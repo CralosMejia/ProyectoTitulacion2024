@@ -1,0 +1,23 @@
+<aside class="sidebar">
+  <figure>
+    <img
+      src="https://i.ibb.co/wrGYVpt/logo-2.png"
+      alt="Logo Pacífico"
+      class="sidebar-logo"
+    />
+  </figure>
+
+  <nav>
+    <ul>
+      <li
+        *ngFor="let listItemMenu of listMenu"
+        class="sidebar-item"
+        [class.active]="activeItem === listItemMenu.id"
+        (click)="setActive(listItemMenu.id)"
+      >
+        <i class="fas sidebar-icon" [ngClass]="listItemMenu.icon"></i
+        ><span>{{ listItemMenu.name }}</span>
+      </li>
+    </ul>
+  </nav>
+</aside>

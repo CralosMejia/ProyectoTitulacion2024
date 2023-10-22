@@ -1,0 +1,17 @@
+/* You can add global styles to this file, and also import other style files */
+@font-face {
+    font-family: 'Rosario';
+    src: url('./assets/fonts/Rosario/Rosario-VariableFont_wght.ttf');
+}
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html{
+    font-size: 62.5%;
+    font-family: 'Rosario';
+}
+body{
+    background-color: #f7f2f2;
+}

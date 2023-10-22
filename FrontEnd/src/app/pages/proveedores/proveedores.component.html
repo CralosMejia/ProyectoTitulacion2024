@@ -1,0 +1,60 @@
+<div class="table-container">
+    <table class="provider-table">
+        <thead>
+            <tr>
+
+                <th>NOMBRE DEL PROVEEDOR</th>
+                <th>DIRECCION</th>
+                <th>ESTADO</th>
+                <th>NIVEL</th>
+                <th>TELEFONO</th>
+                <th></th> <!-- Para el botón de editar -->
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="provider-row" *ngFor="let i of list">
+                <td class="td_image">
+                    <img src="https://i.ibb.co/8ztVbGG/team-2.png" alt="Michael John" class="provider-image">
+                    <div>
+                        <strong class="provider-name">Michael John</strong><br>
+                        <a href="mailto:michael@mail.com" class="provider-email">michael@mail.com</a>
+                    </div>
+                </td>
+                <td class="provider-address">Tumbaco<br>JuanMontalvo</td>
+                <td><span class="provider-status active-status">ACTIVO</span></td>
+                <td class="provider-level">PRIMARIO</td>
+                <td><a href="tel:092843747" class="provider-phone">092843747</a></td>
+                <td><button class="edit-button">Edit</button></td>
+            </tr>
+            <!-- Puedes replicar el <tr class="provider-row"> para cada proveedor en la lista -->
+        </tbody>
+    </table>
+    
+</div>
+
+<div class="provider-container">
+    <h2>Agregar Nuevo Proveedor</h2>
+    <div class="form-row">
+        <div class="input-group">
+            <label for="provider">PROVEEDORES</label>
+            <input type="text" id="provider" placeholder="Type here...">
+        </div>
+        <div class="input-group">
+            <label for="address">DIRECCION</label>
+            <input type="text" id="address" placeholder="Type here...">
+        </div>
+        <div class="input-group">
+            <label for="status">ESTADO</label>
+            <input type="text" id="status" placeholder="Type here...">
+        </div>
+        <div class="input-group">
+            <label for="level">NIVEL</label>
+            <input type="text" id="level" placeholder="Type here...">
+        </div>
+        <div class="input-group">
+            <label for="phone">TELEFONO</label>
+            <input type="text" id="phone" placeholder="Type here...">
+        </div>
+    </div>
+    <button class="generate-btn">GENERAR</button>
+</div>

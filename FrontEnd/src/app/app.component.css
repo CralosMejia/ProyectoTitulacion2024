@@ -1,0 +1,29 @@
+.pricipal_container{
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 18vw 82vw;
+    grid-template-rows: 15vh 78vh 7vh;
+}
+
+.sidebar_container_principal{
+    grid-column: 1 / 2;
+    grid-row: 1 / 4;
+}
+
+.header_container_principal{
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+}
+
+.footer_container_principal{
+    grid-column: 2 / 3;
+    grid-row: 3 / 4;
+}
+
+.container_principal_content{
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+    overflow-y: auto;
+    overflow-x: auto;
+}

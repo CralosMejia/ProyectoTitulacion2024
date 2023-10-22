@@ -1,0 +1,191 @@
+.table-container {
+    height: 45vh; /* o el alto que desees */
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+table.provider-table{
+    border-radius: 2rem;
+    margin: 0 0.5rem;
+}
+
+/* Estilos para la tabla */
+.provider-table {
+    width: 98%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.provider-table th {
+    background-color: #ffffff;
+    padding: 10px;
+    text-align: left;
+    border-radius: 2rem;
+    font-family: 'Rosario';
+    color: #8392AB;
+    font-size: 1.4rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.provider-table td {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e1e1e1;
+}
+
+/* Estilos para la imagen del proveedor */
+.provider-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Estilos para los nombres, emails y otros textos */
+.provider-name {
+    font-weight: bold;
+    font-family: 'Rosario';
+    font-size: 1.2rem;
+}
+
+.provider-email {
+    color: #8392AB;
+    text-decoration: none;
+    font-family: 'Rosario';
+    font-size: 1.1rem;
+}
+
+.provider-level {
+    color: #8392AB;
+    text-decoration: none;
+    font-family: 'Rosario';
+    font-size: 1.4rem;
+}
+
+.provider-address {
+    color: #8392AB;
+    font-family: 'Rosario';
+    font-size: 1.2rem;
+}
+
+.provider-phone {
+    color: #8392AB;
+    text-decoration: none;
+    font-family: 'Rosario';
+    font-size: 1.4rem;
+}
+
+/* Estilos para los botones de estado */
+.provider-status {
+    padding: 5px 15px;
+    border-radius: 1rem;
+    font-size: 14px;
+    text-align: center;
+}
+
+.active-status {
+    background-color: #4CAF50; /* Color verde */
+    color: #ffffff;
+}
+
+.inactive-status {
+    background-color: #A8B8D8; /* Color amarillo */
+    color: #ffffff;
+}
+
+.edit-button {
+    background-color: transparent;
+    border: 1px solid #bfbfbf;
+    padding: 5px 15px;
+    border-radius: 20px;
+    color: #bfbfbf;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.edit-button:hover {
+    background-color: #bfbfbf;
+    color: #ffffff;
+}
+
+.provider-image {
+    width: 50px; /* ajusta este valor según el tamaño deseado */
+    height: 50px;
+    border-radius: 1rem; /* para que sea cuadrada */
+    margin-right: 10px;
+}
+
+.td_image {
+    display: flex;
+    align-items: center;
+}
+
+.provider-name, .provider-email {
+    margin: 0; /* para eliminar márgenes predeterminados de algunos navegadores */
+}
+
+/* -------------------------------------------------------------- */
+.provider-container {
+    width: 99%;
+    margin: 2rem auto;
+    padding: 1rem 2rem 1rem 2rem ;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.provider-container h2 {
+    text-align: left;
+    margin-bottom: 2rem;   
+    color: #8392AB;
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    flex: 1;
+    margin: 0 10px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #8392AB;
+}
+
+.input-group input {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.generate-btn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 25px;
+    /* background-color: #ffa500; */
+    background: rgb(255,153,0);
+    background: linear-gradient(156deg, rgba(255,153,0,1) 33%, rgba(40,144,202,1) 68%);
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.generate-btn:hover {
+    background-color: #ff8c00;
+}

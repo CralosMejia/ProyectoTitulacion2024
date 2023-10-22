@@ -1,0 +1,87 @@
+
+header{
+    width: 80vw;
+    padding: 2rem 0.3rem 0 0.3rem;
+    display: flex;
+    justify-content: space-between
+
+}
+
+.container_header_1{
+    display: flex;
+    flex-direction: column;
+    margin: 0 0 0 0.7rem;
+    font-size: 1.6rem;
+    color: #252f4091;
+}
+
+
+.container_header_1 p {
+    margin: 1rem 0 0 0.7rem;
+    font-size: 1.6rem;
+    color: #252f40;
+    display: inline;
+    
+}
+h1{
+    margin: 1rem 0 0 0.7rem;
+    font-size: 2.6rem;
+    color: #252F40;
+}
+
+.search-container {
+    position: relative;
+    width: 250px;
+    margin: 0 2rem 0 0 ;
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px; /* Puedes ajustar esto según el tamaño que desees para el ícono */
+    color: #888; /* Color del ícono */
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 10px 10px 35px; /* Ajustado para dejar espacio al ícono */
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    outline: none;
+    transition: border-color 0.3s;
+
+    /* Esta es para cuando el usuario hace foco en el input */
+    &:focus {
+        border-color: #888;
+    }
+}
+
+.container_header_2 {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 2rem 0 0 ;
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #f7f2f2;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+}
+
+.btn-icon{
+    color: #8392AB;
+    font-size: 2rem;
+    &:hover {
+        color: #677386;
+    }
+}
