@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HeaderComponent } from './header/header.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { FooterComponent } from './footer/footer.component';
+import { SettingsComponent } from './settings/settings.component';
 
 
 
@@ -10,7 +11,8 @@ import { FooterComponent } from './footer/footer.component';
   declarations: [
     HeaderComponent,
     SidebarComponent,
-    FooterComponent
+    FooterComponent,
+    SettingsComponent
   ],
   imports: [
     CommonModule
@@ -18,7 +20,8 @@ import { FooterComponent } from './footer/footer.component';
   exports:[
     HeaderComponent,
     SidebarComponent,
-    FooterComponent
+    FooterComponent,
+    SettingsComponent
   ]
 })
 export class SharedModule { }

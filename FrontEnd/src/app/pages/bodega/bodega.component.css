@@ -1,0 +1,141 @@
+.table-container {
+    height: 45vh; 
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+.bodega-table{
+    border-radius: 2rem;
+    margin: 0 0.5rem;
+}
+
+.bodega-table {
+    width: 98%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.bodega-table th {
+    background-color: #ffffff;
+    padding: 10px;
+    text-align: center;
+    border-radius: 2rem;
+    font-family: 'Rosario';
+    color: #8392AB;
+    font-size: 1.4rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.bodega-table td {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e1e1e1;
+    text-align: center;
+    color: #8392AB;
+    text-decoration: none;
+    font-family: 'Rosario';
+    font-size: 1.4rem;
+}
+.bodega-table button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1.5rem;
+    margin: 0 5px;
+    padding: 5px;
+    transition: transform 0.1s;
+}
+
+.bodega-table button:hover {
+    transform: scale(1.2);
+}
+
+
+.fa-greater-than {
+    transform: rotate(90deg);
+}
+
+.icono-rojo {
+    color: red;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.icono-animate {
+    animation: fadeIn 0.5s;
+}
+
+/* Sombra interna para la tabla desplegable */
+.info-desplegable table {
+
+    width: 100%;  /* Asegurar que también ocupe todo el ancho */
+}
+
+
+/* ----------------------------------------------------------- */
+.warehouse-container {
+    width: 99%;
+    margin: 2rem auto;
+    padding: 1rem 2rem 1rem 2rem;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.warehouse-container h2 {
+    text-align: left;
+    margin-bottom: 2rem;   
+    color: #8392AB;
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    flex: 1;
+    margin: 0 10px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #8392AB;
+}
+
+.input-group input {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.generate-btn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 25px;
+    background: rgb(255,153,0);
+    background: linear-gradient(156deg, rgba(255,153,0,1) 33%, rgba(40,144,202,1) 68%);
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.generate-btn:hover {
+    background-color: #ff8c00;
+    color: rgb(231, 228, 228);
+}

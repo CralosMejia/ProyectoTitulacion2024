@@ -13,7 +13,7 @@
         *ngFor="let listItemMenu of listMenu"
         class="sidebar-item"
         [class.active]="activeItem === listItemMenu.id"
-        (click)="setActive(listItemMenu.id)"
+        (click)="setActive(listItemMenu.id,listItemMenu.url,listItemMenu.name)"
       >
         <i class="fas sidebar-icon" [ngClass]="listItemMenu.icon"></i
         ><span>{{ listItemMenu.name }}</span>

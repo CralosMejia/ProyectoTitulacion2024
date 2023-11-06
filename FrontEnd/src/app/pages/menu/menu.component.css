@@ -1,0 +1,99 @@
+.platos-container {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.platos-container header {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+    margin-bottom: 20px;
+}
+
+header .agregar-btn {
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.agregar-btn i {
+    margin-left: 10px;
+}
+
+.agregar-btn:hover {
+    background-color: #45a049;
+}
+
+.platos-table {
+    background-color: #ffffff;
+    padding: 10px;
+    text-align: left;
+    border-radius: 2rem;
+    font-family: 'Rosario';
+    color: #8392AB;
+    font-size: 1.4rem;
+    width: 100%;
+}
+
+.platos-table td {
+    padding: 5px 10px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.platos-table td h3 {
+    font-size: 2rem;
+    font-family: 'Rosario';
+    color: #252F40;
+}
+
+.platos-table td img {
+    width: 7rem;
+    height: 7rem;
+    object-fit: cover;
+    border-radius: 0.5rem;
+    margin-right: 15px;
+}
+
+.platos-table td.td_img{
+    text-align: center;
+}
+
+.disponible-btn, .eliminar-btn, .editar-btn {
+    padding: 3px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 0 3px;
+    font-size: 14px;
+}
+
+.disponible-btn {
+    background-color: #4CAF50; /* Color verde */
+    color: #ffffff;
+    padding: 5px 15px;
+    border-radius: 1rem;
+    font-size: 14px;
+    text-align: center;
+}
+
+.no-disponible-btn {
+    background-color: #A8B8D8; /* Color amarillo */
+    color: #ffffff;
+}
+
+.eliminar-btn, .editar-btn {
+    background-color: #ffff;
+    color: #555;
+}
+
+.eliminar-btn:hover, .editar-btn:hover {
+    background-color: #e0e0e0;
+}
+

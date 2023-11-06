@@ -1,0 +1,64 @@
+<div class="add-plato">
+
+    <section class="plato-form">
+        <form action="#" method="post">
+            <div class="input-group">
+                <label for="nombrePlato">Nombre del Plato</label>
+                <input type="text" id="nombrePlato" name="nombrePlato" placeholder="Escribir aquí">
+            </div>
+    
+            <div class="input-group">
+                <label for="descripcionPlato">Descripción</label>
+                <textarea id="descripcionPlato" name="descripcionPlato" placeholder="Escribir aquí"></textarea>
+            </div>
+        </form>
+    </section>
+    
+    <section class="plato-img-form">
+        <div class="img-upload">
+            <label for="fotoPlato">Agregar foto del plato</label>
+            <input type="file" id="fotoPlato" name="fotoPlato">
+        </div>
+    </section>
+    
+    <div class="ingredients-section">
+        <!-- ingredients.component.html -->
+        <h2>Ingredientes del Plato</h2>
+        <div class="ingrediente-item-container">
+            <div *ngFor="let ingredient of ingredients; let i = index" class="ingredient-item">
+                <span class="ingredient-name">{{ ingredient.name }}</span>
+                <span class="ingredient-quantity">{{ ingredient.amount }}</span>
+                <span class="ingredient-weight">{{ ingredient.weight }}</span>
+                <button class="icon-btn" (click)="editIngredient(i)"><i class="fas fa-edit"></i></button>
+                <button class="icon-btn" (click)="deleteIngredient(i)"><i class="fas fa-trash-alt"></i></button>
+            </div>
+        </div>
+        
+    
+    
+        <div class="ingredient-inputs">
+    
+            <select name="producto">
+                <option value="" disabled selected>PRODUCTO</option>
+                <option value="producto1">Producto 1</option>
+                <option value="producto2">Producto 2</option>
+                <!-- ... -->
+            </select>
+            <input type="number" placeholder="Cantidad">
+            <!-- Lista desplegable de Peso -->
+            <select name="peso">
+                <option value="" disabled selected>PESO</option>
+                <option value="Kg">Kg</option>
+                <option value="gr">gr</option>
+                <!-- ... -->
+            </select>
+            
+    
+            <button (click)="addIngredient()">AGREGAR</button>
+        </div>
+    
+    </div>
+    
+    <button class="generate-btn">GENERAR</button>
+</div>
+

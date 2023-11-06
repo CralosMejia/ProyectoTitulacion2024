@@ -1,0 +1,91 @@
+<div class="pedidos-container">
+    <header>
+      <h2>Numero de Pedido: </h2>
+      <h2>fecha de Creación:</h2>
+    </header>
+  
+    <div class="table-container">
+        <table class="bodega-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Cantidad</th>
+              <th>Peso</th>
+              <th>Proveedor</th>
+              <th>Valor</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td>Papa chola</td>
+                <td>3</td>
+                <td>Kg</td>
+                <td>Pronaca</td>
+                <td>120$</td>
+                <td>
+                    <button class="btn-icon"><i class="fas fa-pencil-alt"></i></button>
+                    <button class="btn-icon"><i class="fas fa-trash-alt"></i></button>
+                </td>
+              </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>Subtotal:</td>
+                <td>120$</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>total:</td>
+                <td>132$</td>
+            </tr>
+          </tfoot>
+        </table>
+    </div>
+
+
+    <div class="ingredients-section">
+        <h2>Ingredientes del Plato</h2>
+        <div class="ingredient-inputs">
+    
+            <select name="producto">
+                <option value="" disabled selected>PRODUCTO</option>
+                <option value="producto1">Producto 1</option>
+                <option value="producto2">Producto 2</option>
+                <!-- ... -->
+            </select>
+            <input type="number" placeholder="Cantidad">
+            <!-- Lista desplegable de Peso -->
+            <select name="peso">
+                <option value="" disabled selected>PESO</option>
+                <option value="Kg">Kg</option>
+                <option value="gr">gr</option>
+                <!-- ... -->
+            </select>
+            <select name="Proveedor">
+                <option value="" disabled selected>Proveedor</option>
+                <option value="Pronaca">Pronaca</option>
+                <option value="Buena Vida">Buena Vida</option>
+                <!-- ... -->
+            </select>
+            
+    
+            <button>AGREGAR</button>
+        </div>
+    </div>
+    
+    <div class="button-container">
+        <h3>APROBAR O RECHAZAR PEDIDO</h3>
+        <div class="buttons">
+            <button class="approve-btn">APROBAR EL PEDIDO</button>
+            <button class="reject-btn">RECHAZAR PEDIDO</button>
+        </div>
+    </div>
+    
+
+</div>

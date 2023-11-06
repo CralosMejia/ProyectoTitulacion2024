@@ -1,0 +1,6 @@
+.canvas_container{
+    display: flex;
+    justify-content: space-evenly;
+    height: 65vh;
+    width: 65vw;
+}

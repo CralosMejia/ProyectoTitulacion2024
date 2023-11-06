@@ -1,0 +1,92 @@
+<div class="table-container">
+    <table class="bodega-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Nombre del Producto</th>
+          <th>Cantidad en Existencia</th>
+          <th>Cantidad Mínima</th>
+          <th>Cantidad Máxima Recomendada</th>
+          <th>Fecha de Vencimiento</th>
+          <th>Proveedores</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let product of products">
+          <tr>
+            <td>
+              <button (click)="toggleIcono(product)">
+                <i [ngClass]="{
+                          'fa-solid fa-greater-than': !product.isIconoX, 
+                          'fas fa-times icono-rojo': product.isIconoX,
+                          'icono-animate': true
+                      }">
+                </i>
+              </button>
+              <button><i class="fas fa-pencil-alt"></i></button>
+              <button><i class="fas fa-trash-alt"></i></button>
+            </td>
+            <td class="td_image">Papa Chola</td>
+            <td>4 KG</td>
+            <td>2 KG</td>
+            <td>6 KG</td>
+            <td>17/07/2023</td>
+            <td>PRONACA</td>
+          </tr>
+          <tr *ngIf="product.isIconoX">
+            <td colspan="7">
+              <div class="info-desplegable">
+                <table>
+                  <tr>
+                    <th>Lotes</th>
+                    <th>Cantidad Total</th>
+                    <th>Fecha de Vencimiento</th>
+                    <th>Proveedores</th>
+                  </tr>
+                  <tr *ngFor="let lote of product.lotes">
+                    <td>{{ lote.nombre }}</td>
+                    <td>{{ lote.cantidad }}</td>
+                    <td>{{ lote.fecha }}</td>
+                    <td>{{ lote.proveedor }}</td>
+                  </tr>
+                </table>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+</div>
+
+<div class="warehouse-container">
+    <h2>Agregar Nuevo Producto</h2>
+    <div class="form-row">
+        <div class="input-group">
+            <label for="warehouse">NOMBRE DEL PRODUCTO</label>
+            <input type="text" id="nombre" placeholder="Type here...">
+        </div>
+        <div class="input-group">
+            <label for="address">CANTIDAD EN EXISTENCIA</label>
+            <input type="text" id="cant_act" placeholder="Type here...">
+        </div>
+        <div class="input-group">
+            <label for="status">CANTIDAD MINIMA</label>
+            <input type="text" id="cant_mini" placeholder="Type here...">
+        </div>
+        <div class="input-group">
+            <label for="level">CANTIDAD MAXIMA RECOMENDAD</label>
+            <input type="text" id="cant_max_reco" placeholder="Type here...">
+        </div>
+        <div class="input-group">
+            <label for="phone">FECHA DE VENCIMIENTO</label>
+            <input type="text" id="fecha_vencimiento" placeholder="Type here...">
+        </div>
+        <div class="input-group">
+            <label for="phone">PESO</label>
+            <input type="text" id="peso" placeholder="Type here...">
+        </div>
+    </div>
+    <button class="generate-btn">GENERAR</button>
+</div>
+
+

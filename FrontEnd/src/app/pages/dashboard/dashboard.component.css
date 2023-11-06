@@ -1,0 +1,198 @@
+.dashboar_container{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+}
+
+.dashboar_container section h3{
+    color: #333;
+    margin-bottom: 2rem;
+    font-family: 'Rosario';
+    font-size: 2rem;
+    text-align: center;
+
+}
+
+.dashboar_container section figure {
+    margin: 0;
+}
+
+.dashboar_container section figcaption {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.dashboar_container section {
+    background-color: #fff;
+    margin: 20px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+
+.grafics-section img {
+    width: 100%; /* Ajusta según tus necesidades */
+    max-height: 250px; /* Ajusta según tus necesidades */
+}
+
+
+/* Estilos del Modal */
+.modal {
+    display: none; /* El modal inicia oculto */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5); 
+}
+
+.modal-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 60%;
+    border-radius: 5%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.modal-header, .modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #333;
+}
+
+.close-btn {
+    cursor: pointer;
+    font-size: 1.5em;
+}
+
+.print-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 1em;
+    transition: background-color 0.3s;
+}
+
+.print-btn:hover {
+    background-color: #45a049;
+}
+
+.print-btn i {
+    margin-right: 5px;
+}
+
+/* ------------------------------------------ */
+.filter-container {
+    width: 98%;
+    position: sticky;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    background-color: #ffffff;
+    padding: 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+}
+
+.date-range, .product-dropdown {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    position: relative;
+}
+
+input[type="date"] {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.5rem;
+    width: 150px;
+    font-size: 14px;
+    color: #777;
+}
+
+.product-dropdown label {
+    cursor: pointer;
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 14px;
+    color: #777;
+    position: relative;
+}
+
+.dropdown-content {
+    display: none;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: absolute;
+    top: 40px;
+    left: 0;
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    padding: 0.5rem;
+    border-radius: 8px;
+    z-index: 10;
+}
+
+.product-dropdown:hover .dropdown-content {
+    display: flex;
+}
+
+input[type="checkbox"] {
+    margin-right: 0.5rem;
+}
+
+button {
+    padding: 0.5rem 1.5rem;
+    background-color: #FFD700;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #FFC125;
+}
+
+.filter-container select {
+    padding: 0.8rem 1.2rem;
+    border: 0.1rem solid #E0E0E0;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    appearance: none; /* Esto elimina el aspecto predeterminado del navegador para select */
+    background-color: #fff;
+}
+
+/* Para añadir un icono de flecha descendente a las listas desplegables si lo necesitas */
+.filter-container select:after {
+    content: '\25BC';
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none; /* Asegura que no interfiera con los clics en el select */
+}

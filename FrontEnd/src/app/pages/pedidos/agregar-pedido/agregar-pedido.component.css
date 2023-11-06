@@ -1,0 +1,240 @@
+.pedidos-container {
+    width: 90%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 49%  49% ;
+    grid-template-rows: 9% 60% 26%;
+}
+
+.pedidos-container header {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: row;
+    margin-bottom: 2rem;
+    align-items: center;
+    grid-column: 1 / 3;
+    grid-row: 1 / 2;
+}
+.table-container {
+    height: 45vh; 
+    overflow-y: auto;
+    overflow-x: auto;
+    grid-column: 1 / 3;
+    grid-row: 2 / 3;
+}
+
+.ingredients-section {
+    width: 98%;
+    height: 110%;
+    border-radius: 2rem;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0px .4rem .6rem rgba(0, 0, 0, 0.1);
+    background-color: #FFFFFF;
+    border: 0.1rem solid #E0E0E0;
+    padding: 2rem;
+    box-shadow: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+    grid-column: 1 / 2;
+    grid-row: 3 / 4;
+}
+.button-container {
+    width: 98%;
+    height: 110%;
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    justify-content: center;
+    grid-column: 2 / 3;
+    grid-row: 3 / 4;
+}
+
+.pedidos-container header h2{
+    margin-right: 5rem;
+}
+header .agregar-btn {
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.agregar-btn i {
+    margin-left: 10px;
+}
+
+.agregar-btn:hover {
+    background-color: #45a049;
+}
+
+.table-container {
+    height: 45vh; 
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+.bodega-table{
+    border-radius: 2rem;
+    margin: 0 0.5rem;
+}
+
+.bodega-table {
+    width: 98%;
+    height: 43vh;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.bodega-table th {
+    background-color: #ffffff;
+    padding: 10px;
+    text-align: center;
+    border-radius: 2rem;
+    font-family: 'Rosario';
+    color: #7f8ca1;
+    font-size: 1.4rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.bodega-table td {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e1e1e1;
+    text-align: center;
+    color: #8392AB;
+    text-decoration: none;
+    font-family: 'Rosario';
+    font-size: 1.4rem;
+}
+
+.bodega-table button i{
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1.5rem;
+    margin: 0 5px;
+    padding: 5px;
+    transition: transform 0.1s;
+}
+
+.bodega-table button:hover {
+    transform: scale(1.2);
+}
+
+/* ---------------------------------- */
+.ingredients-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+}
+
+.ingredient-inputs {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 1rem; 
+}
+
+
+.ingredient-inputs input {
+    padding: 0.8rem 1.2rem;
+    border: 0.1rem solid #E0E0E0;
+    border-radius: 0.4rem;
+}
+
+.ingredient-inputs button {
+    background-color: #FFD700; 
+    padding: 0.8rem 1.2rem;
+    border: none;
+    border-radius: 0.4rem;
+    cursor: pointer;
+}
+
+.ingredient-inputs button:hover {
+    background-color: #E0C600;
+}
+
+.ingredient-inputs select {
+    padding: 0.8rem 1.2rem;
+    border: 0.1rem solid #E0E0E0;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    appearance: none; /* Esto elimina el aspecto predeterminado del navegador para select */
+    background-color: #fff;
+}
+
+/* Para añadir un icono de flecha descendente a las listas desplegables si lo necesitas */
+.ingredient-inputs select:after {
+    content: '\25BC';
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none; /* Asegura que no interfiera con los clics en el select */
+}
+
+
+
+/* ------------------------------------------ */
+
+
+h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin: 0;
+}
+
+.buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.approve-btn, .reject-btn {
+    padding: 0.75rem 2rem;
+    border-radius: 30px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.approve-btn {
+    background-color: #4CAF50;
+    color: #ffffff;
+}
+
+.reject-btn {
+    background-color: #8B0000;
+    color: #ffffff;
+}
+
+.approve-btn:hover, .reject-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+.bodega-table .btn-icon{
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1.5rem;
+    margin: 0 5px;
+    padding: 5px;
+    transition: transform 0.1s;
+}
+
+.btn-icon i:hover {
+    transform: scale(1.2);
+}

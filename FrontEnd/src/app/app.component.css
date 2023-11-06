@@ -19,6 +19,8 @@
 .footer_container_principal{
     grid-column: 2 / 3;
     grid-row: 3 / 4;
+    display: flex;
+    align-items: center;
 }
 
 .container_principal_content{

@@ -1,0 +1,35 @@
+<div class="pedidos-container">
+    <header>
+      <button class="agregar-btn" (click)="addPedido()">
+        Agregar Pedido <i class="fas fa-plus"></i>
+      </button>
+    </header>
+  
+    <div class="table-container">
+        <table class="bodega-table">
+          <thead>
+            <tr>
+              <th>Numero del pedido</th>
+              <th>Valor total de la orden</th>
+              <th>Fecha de creación</th>
+              <th>Estado</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr>
+                <td>12345</td>
+                <td>300$</td>
+                <td>10/10/2023</td>
+                <td>
+                    <span class="disponible-btn active-status">Aprobado</span>
+                </td>
+                <td>
+                    <button><i class="fa-solid fa-eye"></i></button>
+                </td>
+              </tr>
+          </tbody>
+        </table>
+    </div>
+
+</div>
