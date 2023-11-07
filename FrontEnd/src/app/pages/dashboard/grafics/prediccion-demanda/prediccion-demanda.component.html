@@ -1,3 +1,24 @@
+
+<div class="subtitle-container" >
+  <h3>Producto 1</h3>
+</div>
+<label class="checkbox-container" *ngIf="!isFilter">
+  Seleccionar
+  <input type="checkbox">
+  <span class="checkmark"></span>
+</label>
+<div class="filter-container" *ngIf="isFilter">
+  <!-- app.component.html -->
+
+  <!-- Rango de fechas -->
+  Desde: <input type="date" >
+  Hasta: <input type="date">
+  
+  <!-- Filtro de productos -->
+  <select >
+    <option *ngFor="let product of products">{{ product }}</option>
+  </select>
+</div>
 <div class="canvas_container">
   <canvas
     baseChart

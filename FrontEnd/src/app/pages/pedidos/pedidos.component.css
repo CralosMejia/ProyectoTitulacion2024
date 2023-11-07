@@ -84,11 +84,42 @@ header .agregar-btn {
     transform: scale(1.2);
 }
 
-.disponible-btn {
-    background-color: #4CAF50; /* Color verde */
+.aprobado-btn{
+    background-color: rgb(213, 213, 30); /* Color verde */
     color: #ffffff;
     padding: 5px 15px;
     border-radius: 1rem;
     font-size: 14px;
     text-align: center;
+}
+
+.cancelado-btn{
+    background-color: rgb(193, 16, 16); /* Color verde */
+    color: #ffffff;
+    padding: 5px 15px;
+    border-radius: 1rem;
+    font-size: 14px;
+    text-align: center;
+}
+
+.enviado-btn{
+    background-color: #4cc650; /* Color verde */
+    color: #ffffff;
+    padding: 5px 15px;
+    border-radius: 1rem;
+    font-size: 14px;
+    text-align: center;
+}
+
+.en-espera-btn{
+    background-color: rgb(104, 104, 104); /* Color verde */
+    color: #ffffff;
+    padding: 5px 15px;
+    border-radius: 1rem;
+    font-size: 14px;
+    text-align: center;
+}
+
+.inactive-btn{
+    display: none;
 }

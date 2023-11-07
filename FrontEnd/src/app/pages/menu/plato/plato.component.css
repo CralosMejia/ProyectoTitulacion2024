@@ -16,6 +16,8 @@
 
 .plato-img-form {
     width: 90%;
+    display: flex;
+    justify-content: center;
     margin: 2rem auto;
     background-color: #ffffff;
     padding: 2rem;
@@ -212,4 +214,10 @@ input, textarea {
 .generate-btn:hover {
     background-color: #ff8c00;
     color: rgb(231, 228, 228);
+}
+
+.image-previsualizer{
+    width: 100%; /* Usa un ancho de 100% para ocupar todo el contenedor */
+    height: 100%; /* Ajusta automáticamente la altura para mantener la relación de aspecto */
+    object-fit: cover;
 }

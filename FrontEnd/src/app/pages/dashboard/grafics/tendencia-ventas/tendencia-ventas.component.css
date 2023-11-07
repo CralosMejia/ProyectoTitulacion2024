@@ -1,0 +1,175 @@
+.canvas_container{
+    display: flex;
+    justify-content: space-evenly;
+    height: 50vh;
+    width: 65vw;
+}
+/* Filtros */
+.filter-container {
+    width: 98%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+
+}
+
+.date-range, .product-dropdown {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    position: relative;
+}
+
+input[type="date"] {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.5rem;
+    width: 150px;
+    font-size: 14px;
+    color: #777;
+}
+
+
+
+button.btn-filter {
+    padding: 0.5rem 1.5rem;
+    background-color: #FFD700;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+button.btn-filter:hover {
+    background-color: #FFC125;
+}
+
+.filter-container select {
+    padding: 0.8rem 1.2rem;
+    border: 0.1rem solid #E0E0E0;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    appearance: none; /* Esto elimina el aspecto predeterminado del navegador para select */
+    background-color: #fff;
+}
+
+/* Para añadir un icono de flecha descendente a las listas desplegables si lo necesitas */
+.filter-container select:after {
+    content: '\25BC';
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none; /* Asegura que no interfiera con los clics en el select */
+}
+
+/*  filtro seleccion multiple */
+/* app.component.css */
+.dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  .dropdown-menu div {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .dropdown-menu div:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .dropdown:hover .dropdown-menu {
+    display: block;
+  }
+  
+
+  .btn-dropdown {
+    background-color: #f2f2f2; /* Color de fondo */
+    border: 1px solid #ccc;    /* Borde */
+    padding: 10px;              /* Espaciado interno */
+    margin: 5px;                /* Espaciado externo */
+    cursor: pointer;            /* Cursor en forma de mano al pasar por encima */
+    border: 0.1rem solid #E0E0E0;
+    border-radius: 0.4rem;
+    background-color: #fff;
+  }
+  
+  /* Podrías añadir :hover, :active y otros pseudo-clases para mejorar la interactividad */
+  .btn-dropdown:hover {
+    background-color: #e6e6e6; /* Color de fondo al pasar el cursor por encima */
+  }
+
+  /* check */
+  /* Estilo personalizado para el contenedor de la etiqueta y el checkbox */
+.checkbox-container {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 18px;
+  user-select: none;
+}
+
+/* Ocultar el checkbox real */
+.checkbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Crear un cuadro personalizado */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: #eee;
+  border: 1px solid #ddd; /* Agrega un borde al cuadro del checkbox */
+}
+
+/* Al marcar la casilla, cambia el color del cuadro */
+.checkbox-container input:checked ~ .checkmark {
+  background-color: #2196F3;
+}
+
+/* Crear el indicador de verificación (escondido cuando no está marcado) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Mostrar el indicador de verificación cuando se verifica el checkbox */
+.checkbox-container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Estilo del indicador de verificación */
+.checkbox-container .checkmark:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}

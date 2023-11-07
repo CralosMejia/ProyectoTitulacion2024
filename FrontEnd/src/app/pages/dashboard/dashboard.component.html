@@ -1,67 +1,73 @@
 <div class="container_dashboard">
   <div class="filter-container">
-
-    <!-- Rango de fechas -->
-    Desde: <input type="date" >
-    Hasta: <input type="date">
-    
-    <!-- Filtro de productos -->
-    <select >
-      <option *ngFor="let product of products">{{ product }}</option>
-    </select>
-    <select >
-      <option *ngFor="let plate of plates">{{ plate }}</option>
-    </select>
-  
-    <!-- Botón de filtrar -->
-    <button>FILTRAR</button>
-  
+    <button class="print-btn" (click)="openModal()">
+      <i class="fas fa-print"></i> IMPRIMIR
+    </button>
   </div>
-  
-  
-  
+
   <div class="dashboar_container">
     <!-- Sección de Ventas -->
     <section class="grafics-section" *ngFor="let grafic of graphics">
       <h3>{{ grafic.title }}</h3>
-      <figure (click)="openModal(grafic)" [ngSwitch]="grafic.title">
-        <app-prediccion-demanda *ngSwitchCase="'Predicciones de Demanda'"></app-prediccion-demanda>
-        <app-tendencia-ventas *ngSwitchCase="'Tendencias de Ventas'"></app-tendencia-ventas>
-        <app-almacenamiento *ngSwitchCase="'Estado de los productos en bodega'"></app-almacenamiento>
-        <app-informacion-pedidos *ngSwitchCase="'Informacion de pedidos'"></app-informacion-pedidos>
-
+      <figure [ngSwitch]="grafic.title">
+        <app-prediccion-demanda
+          *ngSwitchCase="'Predicciones de Demanda'"
+          [isFilter]="true"
+        ></app-prediccion-demanda>
+        <app-tendencia-ventas
+          *ngSwitchCase="'Tendencias de Ventas'"
+          [isFilter]="true"
+        ></app-tendencia-ventas>
+        <app-almacenamiento
+          *ngSwitchCase="'Estado de los productos en bodega'"
+          [isFilter]="true"
+        ></app-almacenamiento>
+        <app-informacion-pedidos
+          *ngSwitchCase="'Informacion de pedidos'"
+          [isFilter]="true"
+        ></app-informacion-pedidos>
       </figure>
     </section>
-  
+
     <!-- Pop-up (Modal) -->
     <div #myModal class="modal">
       <div class="modal-content">
         <div class="modal-header">
           <span class="close-btn" (click)="closeModal()"
-            ><i class="fas fa-times"></i
-          ></span>
-        </div>
-        <div class="modal-body">
+          ><i class="fas fa-times"></i
+            ></span>
+          </div>
+          <div class="modal-body">
+          <h3>Escoja los Graficos que desee imprimir</h3>
           <!-- Contenido del pop-up, puedes insertar la gráfica y la información aquí -->
-          <section class="grafics-section" >
-            <h3>{{ graficModal.title }}</h3>
-            <figure [ngSwitch]="graficModal.title">
-              <app-prediccion-demanda *ngSwitchCase="'Predicciones de Demanda'"></app-prediccion-demanda>
-              <app-tendencia-ventas *ngSwitchCase="'Tendencias de Ventas'"></app-tendencia-ventas>
-              <app-almacenamiento *ngSwitchCase="'Estado de los productos en bodega'"></app-almacenamiento>
-              <app-informacion-pedidos *ngSwitchCase="'Informacion de pedidos'"></app-informacion-pedidos>
+          <section class="grafics-section" *ngFor="let grafic of graphics">
+            <h3>{{ grafic.title }}</h3>
+            <figure [ngSwitch]="grafic.title">
+              <app-prediccion-demanda
+                *ngSwitchCase="'Predicciones de Demanda'"
+                [isFilter]="false"
+              ></app-prediccion-demanda>
+              <app-tendencia-ventas
+                *ngSwitchCase="'Tendencias de Ventas'"
+                [isFilter]="false"
+              ></app-tendencia-ventas>
+              <app-almacenamiento
+                *ngSwitchCase="'Estado de los productos en bodega'"
+                [isFilter]="false"
+              ></app-almacenamiento>
+              <app-informacion-pedidos
+                *ngSwitchCase="'Informacion de pedidos'"
+                [isFilter]="false"
+              ></app-informacion-pedidos>
             </figure>
           </section>
         </div>
         <div class="modal-footer">
           <button class="print-btn" (click)="printContent()">
-            <i class="fas fa-print"></i> IMPRIMIR TODO
+            <i class="fas fa-print"></i> IMPRIMIR
           </button>
         </div>
       </div>
     </div>
   </div>
-  
-  
 </div>
-

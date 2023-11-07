@@ -17,15 +17,26 @@
             </tr>
           </thead>
           <tbody>
-              <tr>
-                <td>12345</td>
-                <td>300$</td>
-                <td>10/10/2023</td>
+              <tr *ngFor="let pedido of pedidos">
+                <td>{{pedido.numPedido}}</td>
+                <td>{{pedido.valorOrden}}</td>
+                <td>{{pedido.fechaCreacion}}</td>
                 <td>
-                    <span class="disponible-btn active-status">Aprobado</span>
+                    <span
+                    [ngClass]="{'en-espera-btn': pedido.estado=='En espera', 
+                                'enviado-btn': pedido.estado=='Enviado',
+                                'cancelado-btn': pedido.estado=='Cancelado',
+                                'aprobado-btn': pedido.estado=='Aprobado',}"
+                                
+                    >{{pedido.estado}}</span>
                 </td>
                 <td>
-                    <button><i class="fa-solid fa-eye"></i></button>
+                    <button
+                    [ngClass]="{'inactive-btn': pedido.estado=='Cancelado' || pedido.estado=='Enviado' }"
+                    ><i class="fas fa-pencil-alt "></i></button>
+                    <button
+                    [ngClass]="{'inactive-btn': pedido.estado=='En espera' || pedido.estado=='Aprobado' }"
+                    ><i class="fa-solid fa-eye"></i></button>
                 </td>
               </tr>
           </tbody>

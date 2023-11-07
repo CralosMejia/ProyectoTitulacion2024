@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import {  ChartConfiguration, ChartEvent, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 
@@ -9,6 +9,18 @@ import { BaseChartDirective } from 'ng2-charts';
   styleUrls: ['./prediccion-demanda.component.css']
 })
 export class PrediccionDemandaComponent {
+
+  /////Filtros
+    //-----------------
+
+    products = [
+      'Producto 1',
+      'Producto 2'
+      // Añade más productos según lo necesario
+    ];  
+  
+  @Input() isFilter: boolean = true;
+
   private newLabel? = 'New label';
 
   constructor() {
@@ -84,9 +96,6 @@ export class PrediccionDemandaComponent {
 
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
-  private static generateNumber(i: number): number {
-    return Math.floor(Math.random() * (i < 2 ? 100 : 1000) + 1);
-  }
 
   // events
   public chartClicked({
@@ -108,6 +117,8 @@ export class PrediccionDemandaComponent {
   }): void {
     console.log(event, active);
   }
-    
+
+
+  
 
 }

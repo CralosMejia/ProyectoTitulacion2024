@@ -1,3 +1,24 @@
+<label class="checkbox-container" *ngIf="!isFilter">
+  Seleccionar
+  <input type="checkbox">
+  <span class="checkmark"></span>
+</label>
+<div class="filter-container" *ngIf="isFilter">
+  <!-- Rango de fechas -->
+  Desde: <input type="date" >
+  Hasta: <input type="date">
+  
+  <!-- Filtro de productos -->
+  <div class="dropdown">
+    <button class="btn-dropdown">Platos</button>
+    <div class="dropdown-menu" *ngIf="toggleDropdown">
+      <div *ngFor="let plato of platos">
+        <input type="checkbox" [(ngModel)]="plato.checked" (change)="plato.checked = !plato.checked">
+        {{ plato.name }}
+      </div>
+    </div>
+  </div>
+</div>
 <div class="canvas_container">
   <canvas
     baseChart

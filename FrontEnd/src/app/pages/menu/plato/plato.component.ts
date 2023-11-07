@@ -17,7 +17,7 @@ export interface Ingredient {
 export class PlatoComponent {
 
 
-
+  imagenVistaPrevia: string | ArrayBuffer | null= null;
   ingredients: Ingredient[] = [];
   newIngredientName = '';
   newIngredientAmount = 0;
@@ -43,4 +43,25 @@ export class PlatoComponent {
   deleteIngredient(index: number) {
     this.ingredients.splice(index, 1);
   }
+
+  mostrarVistaPrevia(evento: Event) {
+    const input = evento.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const archivo = input.files[0];
+      const reader = new FileReader();
+      reader.onload = e => this.imagenVistaPrevia = reader.result;
+      reader.readAsDataURL(archivo);
+    }
+  }
+
+  cambiarImagen(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const archivo = input.files[0];
+      const reader = new FileReader();
+      reader.onload = () => this.imagenVistaPrevia = reader.result;
+      reader.readAsDataURL(archivo);
+    }
+  }
+  
 }

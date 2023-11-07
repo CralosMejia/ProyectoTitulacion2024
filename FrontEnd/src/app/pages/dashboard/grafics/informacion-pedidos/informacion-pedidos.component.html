@@ -1,3 +1,14 @@
+<label class="checkbox-container" *ngIf="!isFilter">
+  Seleccionar
+  <input type="checkbox">
+  <span class="checkmark"></span>
+</label>
+<div class="filter-container" *ngIf="isFilter">
+  <!-- Rango de fechas -->
+  Desde: <input type="date" >
+  Hasta: <input type="date">
+
+</div>
 <div class="canvas_container">
 <canvas
   baseChart

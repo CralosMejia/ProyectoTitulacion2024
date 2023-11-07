@@ -8,7 +8,6 @@
           <th>Cantidad Mínima</th>
           <th>Cantidad Máxima Recomendada</th>
           <th>Fecha de Vencimiento</th>
-          <th>Proveedores</th>
         </tr>
       </thead>
       <tbody>
@@ -23,27 +22,30 @@
                       }">
                 </i>
               </button>
-              <button><i class="fas fa-pencil-alt"></i></button>
-              <button><i class="fas fa-trash-alt"></i></button>
             </td>
             <td class="td_image">Papa Chola</td>
             <td>4 KG</td>
             <td>2 KG</td>
             <td>6 KG</td>
             <td>17/07/2023</td>
-            <td>PRONACA</td>
           </tr>
           <tr *ngIf="product.isIconoX">
             <td colspan="7">
               <div class="info-desplegable">
                 <table>
                   <tr>
+                    <th></th>
                     <th>Lotes</th>
                     <th>Cantidad Total</th>
                     <th>Fecha de Vencimiento</th>
                     <th>Proveedores</th>
                   </tr>
                   <tr *ngFor="let lote of product.lotes">
+                    <td>
+                      <button><i class="fas fa-pencil-alt"></i></button>
+                      <!-- <button><i class="fas fa-trash-alt"></i></button> -->
+                      <app-deleted-button></app-deleted-button>
+                    </td>
                     <td>{{ lote.nombre }}</td>
                     <td>{{ lote.cantidad }}</td>
                     <td>{{ lote.fecha }}</td>

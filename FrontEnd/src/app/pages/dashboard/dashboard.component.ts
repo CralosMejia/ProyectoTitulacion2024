@@ -29,31 +29,14 @@ export class DashboardComponent {
       'description':'Ventas por tipo de plato'
     },
   ]
-  public graficModal={
-    'title':'Ventas',
-    'img':'https://i.ibb.co/yPmdp4H/image-7.png',
-    'description':'Gráfico de ventas por mes'
-  }
-  products = [
-    'Producto 1',
-    'Producto 2'
-    // Añade más productos según lo necesario
-  ];
-
-  plates = [
-    'Papas con cuero',
-    'Mote pillo'
-    // Añade más productos según lo necesario
-  ];
 
   @ViewChild('myModal')
   modal!: ElementRef;
 
-  openModal(grafic:any) {
+  public isFilter:boolean = true;
+
+  openModal() {
     this.modal.nativeElement.style.display = 'block';
-    this.graficModal.title = grafic.title
-    this.graficModal.img = grafic.img
-    this.graficModal.description = grafic.description
   }
 
   closeModal() {
@@ -62,6 +45,22 @@ export class DashboardComponent {
 
   printContent() {
     window.print();
+  }
+
+
+  //-----------------
+  options = [
+    { name: 'Mote pillo', checked: false },
+    { name: 'Papas con cuero', checked: false },
+    // Añadir más opciones aquí
+  ];
+
+  toggleDropdown = true;
+
+  get selectedOptions() {
+    return this.options
+      .filter(option => option.checked)
+      .map(option => option.name);
   }
   
 }

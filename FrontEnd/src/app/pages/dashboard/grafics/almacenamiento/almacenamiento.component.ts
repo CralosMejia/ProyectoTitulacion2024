@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { ChartConfiguration, ChartData, ChartEvent, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 
@@ -10,14 +10,24 @@ import DataLabelsPlugin from 'chartjs-plugin-datalabels';
   styleUrls: ['./almacenamiento.component.css']
 })
 export class AlmacenamientoComponent {
+  /////Filtros
+    //-----------------
 
-@ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
+    products = [
+      'Producto 1',
+      'Producto 2'
+      // Añade más productos según lo necesario
+    ];  
+    
+  @Input() isFilter: boolean = true;
+
+  @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
 
   public barChartOptions: ChartConfiguration['options'] = {
     responsive: true,
     // We use these empty structures as placeholders for dynamic theming.
     scales: {
-      x: {},
+      x: {min:0},
       y: {
         min: 0,
       },
@@ -36,11 +46,11 @@ export class AlmacenamientoComponent {
   public barChartPlugins = [DataLabelsPlugin];
 
   public barChartData: ChartData<'bar'> = {
-    labels: ['Cebolla', 'Papas', 'Queso hoja', 'Mote'],
+    labels: ['Producto 1'],
     datasets: [
-      { data: [65, 59, 80, 81], label: 'Catidad Maxima' },
-      { data: [28, 48, 40, 20], label: 'Catidad Actual' },
-      { data: [18, 28, 20, 10], label: 'Catidad Minima' },
+      { data: [65], label: 'Catidad Maxima' },
+      { data: [28], label: 'Catidad Actual' },
+      { data: [18], label: 'Catidad Minima' },
       
     ],
   };

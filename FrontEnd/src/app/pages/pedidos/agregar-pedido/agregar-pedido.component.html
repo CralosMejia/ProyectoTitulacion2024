@@ -1,7 +1,8 @@
 <div class="pedidos-container">
     <header>
-      <h2>Numero de Pedido: </h2>
-      <h2>fecha de Creación:</h2>
+      <h2>Numero de Pedido: 12345</h2>
+      <h2>fecha de Creación: 12/10/2023</h2>
+      <h2>Estado del Pedido: Aprobado</h2>
     </header>
   
     <div class="table-container">
@@ -25,7 +26,7 @@
                 <td>120$</td>
                 <td>
                     <button class="btn-icon"><i class="fas fa-pencil-alt"></i></button>
-                    <button class="btn-icon"><i class="fas fa-trash-alt"></i></button>
+                    <app-deleted-button></app-deleted-button>
                 </td>
               </tr>
           </tbody>
@@ -57,33 +58,29 @@
                 <option value="" disabled selected>PRODUCTO</option>
                 <option value="producto1">Producto 1</option>
                 <option value="producto2">Producto 2</option>
-                <!-- ... -->
             </select>
             <input type="number" placeholder="Cantidad">
-            <!-- Lista desplegable de Peso -->
             <select name="peso">
                 <option value="" disabled selected>PESO</option>
                 <option value="Kg">Kg</option>
                 <option value="gr">gr</option>
-                <!-- ... -->
             </select>
             <select name="Proveedor">
                 <option value="" disabled selected>Proveedor</option>
                 <option value="Pronaca">Pronaca</option>
                 <option value="Buena Vida">Buena Vida</option>
-                <!-- ... -->
             </select>
             
     
-            <button>AGREGAR</button>
         </div>
+        <button class="btn-add">AGREGAR</button>
     </div>
     
     <div class="button-container">
-        <h3>APROBAR O RECHAZAR PEDIDO</h3>
+        <h3>ENVIAR O PONER EN ESPERA </h3>
         <div class="buttons">
-            <button class="approve-btn">APROBAR EL PEDIDO</button>
-            <button class="reject-btn">RECHAZAR PEDIDO</button>
+            <button class="approve-btn">ENVIAR EL PEDIDO</button>
+            <button class="reject-btn">PONER EN ESPERA PEDIDO</button>
         </div>
     </div>
     

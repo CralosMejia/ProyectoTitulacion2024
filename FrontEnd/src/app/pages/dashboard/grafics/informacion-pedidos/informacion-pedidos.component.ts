@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import DatalabelsPlugin from 'chartjs-plugin-datalabels';
 import { ChartConfiguration, ChartData, ChartEvent, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
@@ -11,6 +11,7 @@ import { BaseChartDirective } from 'ng2-charts';
 export class InformacionPedidosComponent {
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
 
+  @Input() isFilter: boolean = true;
   // Pie
   public pieChartOptions: ChartConfiguration['options'] = {
     responsive: true,

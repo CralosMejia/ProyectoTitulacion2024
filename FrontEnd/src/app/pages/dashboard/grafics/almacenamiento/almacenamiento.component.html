@@ -1,10 +1,29 @@
-<canvas
-  baseChart
-  class="chart"
-  [data]="barChartData"
-  [options]="barChartOptions"
-  [type]="barChartType"
-  (chartHover)="chartHovered($event)"
-  (chartClick)="chartClicked($event)"
->
-</canvas>
+<label class="checkbox-container" *ngIf="!isFilter">
+  Seleccionar
+  <input type="checkbox">
+  <span class="checkmark"></span>
+</label>
+<div class="filter-container" *ngIf="isFilter">
+  <!-- Rango de fechas -->
+  Desde: <input type="date" >
+  Hasta: <input type="date">
+  
+  <!-- Filtro de productos -->
+  <select >
+    <option *ngFor="let product of products">{{ product }}</option>
+  </select>
+</div>
+<div class="canvas_container">
+
+  <canvas
+    baseChart
+    class="chart"
+    [data]="barChartData"
+    [options]="barChartOptions"
+    [type]="barChartType"
+    (chartHover)="chartHovered($event)"
+    (chartClick)="chartClicked($event)"
+  >
+  </canvas>
+</div>
+

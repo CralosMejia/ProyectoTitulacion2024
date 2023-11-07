@@ -3,7 +3,7 @@
     margin: 0 auto;
     display: grid;
     grid-template-columns: 49%  49% ;
-    grid-template-rows: 9% 60% 26%;
+    grid-template-rows: 9% 54% 30%;
 }
 
 .pedidos-container header {
@@ -25,7 +25,7 @@
 
 .ingredients-section {
     width: 98%;
-    height: 110%;
+    height: 120%;
     border-radius: 2rem;
     display: flex;
     flex-direction: column;
@@ -40,7 +40,7 @@
 }
 .button-container {
     width: 98%;
-    height: 110%;
+    height: 120%;
     background-color: #ffffff;
     padding: 2rem;
     border-radius: 20px;
@@ -144,7 +144,7 @@ header .agregar-btn {
     align-items: center;
     flex-wrap: wrap;
     justify-content: space-around;
-    gap: 1rem; 
+    gap: .5rem; 
 }
 
 
@@ -154,15 +154,16 @@ header .agregar-btn {
     border-radius: 0.4rem;
 }
 
-.ingredient-inputs button {
+button.btn-add {
     background-color: #FFD700; 
     padding: 0.8rem 1.2rem;
     border: none;
     border-radius: 0.4rem;
     cursor: pointer;
+    margin: 1.5rem;
 }
 
-.ingredient-inputs button:hover {
+button.btn-add:hover {
     background-color: #E0C600;
 }
 

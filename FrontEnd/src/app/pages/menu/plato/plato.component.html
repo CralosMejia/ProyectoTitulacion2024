@@ -14,10 +14,13 @@
         </form>
     </section>
     
-    <section class="plato-img-form">
-        <div class="img-upload">
+    <section class="plato-img-form" >
+        <div class="img-upload" >
+            <img [src]="imagenVistaPrevia" *ngIf="imagenVistaPrevia" class="image-previsualizer"
+            (click)="fileInput.click()" 
+            style="cursor: pointer;">
             <label for="fotoPlato">Agregar foto del plato</label>
-            <input type="file" id="fotoPlato" name="fotoPlato">
+            <input type="file" #fileInput id="fotoPlato" name="fotoPlato" (change)="mostrarVistaPrevia($event)">
         </div>
     </section>
     
@@ -30,7 +33,7 @@
                 <span class="ingredient-quantity">{{ ingredient.amount }}</span>
                 <span class="ingredient-weight">{{ ingredient.weight }}</span>
                 <button class="icon-btn" (click)="editIngredient(i)"><i class="fas fa-edit"></i></button>
-                <button class="icon-btn" (click)="deleteIngredient(i)"><i class="fas fa-trash-alt"></i></button>
+                <app-deleted-button></app-deleted-button>
             </div>
         </div>
         

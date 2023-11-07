@@ -1,0 +1,73 @@
+button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1.5rem;
+    margin: 0 5px;
+    padding: 5px;
+    transition: transform 0.1s;
+}
+
+button:hover {
+    transform: scale(1.2);
+}
+
+/* Estilos del Modal */
+.modal {
+    display: none; /* El modal inicia oculto */
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5); 
+}
+
+.modal-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 30%;
+    border-radius: 2rem;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.modal-header, .modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-footer{
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+h2.titulo-modal {
+    margin: 0;
+    color: #333;
+}
+
+.close-btn {
+    cursor: pointer;
+    font-size: 1.5em;
+}
+
+.btn-cancelar,.btn-eliminar {
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 1em;
+    transition: background-color 0.3s;
+}
+
+.btn-eliminar {
+    background-color:red;
+}
+

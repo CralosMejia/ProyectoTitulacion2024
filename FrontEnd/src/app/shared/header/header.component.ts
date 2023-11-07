@@ -10,6 +10,13 @@ import { MenuService } from 'src/app/services/communication/menu.service';
 export class HeaderComponent {
 
   public nameRoute:string=''
+
+  filtros = [
+    'Nombre del proveedor',
+    'Direccion'
+    // Añade más productos según lo necesario
+  ];
+
   constructor(
     private router:Router,
     private menuSrv: MenuService

@@ -16,6 +16,8 @@ import { TendenciaVentasComponent } from './dashboard/grafics/tendencia-ventas/t
 import { NgChartsModule } from 'ng2-charts';
 import { AlmacenamientoComponent } from './dashboard/grafics/almacenamiento/almacenamiento.component';
 import { InformacionPedidosComponent } from './dashboard/grafics/informacion-pedidos/informacion-pedidos.component';
+import { CommonComponentsModule } from '../common/common-components.module';
+import { FormsModule } from '@angular/forms';
 
 
 
@@ -36,7 +38,9 @@ import { InformacionPedidosComponent } from './dashboard/grafics/informacion-ped
   ],
   imports: [
     CommonModule,
-    NgChartsModule
+    NgChartsModule,
+    CommonComponentsModule,
+    FormsModule
   ],
   exports:[
     ProveedoresComponent,
