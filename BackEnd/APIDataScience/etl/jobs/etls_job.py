@@ -29,3 +29,4 @@ def run_etl():
     finally:
         ses_db_etls.dispose()
         ses_db_pacifico.dispose()
+        ses_db_data_science.dispose()

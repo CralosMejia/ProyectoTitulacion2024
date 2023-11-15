@@ -24,11 +24,7 @@ def data_preparation(df_fecha, df_producto, df_demanda):
     # Renombra las columnas para cumplir con los requisitos de Prophet
     df.rename(columns={'fecha': 'ds', 'cantidad_real': 'y', 'producto_id': 'producto'}, inplace=True)
 
-    # Convertir el 'producto_id' a una variable categórica si aún no lo es
-    df['producto'] = df['producto'].astype('category')
 
-    # Convirtiendo las categorías en códigos para que Prophet pueda manejarlas como regresores numéricos
-    df['producto'] = df['producto'].cat.codes
 
     # Selecciona solo las columnas necesarias para el modelo
     df_modelo = df[['ds', 'y', 'producto']]

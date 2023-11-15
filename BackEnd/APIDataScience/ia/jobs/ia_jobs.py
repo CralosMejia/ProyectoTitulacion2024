@@ -1,10 +1,10 @@
-from config.properties import getProperty
-from DB.connection import connect
-from ia.data_preparation.data_preparation import data_preparation
-from ia.model_training.training_model import train_models
-from  ia.model_evaluation.evaluate_model import evaluate_model
-import pandas as pd
-import time
+# from config.properties import getProperty
+# from DB.connection import connect
+# from ia.data_preparation.data_preparation import data_preparation
+# from ia.model_training.training_model import train_models
+# from  ia.model_evaluation.evaluate_model import evaluate_model
+# import pandas as pd
+# import time
 
 
 
