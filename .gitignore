@@ -1,7 +1,12 @@
 #Carpetas proyecto
 GeneradorDatos/
 
-BackEnd/APIDataScience
+
+BackEnd/APIDataScience/ApiPythonENV
+BackEnd/APIDataScience/common
+BackEnd/APIDataScience/ia 
+BackEnd/APIDataScience/test 
+BackEnd/APIDataScience/api
 
 Scripts/
 

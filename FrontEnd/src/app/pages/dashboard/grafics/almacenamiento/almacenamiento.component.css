@@ -24,14 +24,7 @@
     position: relative;
 }
 
-input[type="date"] {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 0.5rem;
-    width: 150px;
-    font-size: 14px;
-    color: #777;
-}
+
 
 
 
