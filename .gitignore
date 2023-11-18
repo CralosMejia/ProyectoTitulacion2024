@@ -7,9 +7,8 @@ BackEnd/APIDataScience/common
 BackEnd/APIDataScience/test 
 BackEnd/APIDataScience/api
 
-BackEnd/APIDataScience/ia/inference
-BackEnd/APIDataScience/ia/model_evaluation
-BackEnd/APIDataScience/ia/utils
+
+BackEnd/APIDataScience/ia/models/
 
 
 Scripts/
