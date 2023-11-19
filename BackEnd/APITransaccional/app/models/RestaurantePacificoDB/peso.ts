@@ -76,4 +76,8 @@ export class peso extends Model<pesoAttributes, pesoCreationAttributes> implemen
     ]
   });
   }
+
+  toString():string{
+    return `{peso_id: ${this.peso_id}, unidad: ${this.unidad}, simbolo: ${this.simbolo} }`
+  }
 }
