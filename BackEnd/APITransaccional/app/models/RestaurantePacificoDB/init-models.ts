@@ -1,10 +1,6 @@
 import type { Sequelize } from "sequelize";
-import { detallefactura as _detallefactura } from "./detallefactura";
-import type { detallefacturaAttributes, detallefacturaCreationAttributes } from "./detallefactura";
 import { detalleordenes as _detalleordenes } from "./detalleordenes";
 import type { detalleordenesAttributes, detalleordenesCreationAttributes } from "./detalleordenes";
-import { facturas as _facturas } from "./facturas";
-import type { facturasAttributes, facturasCreationAttributes } from "./facturas";
 import { ingredientesporplato as _ingredientesporplato } from "./ingredientesporplato";
 import type { ingredientesporplatoAttributes, ingredientesporplatoCreationAttributes } from "./ingredientesporplato";
 import { lotes as _lotes } from "./lotes";
@@ -23,9 +19,7 @@ import { proveedor as _proveedor } from "./proveedor";
 import type { proveedorAttributes, proveedorCreationAttributes } from "./proveedor";
 
 export {
-  _detallefactura as detallefactura,
   _detalleordenes as detalleordenes,
-  _facturas as facturas,
   _ingredientesporplato as ingredientesporplato,
   _lotes as lotes,
   _ordenes as ordenes,
@@ -37,12 +31,8 @@ export {
 };
 
 export type {
-  detallefacturaAttributes,
-  detallefacturaCreationAttributes,
   detalleordenesAttributes,
   detalleordenesCreationAttributes,
-  facturasAttributes,
-  facturasCreationAttributes,
   ingredientesporplatoAttributes,
   ingredientesporplatoCreationAttributes,
   lotesAttributes,
@@ -62,9 +52,7 @@ export type {
 };
 
 export function initModels(sequelize: Sequelize) {
-  const detallefactura = _detallefactura.initModel(sequelize);
   const detalleordenes = _detalleordenes.initModel(sequelize);
-  const facturas = _facturas.initModel(sequelize);
   const ingredientesporplato = _ingredientesporplato.initModel(sequelize);
   const lotes = _lotes.initModel(sequelize);
   const ordenes = _ordenes.initModel(sequelize);
@@ -74,8 +62,6 @@ export function initModels(sequelize: Sequelize) {
   const productosbodega = _productosbodega.initModel(sequelize);
   const proveedor = _proveedor.initModel(sequelize);
 
-  detallefactura.belongsTo(facturas, { as: "factura", foreignKey: "factura_id"});
-  facturas.hasMany(detallefactura, { as: "detallefacturas", foreignKey: "factura_id"});
   detalleordenes.belongsTo(ordenes, { as: "orden", foreignKey: "orden_id"});
   ordenes.hasMany(detalleordenes, { as: "detalleordenes", foreignKey: "orden_id"});
   ordenesproveedor.belongsTo(ordenes, { as: "orden", foreignKey: "orden_id"});
@@ -84,8 +70,6 @@ export function initModels(sequelize: Sequelize) {
   peso.hasMany(ingredientesporplato, { as: "ingredientesporplatos", foreignKey: "peso_id"});
   productosbodega.belongsTo(peso, { as: "peso", foreignKey: "peso_id"});
   peso.hasMany(productosbodega, { as: "productosbodegas", foreignKey: "peso_id"});
-  detallefactura.belongsTo(platos, { as: "plato", foreignKey: "plato_id"});
-  platos.hasMany(detallefactura, { as: "detallefacturas", foreignKey: "plato_id"});
   ingredientesporplato.belongsTo(platos, { as: "plato", foreignKey: "plato_id"});
   platos.hasMany(ingredientesporplato, { as: "ingredientesporplatos", foreignKey: "plato_id"});
   detalleordenes.belongsTo(productosbodega, { as: "producto_bodega", foreignKey: "producto_bodega_id"});
@@ -100,9 +84,7 @@ export function initModels(sequelize: Sequelize) {
   proveedor.hasMany(productosbodega, { as: "productosbodegas", foreignKey: "proveedor_id"});
 
   return {
-    detallefactura: detallefactura,
     detalleordenes: detalleordenes,
-    facturas: facturas,
     ingredientesporplato: ingredientesporplato,
     lotes: lotes,
     ordenes: ordenes,
