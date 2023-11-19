@@ -5,6 +5,7 @@ import {PacificoDB,DataScienceDB} from './config/db'
 //Routes imports
 import {pesoRoutes} from './app/routes/pesoRoutes'
 import {proveedoresRoutes} from './app/routes/proveedoresRoutes'
+import {platoRoutes} from './app/routes/platoRoutes'
 
 
 //Models imports
@@ -25,6 +26,7 @@ app.use(express.json())//middleware que transforma la req.body a un json
 //Routes
 app.use('/api/peso',pesoRoutes)
 app.use('/api/proveedor',proveedoresRoutes)
+app.use('/api/plato',platoRoutes)
 
 
 //Inicializacion del servidor

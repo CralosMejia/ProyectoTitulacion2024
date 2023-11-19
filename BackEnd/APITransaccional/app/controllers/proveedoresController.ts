@@ -32,9 +32,9 @@ export const createProveedor = async(req:Request, res:Response)=>{
  */
 export const getProveedor = async(_req:Request, res:Response)=>{
     try {
-        await proveedor.findAll({raw: true}).then(proveedor => {
+        await proveedor.findAll({raw: true}).then(proveedores => {
             return res.status(200).json({
-                proveedor: proveedor
+                proveedores
             })
         })
     } catch (error) {
