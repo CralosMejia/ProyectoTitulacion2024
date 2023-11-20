@@ -41,6 +41,16 @@ const modelMapping: { [key: string]: ModelStatic<Model> } = {
     'Proveedor': models.proveedor,
     'Platos': models.platos,
     'Producto bodega': models.productosbodega,
+    'Ingredientes por plato': models.ingredientesporplato,
+    'Lotes': models.lotes,
+    'Ordenes': models.ordenes,
+    'Detalle orden': models.detalleordenes,
+    'Ordenes proveedor': models.ordenesproveedor,
+
+
+
+
+
     // Agrega más modelos aquí según sea necesario
 };
 

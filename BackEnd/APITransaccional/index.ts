@@ -25,6 +25,13 @@ app.use('/api/peso',getCrudRouter('Peso'))
 app.use('/api/proveedor',getCrudRouter('Proveedor'))
 app.use('/api/plato',getCrudRouter('Platos'))
 app.use('/api/productoBodega',getCrudRouter('Producto bodega'))
+app.use('/api/ingredientesPorPlato',getCrudRouter('Ingredientes por plato'))
+app.use('/api/lote',getCrudRouter('Lotes'))
+app.use('/api/orden',getCrudRouter('Ordenes'))
+app.use('/api/detalleOrden',getCrudRouter('Detalle orden'))
+app.use('/api/ordenesProveedor',getCrudRouter('Ordenes proveedor'))
+
+
 
 
 //Inicializacion del servidor

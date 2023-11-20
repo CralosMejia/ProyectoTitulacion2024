@@ -1,5 +1,6 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
+import type { detallefactura, detallefacturaId } from './detallefactura';
 import type { ingredientesporplato, ingredientesporplatoId } from './ingredientesporplato';
 
 export interface platosAttributes {
@@ -23,6 +24,16 @@ export class platos extends Model<platosAttributes, platosCreationAttributes> im
   imagen?: string;
 
   // platos hasMany detallefactura via plato_id
+  detallefacturas!: detallefactura[];
+  getDetallefacturas!: Sequelize.HasManyGetAssociationsMixin<detallefactura>;
+  setDetallefacturas!: Sequelize.HasManySetAssociationsMixin<detallefactura, detallefacturaId>;
+  addDetallefactura!: Sequelize.HasManyAddAssociationMixin<detallefactura, detallefacturaId>;
+  addDetallefacturas!: Sequelize.HasManyAddAssociationsMixin<detallefactura, detallefacturaId>;
+  createDetallefactura!: Sequelize.HasManyCreateAssociationMixin<detallefactura>;
+  removeDetallefactura!: Sequelize.HasManyRemoveAssociationMixin<detallefactura, detallefacturaId>;
+  removeDetallefacturas!: Sequelize.HasManyRemoveAssociationsMixin<detallefactura, detallefacturaId>;
+  hasDetallefactura!: Sequelize.HasManyHasAssociationMixin<detallefactura, detallefacturaId>;
+  hasDetallefacturas!: Sequelize.HasManyHasAssociationsMixin<detallefactura, detallefacturaId>;
   countDetallefacturas!: Sequelize.HasManyCountAssociationsMixin;
   // platos hasMany ingredientesporplato via plato_id
   ingredientesporplatos!: ingredientesporplato[];
