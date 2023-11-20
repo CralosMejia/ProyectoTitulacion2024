@@ -3,10 +3,7 @@ import dotenv from 'dotenv';
 import {PacificoDB,DataScienceDB} from './config/db'
 
 //Routes imports
-import {pesoRoutes} from './app/routes/pesoRoutes'
-import {proveedoresRoutes} from './app/routes/proveedoresRoutes'
-import {platoRoutes} from './app/routes/platoRoutes'
-import {productosBodegaRoutes} from './app/routes/productosBodegaRoutes'
+import { getCrudRouter} from './app/routes/crudRoutes'
 
 //Models imports
 import * as modelPacifico from './app/models/RestaurantePacificoDB/init-models'
@@ -24,11 +21,10 @@ app.use(express.json())//middleware que transforma la req.body a un json
 
 
 //Routes
-app.use('/api/peso',pesoRoutes)
-app.use('/api/proveedor',proveedoresRoutes)
-app.use('/api/plato',platoRoutes)
-app.use('/api/productoBodega',productosBodegaRoutes)
-
+app.use('/api/peso',getCrudRouter('Peso'))
+app.use('/api/proveedor',getCrudRouter('Proveedor'))
+app.use('/api/plato',getCrudRouter('Platos'))
+app.use('/api/productoBodega',getCrudRouter('Producto bodega'))
 
 
 //Inicializacion del servidor
