@@ -2,7 +2,7 @@ import { Request, Response  } from 'express';
 import {proveedor} from '../models/RestaurantePacificoDB/proveedor'
 
 
-
+const nameTable:string= 'Proveedor';
 /**
  * Creates a new 'proveedor' (supplier) entry in the database.
  *
@@ -11,15 +11,15 @@ import {proveedor} from '../models/RestaurantePacificoDB/proveedor'
  */
 export const createProveedor = async(req:Request, res:Response)=>{
     try {
-        const  newProveedor =req.body
-        await proveedor.create(newProveedor).then((prov_par)=>{
-            console.log(`Proveedor created correctly: ${JSON.stringify(prov_par)}`)
+        const  newOBJ =req.body
+        await proveedor.create(newOBJ).then((objectPar)=>{
+            console.log(`${nameTable} created correctly: ${JSON.stringify(objectPar)}`)
             return res.status(200).json({
-                newProveedor: prov_par
+                newEntrie: objectPar
             })
         });
     } catch (error) {
-        console.log(`An error has occurred in the process of creating proveedor: ${error}`)
+        console.log(`An error has occurred in the process of creating ${nameTable}: ${error}`)
         res.status(400).send(error);
     }
 }
@@ -32,13 +32,13 @@ export const createProveedor = async(req:Request, res:Response)=>{
  */
 export const getProveedor = async(_req:Request, res:Response)=>{
     try {
-        await proveedor.findAll({raw: true}).then(proveedores => {
+        await proveedor.findAll({raw: true}).then(objectPar => {
             return res.status(200).json({
-                proveedores
+                entriesList: objectPar
             })
         })
     } catch (error) {
-        console.log(`An error has occurred in the process of get proveedor: ${error}`)
+        console.log(`An error has occurred in the process of get ${nameTable}: ${error}`)
         res.status(400).send(error);
     }
 }
@@ -53,13 +53,13 @@ export const getProveedorById = async(req:Request, res:Response)=>{
     try {
         const{id}=req.params
 
-        await proveedor.findByPk(id).then(proveedor => {
+        await proveedor.findByPk(id).then(objectPar => {
             return res.status(200).json({
-                proveedor: proveedor
+                entrie: objectPar
             })
         })
     } catch (error) {
-        console.log(`An error has occurred in the process of get proveedor by id: ${error}`)
+        console.log(`An error has occurred in the process of get ${nameTable} by id: ${error}`)
         res.status(400).send(error);
     }
 }
@@ -73,23 +73,23 @@ export const getProveedorById = async(req:Request, res:Response)=>{
 export const updateProveedor = async(req:Request, res:Response)=>{
     try {
         const{id}=req.params
-        const currentProveedor =await proveedor.findByPk(id)
-        const newProveedor  =req.body
+        const currentOBJ =await proveedor.findByPk(id)
+        const newOBJ  =req.body
 
-        if (currentProveedor) {
+        if (currentOBJ) {
 
-            await currentProveedor.update(newProveedor).then((proveedorUpdated)=>{
-                console.log(`proveedor updated correctly: ${JSON.stringify(proveedorUpdated)}`)
+            await currentOBJ.update(newOBJ).then((objectPar)=>{
+                console.log(`${nameTable} updated correctly: ${JSON.stringify(objectPar)}`)
                 return res.status(200).json({
-                    updatedProveedor: proveedorUpdated
+                    entrieUpdate: objectPar
                 })
             })
 
         } else {
-            res.status(404).send('Proveedor not found');
+            res.status(404).send(`${nameTable} not found`);
         }
     } catch (error) {
-        console.log(`An error has occurred in the proveedor update process: ${error}`)
+        console.log(`An error has occurred in the ${nameTable} update process: ${error}`)
         res.status(400).send(error);
     }
 }
@@ -103,22 +103,22 @@ export const updateProveedor = async(req:Request, res:Response)=>{
 export const deleteProveedor = async(req:Request, res:Response)=>{
     try {
         const{id}=req.params
-        const currentProveedor =await proveedor.findByPk(id)
+        const currentOBJ =await proveedor.findByPk(id)
 
-        if (currentProveedor) {
+        if (currentOBJ) {
 
-            await currentProveedor.destroy().then(()=>{
-                console.log(`Proveedor deleted correctly: ${JSON.stringify(currentProveedor)}`)
+            await currentOBJ.destroy().then(()=>{
+                console.log(`${nameTable} deleted correctly: ${JSON.stringify(currentOBJ)}`)
                 return res.status(200).json({
-                    deletedProveedor: currentProveedor
+                    deletedEntrie: currentOBJ
                 })
             })
 
         } else {
-            res.status(404).send('Proveedor not found');
+            res.status(404).send(`${nameTable} not found`);
         }
     } catch (error) {
-        console.log(`An error has occurred in the proveedor delete process: ${error}`)
+        console.log(`An error has occurred in the ${nameTable} delete process: ${error}`)
         res.status(400).send(error);
     }
 }

@@ -1,7 +1,7 @@
 import { Request, Response  } from 'express';
 import {platos} from '../models/RestaurantePacificoDB/platos'
 
-
+const nameTable:string= 'Platos';
 
 /**
  * Creates a new 'plato' (dish) entry in the database.
@@ -11,15 +11,15 @@ import {platos} from '../models/RestaurantePacificoDB/platos'
  */
 export const createPlato = async(req:Request, res:Response)=>{
     try {
-        const  newPlato =req.body
-        await platos.create(newPlato).then((plato_par)=>{
-            console.log(`Plato created correctly: ${JSON.stringify(plato_par)}`)
+        const  newOBJ =req.body
+        await platos.create(newOBJ).then((objectPar)=>{
+            console.log(`${nameTable} created correctly: ${JSON.stringify(objectPar)}`)
             return res.status(200).json({
-                newPlato: plato_par
+                newEntrie: objectPar
             })
         });
     } catch (error) {
-        console.log(`An error has occurred in the process of creating plato: ${error}`)
+        console.log(`An error has occurred in the process of creating ${nameTable}: ${error}`)
         res.status(400).send(error);
     }
 }
@@ -32,13 +32,13 @@ export const createPlato = async(req:Request, res:Response)=>{
  */
 export const getPlato = async(_req:Request, res:Response)=>{
     try {
-        await platos.findAll({raw: true}).then(platos => {
+        await platos.findAll({raw: true}).then(objectPar => {
             return res.status(200).json({
-                platos
+                entriesList: objectPar
             })
         })
     } catch (error) {
-        console.log(`An error has occurred in the process of get plato: ${error}`)
+        console.log(`An error has occurred in the process of get ${nameTable}: ${error}`)
         res.status(400).send(error);
     }
 }
@@ -53,13 +53,13 @@ export const getPlatoById = async(req:Request, res:Response)=>{
     try {
         const{id}=req.params
 
-        await platos.findByPk(id).then(plato => {
+        await platos.findByPk(id).then(objectPar => {
             return res.status(200).json({
-                plato
+                entrie: objectPar
             })
         })
     } catch (error) {
-        console.log(`An error has occurred in the process of get proveedor by id: ${error}`)
+        console.log(`An error has occurred in the process of get ${nameTable} by id: ${error}`)
         res.status(400).send(error);
     }
 }
@@ -73,23 +73,23 @@ export const getPlatoById = async(req:Request, res:Response)=>{
 export const updatePlato = async(req:Request, res:Response)=>{
     try {
         const{id}=req.params
-        const currentPlato =await platos.findByPk(id)
-        const newPlato  =req.body
+        const currentOBJ =await platos.findByPk(id)
+        const newOBJ  =req.body
 
-        if (currentPlato) {
+        if (currentOBJ) {
 
-            await currentPlato.update(newPlato).then((platoUpdated)=>{
-                console.log(`Plato updated correctly: ${JSON.stringify(platoUpdated)}`)
+            await currentOBJ.update(newOBJ).then((objectPar)=>{
+                console.log(`${nameTable} updated correctly: ${JSON.stringify(objectPar)}`)
                 return res.status(200).json({
-                    platoUpdated
+                    entrieUpdate: objectPar
                 })
             })
 
         } else {
-            res.status(404).send('Plato not found');
+            res.status(404).send(`${nameTable} not found`);
         }
     } catch (error) {
-        console.log(`An error has occurred in the plato update process: ${error}`)
+        console.log(`An error has occurred in the ${nameTable} update process: ${error}`)
         res.status(400).send(error);
     }
 }
@@ -103,22 +103,22 @@ export const updatePlato = async(req:Request, res:Response)=>{
 export const deletePlato = async(req:Request, res:Response)=>{
     try {
         const{id}=req.params
-        const currentPlato =await platos.findByPk(id)
+        const currentOBJ =await platos.findByPk(id)
 
-        if (currentPlato) {
+        if (currentOBJ) {
 
-            await currentPlato.destroy().then(()=>{
-                console.log(`Plato deleted correctly: ${JSON.stringify(currentPlato)}`)
+            await currentOBJ.destroy().then(()=>{
+                console.log(`${nameTable} deleted correctly: ${JSON.stringify(currentOBJ)}`)
                 return res.status(200).json({
-                    deletedPlato: currentPlato
+                    deletedEntrie: currentOBJ
                 })
             })
 
         } else {
-            res.status(404).send('Plato not found');
+            res.status(404).send(`${nameTable} not found`);
         }
     } catch (error) {
-        console.log(`An error has occurred in the Plato delete process: ${error}`)
+        console.log(`An error has occurred in the ${nameTable} delete process: ${error}`)
         res.status(400).send(error);
     }
 }

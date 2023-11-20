@@ -2,6 +2,7 @@ import { Request, Response  } from 'express';
 import {peso} from '../models/RestaurantePacificoDB/peso'
 
 
+const nameTable:string= 'Peso';
 
 /**
  * Creates a new 'peso' entry in the database.
@@ -11,15 +12,15 @@ import {peso} from '../models/RestaurantePacificoDB/peso'
  */
 export const createPeso = async(req:Request, res:Response)=>{
     try {
-        const  newPeso =req.body
-        await peso.create(newPeso).then((peso_par)=>{
-            console.log(`Peso created correctly: ${JSON.stringify(peso_par)}`)
+        const  newOBJ =req.body
+        await peso.create(newOBJ).then((objectPar)=>{
+            console.log(`${nameTable} created correctly: ${JSON.stringify(objectPar)}`)
             return res.status(200).json({
-                newPeso: peso_par
+                newEntrie: objectPar
             })
         });
     } catch (error) {
-        console.log(`An error has occurred in the process of creating peso: ${error}`)
+        console.log(`An error has occurred in the process of creating ${nameTable}: ${error}`)
         res.status(400).send(error);
     }
 }
@@ -32,13 +33,13 @@ export const createPeso = async(req:Request, res:Response)=>{
  */
 export const getPeso = async(_req:Request, res:Response)=>{
     try {
-        await peso.findAll({raw: true}).then(pesos => {
+        await peso.findAll({raw: true}).then(objectPar => {
             return res.status(200).json({
-                pesos
+                entriesList: objectPar
             })
         })
     } catch (error) {
-        console.log(`An error has occurred in the process of get peso: ${error}`)
+        console.log(`An error has occurred in the process of get ${nameTable}: ${error}`)
         res.status(400).send(error);
     }
 }
@@ -53,13 +54,13 @@ export const getPesoById = async(req:Request, res:Response)=>{
     try {
         const{id}=req.params
 
-        await peso.findByPk(id).then(pesos => {
+        await peso.findByPk(id).then(objectPar => {
             return res.status(200).json({
-                pesos
+                entrie: objectPar
             })
         })
     } catch (error) {
-        console.log(`An error has occurred in the process of get peso by id: ${error}`)
+        console.log(`An error has occurred in the process of get ${nameTable} by id: ${error}`)
         res.status(400).send(error);
     }
 }
@@ -73,23 +74,23 @@ export const getPesoById = async(req:Request, res:Response)=>{
 export const updatePeso = async(req:Request, res:Response)=>{
     try {
         const{id}=req.params
-        const currentPeso =await peso.findByPk(id)
-        const newPeso  =req.body
+        const currentOBJ =await peso.findByPk(id)
+        const newOBJ  =req.body
 
-        if (currentPeso) {
+        if (currentOBJ) {
 
-            await currentPeso.update(newPeso).then((pesoUpdated)=>{
-                console.log(`Peso updated correctly: ${JSON.stringify(pesoUpdated)}`)
+            await currentOBJ.update(newOBJ).then((objectPar)=>{
+                console.log(`${nameTable} updated correctly: ${JSON.stringify(objectPar)}`)
                 return res.status(200).json({
-                    updatedPeso: pesoUpdated
+                    entrieUpdate: objectPar
                 })
             })
 
         } else {
-            res.status(404).send('Peso not found');
+            res.status(404).send(`${nameTable} not found`);
         }
     } catch (error) {
-        console.log(`An error has occurred in the peso update process: ${error}`)
+        console.log(`An error has occurred in the ${nameTable} update process: ${error}`)
         res.status(400).send(error);
     }
 }
@@ -103,22 +104,22 @@ export const updatePeso = async(req:Request, res:Response)=>{
 export const deletePeso = async(req:Request, res:Response)=>{
     try {
         const{id}=req.params
-        const currentPeso =await peso.findByPk(id)
+        const currentOBJ =await peso.findByPk(id)
 
-        if (currentPeso) {
+        if (currentOBJ) {
 
-            await currentPeso.destroy().then(()=>{
-                console.log(`Peso deleted correctly: ${JSON.stringify(currentPeso)}`)
+            await currentOBJ.destroy().then(()=>{
+                console.log(`${nameTable} deleted correctly: ${JSON.stringify(currentOBJ)}`)
                 return res.status(200).json({
-                    deletedPeso: currentPeso
+                    deletedEntrie: currentOBJ
                 })
             })
 
         } else {
-            res.status(404).send('Peso not found');
+            res.status(404).send(`${nameTable} not found`);
         }
     } catch (error) {
-        console.log(`An error has occurred in the peso delete process: ${error}`)
+        console.log(`An error has occurred in the ${nameTable} delete process: ${error}`)
         res.status(400).send(error);
     }
 }

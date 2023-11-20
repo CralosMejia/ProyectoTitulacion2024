@@ -6,7 +6,7 @@ import {PacificoDB,DataScienceDB} from './config/db'
 import {pesoRoutes} from './app/routes/pesoRoutes'
 import {proveedoresRoutes} from './app/routes/proveedoresRoutes'
 import {platoRoutes} from './app/routes/platoRoutes'
-
+import {productosBodegaRoutes} from './app/routes/productosBodegaRoutes'
 
 //Models imports
 import * as modelPacifico from './app/models/RestaurantePacificoDB/init-models'
@@ -27,6 +27,8 @@ app.use(express.json())//middleware que transforma la req.body a un json
 app.use('/api/peso',pesoRoutes)
 app.use('/api/proveedor',proveedoresRoutes)
 app.use('/api/plato',platoRoutes)
+app.use('/api/productoBodega',productosBodegaRoutes)
+
 
 
 //Inicializacion del servidor
