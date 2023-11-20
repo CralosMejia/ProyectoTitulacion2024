@@ -1,7 +1,7 @@
 
 import { Router } from 'express';
-import * as crudFunctions from '../controllers/crudController'
-import * as models from '../models/RestaurantePacificoDB/init-models'
+import * as crudFunctions from './crudController'
+import * as models from '../../data/models/RestaurantePacificoDB/init-models'
 import { Model, ModelStatic } from 'sequelize/types/model';
 
 let tableName:string = '';
@@ -46,11 +46,6 @@ const modelMapping: { [key: string]: ModelStatic<Model> } = {
     'Ordenes': models.ordenes,
     'Detalle orden': models.detalleordenes,
     'Ordenes proveedor': models.ordenesproveedor,
-
-
-
-
-
     // Agrega más modelos aquí según sea necesario
 };
 

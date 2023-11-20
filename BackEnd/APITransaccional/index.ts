@@ -3,11 +3,11 @@ import dotenv from 'dotenv';
 import {PacificoDB,DataScienceDB} from './config/db'
 
 //Routes imports
-import { getCrudRouter} from './app/routes/crudRoutes'
+import { getCrudRouter} from './app/common/presentation/crudRoutes'
 
 //Models imports
-import * as modelPacifico from './app/models/RestaurantePacificoDB/init-models'
-import * as modelDataScience from './app/models/DataScienceDB/init-models'
+import * as modelPacifico from './app/data/models/RestaurantePacificoDB/init-models'
+import * as modelDataScience from './app/data/models/DataScienceDB/init-models'
 
 
 

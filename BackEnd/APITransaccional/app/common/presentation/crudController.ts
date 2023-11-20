@@ -1,5 +1,6 @@
 import { Request, Response  } from 'express';
 import { Model, ModelStatic } from 'sequelize';
+import {EntrieRepository} from '../../data/repository/entrieRepository'
 
 
 
@@ -16,7 +17,8 @@ export const getEntries= <T extends ModelStatic<Model>> (
     ) => {
     return async (_req: Request, res: Response) => {
         try {
-            await model.findAll({raw: true}).then(objectPar => {
+            const entrie = new EntrieRepository(model);
+            await entrie.getAll().then(objectPar => {
                 return res.status(200).json({
                     entriesList: objectPar
                 })
@@ -42,7 +44,8 @@ export const createEntrie= <T extends ModelStatic<Model>> (
     return async (req: Request, res: Response) => {
         try {
             const  newOBJ =req.body
-            await model.create(newOBJ).then((objectPar)=>{
+            const entrie = new EntrieRepository(model);
+            await entrie.create(newOBJ).then((objectPar)=>{
                 console.log(`${nameTable} created correctly: ${JSON.stringify(objectPar)}`)
                 return res.status(200).json({
                     newEntrie: objectPar
@@ -69,8 +72,10 @@ export const getEntrieById= <T extends ModelStatic<Model>> (
     return async (req: Request, res: Response) => {
         try {
             const{id}=req.params
+            const idNumber = parseInt(id);
+            const entrie = new EntrieRepository(model);
     
-            await model.findByPk(id).then(objectPar => {
+            await entrie.getById(idNumber).then(objectPar => {
                 return res.status(200).json({
                     entrie: objectPar
                 })
@@ -96,21 +101,18 @@ export const updateEntrie= <T extends ModelStatic<Model>> (
     return async (req: Request, res: Response) => {
         try {
             const{id}=req.params
-            const currentOBJ =await model.findByPk(id)
+            const idNumber = parseInt(id);
+            const entrie = new EntrieRepository(model);
             const newOBJ  =req.body
     
-            if (currentOBJ) {
     
-                await currentOBJ.update(newOBJ).then((objectPar)=>{
-                    console.log(`${nameTable} updated correctly: ${JSON.stringify(objectPar)}`)
-                    return res.status(200).json({
-                        entrieUpdate: objectPar
-                    })
+            await entrie.update(idNumber,newOBJ).then((objectPar)=>{
+                console.log(`${nameTable} updated correctly: ${JSON.stringify(objectPar)}`)
+                return res.status(200).json({
+                    entrieUpdate: objectPar
                 })
+            })
     
-            } else {
-                res.status(404).send(`${nameTable} not found`);
-            }
         } catch (error) {
             console.log(`An error has occurred in the ${nameTable} update process: ${error}`)
             res.status(400).send(error);
@@ -132,20 +134,17 @@ export const deleteEntrie= <T extends ModelStatic<Model>> (
     return async (req: Request, res: Response) => {
         try {
             const{id}=req.params
-            const currentOBJ =await model.findByPk(id)
+            const idNumber = parseInt(id);
+            const entrie = new EntrieRepository(model);
     
-            if (currentOBJ) {
+
     
-                await currentOBJ.destroy().then(()=>{
-                    console.log(`${nameTable} deleted correctly: ${JSON.stringify(currentOBJ)}`)
-                    return res.status(200).json({
-                        deletedEntrie: currentOBJ
-                    })
+            await entrie.delete(idNumber).then(objectPar=>{
+                return res.status(200).json({
+                    deletedEntrie: objectPar
                 })
-    
-            } else {
-                res.status(404).send(`${nameTable} not found`);
-            }
+            })
+
         } catch (error) {
             console.log(`An error has occurred in the ${nameTable} delete process: ${error}`)
             res.status(400).send(error);
