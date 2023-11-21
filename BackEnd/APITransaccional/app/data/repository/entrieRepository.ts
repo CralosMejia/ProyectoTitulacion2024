@@ -1,4 +1,4 @@
-import { CreationAttributes, Model, ModelStatic } from 'sequelize';
+import { CreationAttributes, Model, ModelStatic, WhereOptions } from 'sequelize';
 
 /**
  * A generic repository class for handling database operations.
@@ -141,6 +141,33 @@ export class EntrieRepository<T extends Model> {
             });
         } catch (error) {
             throw new Error(`Error al eliminar las entradas por ${String(field)}: ${error}`);
+        }
+    }
+
+    /**
+     * Updates a single field of an entry in the database by its ID.
+     * 
+     * @param idFieldName - The name of the field that identifies the entry (e.g., primary key field name).
+     * @param idValue - The value of the identification field for the entry to be updated.
+     * @param fieldToUpdate - The name of the field to update.
+     * @param newValue - The new value to set for the field being updated.
+     * @returns The number of affected rows (entries) in the database.
+     */
+    async updateSingleFieldById(idFieldName: keyof T, idValue: number, fieldToUpdate: keyof T, newValue: any): Promise<number> {
+        try {
+            const updateData: Partial<Record<keyof T, any>> = {};
+            updateData[fieldToUpdate] = newValue;
+
+            // Crear el objeto whereClause de forma dinámica
+            const whereClause: WhereOptions = {};
+            whereClause[idFieldName as string] = idValue;
+
+            const [affectedCount] = await this.model.update(updateData, {
+                where: whereClause
+            });
+            return affectedCount;
+        } catch (error) {
+            throw new Error(`Error al actualizar la entrada con ${String(idFieldName)} = ${idValue}: ${error}`);
         }
     }
 }

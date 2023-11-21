@@ -9,6 +9,7 @@ import { routerMIPP } from './app/MIPP/presentation/routes/mippRoutes';
 //Models imports
 import * as modelPacifico from './app/data/models/RestaurantePacificoDB/init-models'
 import * as modelDataScience from './app/data/models/DataScienceDB/init-models'
+import { routerMGPAA } from './app/MGPAAB/presentation/routes/mgpaabRoutes';
 
 
 
@@ -35,6 +36,8 @@ app.use('/api/ordenesProveedor',getCrudRouter('Ordenes proveedor'))
 
 //MÓDULO IGREDIENTES POR PLATO
 app.use('/api/mipp',routerMIPP)
+app.use('/api/mgpaab',routerMGPAA)
+
 
 
 
