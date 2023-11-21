@@ -4,11 +4,11 @@ import {PacificoDB,DataScienceDB} from './config/db'
 
 //Routes imports
 import { getCrudRouter} from './app/common/presentation/crudRoutes'
+import { routerMIPP } from './app/MIPP/presentation/routes/mippRoutes';
 
 //Models imports
 import * as modelPacifico from './app/data/models/RestaurantePacificoDB/init-models'
 import * as modelDataScience from './app/data/models/DataScienceDB/init-models'
-import { routerMIPP } from './app/MIPP/presentation/routes/mippRoutes';
 
 
 

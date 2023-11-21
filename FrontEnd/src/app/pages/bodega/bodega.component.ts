@@ -6,6 +6,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./bodega.component.css']
 })
 export class BodegaComponent {
+
+  isLote= false
+
   products = [
     { 
       nombre: 'Mote', 
@@ -86,6 +89,17 @@ export class BodegaComponent {
     }
   ];
 
+  options =[
+    {
+      name:'Nuevo Producto',
+      isSelected:true
+    },
+    {
+      name:'Nuevo Lote',
+      isSelected:false
+    }
+    
+  ]
   toggleIcono(product:any) {
     product.isIconoX = !product.isIconoX;
   }

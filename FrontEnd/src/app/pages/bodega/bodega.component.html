@@ -22,6 +22,7 @@
                       }">
                 </i>
               </button>
+              <button><i class="fas fa-pencil-alt"></i></button>
             </td>
             <td class="td_image">Papa Chola</td>
             <td>4 KG</td>
@@ -62,32 +63,45 @@
 
 <div class="warehouse-container">
     <h2>Agregar Nuevo Producto</h2>
+    <select >
+      <option *ngFor="let filtro of options">{{ filtro.name}}</option>
+    </select>
     <div class="form-row">
         <div class="input-group">
             <label for="warehouse">NOMBRE DEL PRODUCTO</label>
-            <input type="text" id="nombre" placeholder="Type here...">
+            <input type="text" id="nombre" placeholder="Type here..." *ngIf="!isLote" >
+            <!--  -->
+            <select *ngIf="isLote" >
+              <option> ingrediente 1</option>
+            </select>
+        </div>
+        <div class="input-group" >
+            <label for="status" *ngIf="!isLote" >CANTIDAD MINIMA</label>
+            <input type="text" id="cant_mini" placeholder="Type here..." *ngIf="!isLote" >
+            <!--  -->
+            <label for="address" *ngIf="isLote" >CANTIDAD</label>
+            <input type="text" id="cant_act" placeholder="Type here..." *ngIf="isLote" >
         </div>
         <div class="input-group">
-            <label for="address">CANTIDAD EN EXISTENCIA</label>
-            <input type="text" id="cant_act" placeholder="Type here...">
+            <label for="level" *ngIf="!isLote" >CANTIDAD MAXIMA RECOMENDADA</label>
+            <input type="text" id="cant_max_reco" placeholder="Type here..." *ngIf="!isLote" >
+            <!--  -->
+            <label for="phone" *ngIf="isLote"  >FECHA DE VENCIMIENTO</label>
+            <input type="text" id="fecha_vencimiento" placeholder="Type here..."  *ngIf="isLote" >
         </div>
         <div class="input-group">
-            <label for="status">CANTIDAD MINIMA</label>
-            <input type="text" id="cant_mini" placeholder="Type here...">
+            <label for="phone" *ngIf="!isLote"  >FECHA DE VENCIMIENTO</label>
+            <input type="text" id="fecha_vencimiento" placeholder="Type here..."  *ngIf="!isLote" >
+            <!--  -->
+            <label for="phone"  *ngIf="isLote" >PESO</label>
+            <input type="text" id="peso" placeholder="Type here..." *ngIf="isLote" >
         </div>
         <div class="input-group">
-            <label for="level">CANTIDAD MAXIMA RECOMENDAD</label>
-            <input type="text" id="cant_max_reco" placeholder="Type here...">
-        </div>
-        <div class="input-group">
-            <label for="phone">FECHA DE VENCIMIENTO</label>
-            <input type="text" id="fecha_vencimiento" placeholder="Type here...">
-        </div>
-        <div class="input-group">
-            <label for="phone">PESO</label>
-            <input type="text" id="peso" placeholder="Type here...">
+            <label for="phone"  *ngIf="!isLote" >PESO</label>
+            <input type="text" id="peso" placeholder="Type here..." *ngIf="!isLote" >
         </div>
     </div>
+    
     <button class="generate-btn">GENERAR</button>
 </div>
 

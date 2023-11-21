@@ -1,5 +1,8 @@
 import { CreationAttributes, Model, ModelStatic } from 'sequelize';
 
+/**
+ * A generic repository class for handling database operations.
+ */
 export class EntrieRepository<T extends Model> {
     private model: ModelStatic<T>;
 
@@ -7,7 +10,12 @@ export class EntrieRepository<T extends Model> {
         this.model = model;
     }
 
-    // Crear una nueva entrada
+    /**
+     * Creates a new entry in the database.
+     * 
+     * @param entry - The data for the new entry.
+     * @returns A promise that resolves to the created entry.
+     */
     async create(entry: CreationAttributes<T>): Promise<T> {
         try {
             return await this.model.create(entry);
@@ -16,7 +24,11 @@ export class EntrieRepository<T extends Model> {
         }
     }
 
-    // Obtener todas las entradas
+   /**
+     * Retrieves all entries from the database.
+     * 
+     * @returns A promise that resolves to an array of entries.
+     */
     async getAll(): Promise<T[]> {
         try {
             return await this.model.findAll({raw: true});
@@ -25,7 +37,12 @@ export class EntrieRepository<T extends Model> {
         }
     }
 
-    // Obtener una entrada por ID
+    /**
+     * Retrieves an entry by its ID.
+     * 
+     * @param id - The ID of the entry to retrieve.
+     * @returns A promise that resolves to the found entry or null if not found.
+     */
     async getById(id: number): Promise<T | null> {
         try {
             return await this.model.findByPk(id);
@@ -34,7 +51,13 @@ export class EntrieRepository<T extends Model> {
         }
     }
 
-    // Actualizar una entrada por ID
+    /**
+     * Updates an entry by its ID.
+     * 
+     * @param id - The ID of the entry to update.
+     * @param updatedData - The data to update the entry with.
+     * @returns A promise that resolves to the updated entry or null if not found.
+     */
     async update(id: number, updatedData: Partial<T>): Promise<T | null> {
         try {
             const entry = await this.model.findByPk(id);
@@ -47,7 +70,12 @@ export class EntrieRepository<T extends Model> {
         }
     }
 
-    // Eliminar una entrada por ID
+    /**
+     * Deletes an entry by its ID.
+     * 
+     * @param id - The ID of the entry to delete.
+     * @returns A promise that resolves to true if the entry was deleted, or false otherwise.
+     */
     async delete(id: number): Promise<boolean> {
         try {
             const entry = await this.model.findByPk(id);
@@ -61,7 +89,12 @@ export class EntrieRepository<T extends Model> {
         }
     }
 
-    // Método para crear entradas en masa
+    /**
+     * Creates multiple entries in a bulk operation.
+     * 
+     * @param entries - An array of entry data to create.
+     * @returns A promise that resolves to an array of created entries.
+     */
     async bulkCreate(entries: CreationAttributes<T>[]): Promise<T[]> {
         try {
             return await this.model.bulkCreate(entries);
@@ -70,7 +103,13 @@ export class EntrieRepository<T extends Model> {
         }
     }
 
-    // Obtener todas las entradas en función de un campo y valor específico
+    /**
+     * Retrieves all entries that match a specific field and value.
+     * 
+     * @param field - The field to match.
+     * @param value - The value to match against the field.
+     * @returns A promise that resolves to an array of matching entries.
+     */
     async getAllByField(field: keyof T, value: any): Promise<T[]> {
         try {
             const whereClause: any = {};
@@ -85,7 +124,13 @@ export class EntrieRepository<T extends Model> {
         }
     }
 
-    // Eliminar todas las entradas en función de un campo y valor específico
+    /**
+     * Deletes all entries that match a specific field and value.
+     * 
+     * @param field - The field to match.
+     * @param value - The value to match against the field.
+     * @returns A promise that resolves to the number of entries deleted.
+     */
     async deleteAllByField(field: keyof T, value: any): Promise<number> {
         try {
             const whereClause: any = {};
