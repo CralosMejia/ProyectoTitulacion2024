@@ -60,4 +60,42 @@ export class EntrieRepository<T extends Model> {
             throw new Error(`Error al eliminar la entrada con ID ${id}: ${error}`);
         }
     }
+
+    // Método para crear entradas en masa
+    async bulkCreate(entries: CreationAttributes<T>[]): Promise<T[]> {
+        try {
+            return await this.model.bulkCreate(entries);
+        } catch (error) {
+            throw new Error(`Error al realizar inserción masiva: ${error}`);
+        }
+    }
+
+    // Obtener todas las entradas en función de un campo y valor específico
+    async getAllByField(field: keyof T, value: any): Promise<T[]> {
+        try {
+            const whereClause: any = {};
+            whereClause[field] = value;
+
+            return await this.model.findAll({
+                where: whereClause,
+                raw: true
+            });
+        } catch (error) {
+            throw new Error(`Error al obtener las entradas por ${String(field)}: ${error}`);
+        }
+    }
+
+    // Eliminar todas las entradas en función de un campo y valor específico
+    async deleteAllByField(field: keyof T, value: any): Promise<number> {
+        try {
+            const whereClause: any = {};
+            whereClause[field] = value;
+
+            return await this.model.destroy({
+                where: whereClause
+            });
+        } catch (error) {
+            throw new Error(`Error al eliminar las entradas por ${String(field)}: ${error}`);
+        }
+    }
 }
