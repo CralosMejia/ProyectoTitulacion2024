@@ -1,42 +1,30 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
-import type { detallefactura, detallefacturaId } from './detallefactura';
 import type { ingredientesporplato, ingredientesporplatoId } from './ingredientesporplato';
+import type { ventas, ventasId } from './ventas';
 
 export interface platosAttributes {
   plato_id: number;
   nombre_plato: string;
-  descripcion: string;
-  precio: number;
+  descripcion?: string;
+  precio?: number;
   imagen?: string;
   estado?: 'Disponible' | 'No disponible';
 }
 
 export type platosPk = "plato_id";
 export type platosId = platos[platosPk];
-export type platosOptionalAttributes = "plato_id" | "imagen" | "estado";
+export type platosOptionalAttributes = "plato_id" | "descripcion" | "precio" | "imagen" | "estado";
 export type platosCreationAttributes = Optional<platosAttributes, platosOptionalAttributes>;
 
 export class platos extends Model<platosAttributes, platosCreationAttributes> implements platosAttributes {
   plato_id!: number;
   nombre_plato!: string;
-  descripcion!: string;
-  precio!: number;
+  descripcion?: string;
+  precio?: number;
   imagen?: string;
   estado?: 'Disponible' | 'No disponible';
 
-  // platos hasMany detallefactura via plato_id
-  detallefacturas!: detallefactura[];
-  getDetallefacturas!: Sequelize.HasManyGetAssociationsMixin<detallefactura>;
-  setDetallefacturas!: Sequelize.HasManySetAssociationsMixin<detallefactura, detallefacturaId>;
-  addDetallefactura!: Sequelize.HasManyAddAssociationMixin<detallefactura, detallefacturaId>;
-  addDetallefacturas!: Sequelize.HasManyAddAssociationsMixin<detallefactura, detallefacturaId>;
-  createDetallefactura!: Sequelize.HasManyCreateAssociationMixin<detallefactura>;
-  removeDetallefactura!: Sequelize.HasManyRemoveAssociationMixin<detallefactura, detallefacturaId>;
-  removeDetallefacturas!: Sequelize.HasManyRemoveAssociationsMixin<detallefactura, detallefacturaId>;
-  hasDetallefactura!: Sequelize.HasManyHasAssociationMixin<detallefactura, detallefacturaId>;
-  hasDetallefacturas!: Sequelize.HasManyHasAssociationsMixin<detallefactura, detallefacturaId>;
-  countDetallefacturas!: Sequelize.HasManyCountAssociationsMixin;
   // platos hasMany ingredientesporplato via plato_id
   ingredientesporplatos!: ingredientesporplato[];
   getIngredientesporplatos!: Sequelize.HasManyGetAssociationsMixin<ingredientesporplato>;
@@ -49,6 +37,18 @@ export class platos extends Model<platosAttributes, platosCreationAttributes> im
   hasIngredientesporplato!: Sequelize.HasManyHasAssociationMixin<ingredientesporplato, ingredientesporplatoId>;
   hasIngredientesporplatos!: Sequelize.HasManyHasAssociationsMixin<ingredientesporplato, ingredientesporplatoId>;
   countIngredientesporplatos!: Sequelize.HasManyCountAssociationsMixin;
+  // platos hasMany ventas via plato_id
+  venta!: ventas[];
+  getVenta!: Sequelize.HasManyGetAssociationsMixin<ventas>;
+  setVenta!: Sequelize.HasManySetAssociationsMixin<ventas, ventasId>;
+  addVentum!: Sequelize.HasManyAddAssociationMixin<ventas, ventasId>;
+  addVenta!: Sequelize.HasManyAddAssociationsMixin<ventas, ventasId>;
+  createVentum!: Sequelize.HasManyCreateAssociationMixin<ventas>;
+  removeVentum!: Sequelize.HasManyRemoveAssociationMixin<ventas, ventasId>;
+  removeVenta!: Sequelize.HasManyRemoveAssociationsMixin<ventas, ventasId>;
+  hasVentum!: Sequelize.HasManyHasAssociationMixin<ventas, ventasId>;
+  hasVenta!: Sequelize.HasManyHasAssociationsMixin<ventas, ventasId>;
+  countVenta!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof platos {
     return platos.init({
@@ -64,11 +64,13 @@ export class platos extends Model<platosAttributes, platosCreationAttributes> im
     },
     descripcion: {
       type: DataTypes.CHAR(70),
-      allowNull: false
+      allowNull: true,
+      defaultValue: ""
     },
     precio: {
       type: DataTypes.DECIMAL(6,2),
-      allowNull: false
+      allowNull: true,
+      defaultValue: 0.00
     },
     imagen: {
       type: DataTypes.STRING(255),

@@ -1,5 +1,6 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
+import type { conversionpeso, conversionpesoId } from './conversionpeso';
 import type { ingredientesporplato, ingredientesporplatoId } from './ingredientesporplato';
 import type { productosbodega, productosbodegaId } from './productosbodega';
 
@@ -19,6 +20,30 @@ export class peso extends Model<pesoAttributes, pesoCreationAttributes> implemen
   unidad!: string;
   simbolo!: string;
 
+  // peso hasMany conversionpeso via peso_id_origen
+  conversionpesos!: conversionpeso[];
+  getConversionpesos!: Sequelize.HasManyGetAssociationsMixin<conversionpeso>;
+  setConversionpesos!: Sequelize.HasManySetAssociationsMixin<conversionpeso, conversionpesoId>;
+  addConversionpeso!: Sequelize.HasManyAddAssociationMixin<conversionpeso, conversionpesoId>;
+  addConversionpesos!: Sequelize.HasManyAddAssociationsMixin<conversionpeso, conversionpesoId>;
+  createConversionpeso!: Sequelize.HasManyCreateAssociationMixin<conversionpeso>;
+  removeConversionpeso!: Sequelize.HasManyRemoveAssociationMixin<conversionpeso, conversionpesoId>;
+  removeConversionpesos!: Sequelize.HasManyRemoveAssociationsMixin<conversionpeso, conversionpesoId>;
+  hasConversionpeso!: Sequelize.HasManyHasAssociationMixin<conversionpeso, conversionpesoId>;
+  hasConversionpesos!: Sequelize.HasManyHasAssociationsMixin<conversionpeso, conversionpesoId>;
+  countConversionpesos!: Sequelize.HasManyCountAssociationsMixin;
+  // peso hasMany conversionpeso via peso_id_destino
+  peso_id_destino_conversionpesos!: conversionpeso[];
+  getPeso_id_destino_conversionpesos!: Sequelize.HasManyGetAssociationsMixin<conversionpeso>;
+  setPeso_id_destino_conversionpesos!: Sequelize.HasManySetAssociationsMixin<conversionpeso, conversionpesoId>;
+  addPeso_id_destino_conversionpeso!: Sequelize.HasManyAddAssociationMixin<conversionpeso, conversionpesoId>;
+  addPeso_id_destino_conversionpesos!: Sequelize.HasManyAddAssociationsMixin<conversionpeso, conversionpesoId>;
+  createPeso_id_destino_conversionpeso!: Sequelize.HasManyCreateAssociationMixin<conversionpeso>;
+  removePeso_id_destino_conversionpeso!: Sequelize.HasManyRemoveAssociationMixin<conversionpeso, conversionpesoId>;
+  removePeso_id_destino_conversionpesos!: Sequelize.HasManyRemoveAssociationsMixin<conversionpeso, conversionpesoId>;
+  hasPeso_id_destino_conversionpeso!: Sequelize.HasManyHasAssociationMixin<conversionpeso, conversionpesoId>;
+  hasPeso_id_destino_conversionpesos!: Sequelize.HasManyHasAssociationsMixin<conversionpeso, conversionpesoId>;
+  countPeso_id_destino_conversionpesos!: Sequelize.HasManyCountAssociationsMixin;
   // peso hasMany ingredientesporplato via peso_id
   ingredientesporplatos!: ingredientesporplato[];
   getIngredientesporplatos!: Sequelize.HasManyGetAssociationsMixin<ingredientesporplato>;

@@ -11,16 +11,16 @@ export interface productosbodegaAttributes {
   proveedor_id: number;
   peso_id: number;
   nombre_producto: string;
-  cantidad_actual: number;
-  cantidad_minima: number;
-  cantidad_maxima: number;
+  cantidad_actual?: number;
+  cantidad_minima?: number;
+  cantidad_maxima?: number;
   tipo: string;
-  precio_proveedor: number;
+  precio_proveedor?: number;
 }
 
 export type productosbodegaPk = "producto_bodega_id";
 export type productosbodegaId = productosbodega[productosbodegaPk];
-export type productosbodegaOptionalAttributes = "producto_bodega_id";
+export type productosbodegaOptionalAttributes = "producto_bodega_id" | "cantidad_actual" | "cantidad_minima" | "cantidad_maxima" | "precio_proveedor";
 export type productosbodegaCreationAttributes = Optional<productosbodegaAttributes, productosbodegaOptionalAttributes>;
 
 export class productosbodega extends Model<productosbodegaAttributes, productosbodegaCreationAttributes> implements productosbodegaAttributes {
@@ -28,11 +28,11 @@ export class productosbodega extends Model<productosbodegaAttributes, productosb
   proveedor_id!: number;
   peso_id!: number;
   nombre_producto!: string;
-  cantidad_actual!: number;
-  cantidad_minima!: number;
-  cantidad_maxima!: number;
+  cantidad_actual?: number;
+  cantidad_minima?: number;
+  cantidad_maxima?: number;
   tipo!: string;
-  precio_proveedor!: number;
+  precio_proveedor?: number;
 
   // productosbodega belongsTo peso via peso_id
   peso!: peso;
@@ -111,15 +111,18 @@ export class productosbodega extends Model<productosbodegaAttributes, productosb
     },
     cantidad_actual: {
       type: DataTypes.DECIMAL(10,2),
-      allowNull: false
+      allowNull: true,
+      defaultValue: 0.00
     },
     cantidad_minima: {
       type: DataTypes.DECIMAL(10,2),
-      allowNull: false
+      allowNull: true,
+      defaultValue: 0.00
     },
     cantidad_maxima: {
       type: DataTypes.DECIMAL(10,2),
-      allowNull: false
+      allowNull: true,
+      defaultValue: 0.00
     },
     tipo: {
       type: DataTypes.CHAR(10),
@@ -127,7 +130,8 @@ export class productosbodega extends Model<productosbodegaAttributes, productosb
     },
     precio_proveedor: {
       type: DataTypes.DECIMAL(6,2),
-      allowNull: false
+      allowNull: true,
+      defaultValue: 0.00
     }
   }, {
     sequelize,

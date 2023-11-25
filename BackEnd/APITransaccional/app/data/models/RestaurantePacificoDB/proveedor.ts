@@ -1,6 +1,6 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
-import type { ordenesproveedor, ordenesproveedorId } from './ordenesproveedor';
+import type { detalleordenes, detalleordenesId } from './detalleordenes';
 import type { productosbodega, productosbodegaId } from './productosbodega';
 
 export interface proveedorAttributes {
@@ -25,18 +25,18 @@ export class proveedor extends Model<proveedorAttributes, proveedorCreationAttri
   nivel?: '1' | '2' | '3';
   estado?: 'activo' | 'inactivo';
 
-  // proveedor hasMany ordenesproveedor via proveedor_id
-  ordenesproveedors!: ordenesproveedor[];
-  getOrdenesproveedors!: Sequelize.HasManyGetAssociationsMixin<ordenesproveedor>;
-  setOrdenesproveedors!: Sequelize.HasManySetAssociationsMixin<ordenesproveedor, ordenesproveedorId>;
-  addOrdenesproveedor!: Sequelize.HasManyAddAssociationMixin<ordenesproveedor, ordenesproveedorId>;
-  addOrdenesproveedors!: Sequelize.HasManyAddAssociationsMixin<ordenesproveedor, ordenesproveedorId>;
-  createOrdenesproveedor!: Sequelize.HasManyCreateAssociationMixin<ordenesproveedor>;
-  removeOrdenesproveedor!: Sequelize.HasManyRemoveAssociationMixin<ordenesproveedor, ordenesproveedorId>;
-  removeOrdenesproveedors!: Sequelize.HasManyRemoveAssociationsMixin<ordenesproveedor, ordenesproveedorId>;
-  hasOrdenesproveedor!: Sequelize.HasManyHasAssociationMixin<ordenesproveedor, ordenesproveedorId>;
-  hasOrdenesproveedors!: Sequelize.HasManyHasAssociationsMixin<ordenesproveedor, ordenesproveedorId>;
-  countOrdenesproveedors!: Sequelize.HasManyCountAssociationsMixin;
+  // proveedor hasMany detalleordenes via proveedor_id
+  detalleordenes!: detalleordenes[];
+  getDetalleordenes!: Sequelize.HasManyGetAssociationsMixin<detalleordenes>;
+  setDetalleordenes!: Sequelize.HasManySetAssociationsMixin<detalleordenes, detalleordenesId>;
+  addDetalleordene!: Sequelize.HasManyAddAssociationMixin<detalleordenes, detalleordenesId>;
+  addDetalleordenes!: Sequelize.HasManyAddAssociationsMixin<detalleordenes, detalleordenesId>;
+  createDetalleordene!: Sequelize.HasManyCreateAssociationMixin<detalleordenes>;
+  removeDetalleordene!: Sequelize.HasManyRemoveAssociationMixin<detalleordenes, detalleordenesId>;
+  removeDetalleordenes!: Sequelize.HasManyRemoveAssociationsMixin<detalleordenes, detalleordenesId>;
+  hasDetalleordene!: Sequelize.HasManyHasAssociationMixin<detalleordenes, detalleordenesId>;
+  hasDetalleordenes!: Sequelize.HasManyHasAssociationsMixin<detalleordenes, detalleordenesId>;
+  countDetalleordenes!: Sequelize.HasManyCountAssociationsMixin;
   // proveedor hasMany productosbodega via proveedor_id
   productosbodegas!: productosbodega[];
   getProductosbodegas!: Sequelize.HasManyGetAssociationsMixin<productosbodega>;
@@ -76,7 +76,8 @@ export class proveedor extends Model<proveedorAttributes, proveedorCreationAttri
     },
     estado: {
       type: DataTypes.ENUM('activo','inactivo'),
-      allowNull: true
+      allowNull: true,
+      defaultValue: "activo"
     }
   }, {
     sequelize,

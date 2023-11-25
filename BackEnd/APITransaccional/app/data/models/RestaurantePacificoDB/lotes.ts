@@ -60,6 +60,7 @@ export class lotes extends Model<lotesAttributes, lotesCreationAttributes> imple
   }, {
     sequelize,
     tableName: 'lotes',
+    hasTrigger: true,
     timestamps: false,
     indexes: [
       {

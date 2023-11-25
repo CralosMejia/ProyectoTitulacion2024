@@ -3,13 +3,14 @@ import dotenv from 'dotenv';
 import {PacificoDB,DataScienceDB} from './config/db'
 
 //Routes imports
-import { getCrudRouter} from './app/common/presentation/crudRoutes'
-import { routerMIPP } from './app/MIPP/presentation/routes/mippRoutes';
+import { getCrudRouter} from './app/presentation/routes/common/crudRoutes'
+import { routerMIPP } from './app/presentation/routes/MIPP/mippRoutes';
 
 //Models imports
 import * as modelPacifico from './app/data/models/RestaurantePacificoDB/init-models'
 import * as modelDataScience from './app/data/models/DataScienceDB/init-models'
-import { routerMGPAA } from './app/MGPAAB/presentation/routes/mgpaabRoutes';
+import { routerMGPAA } from './app/presentation/routes/MGPAAB/mgpaabRoutes';
+import { routerMAP } from './app/presentation/routes/MAP/mapRoutes';
 
 
 
@@ -32,11 +33,12 @@ app.use('/api/ingredientesPorPlato',getCrudRouter('Ingredientes por plato'))
 app.use('/api/lote',getCrudRouter('Lotes'))
 app.use('/api/orden',getCrudRouter('Ordenes'))
 app.use('/api/detalleOrden',getCrudRouter('Detalle orden'))
-app.use('/api/ordenesProveedor',getCrudRouter('Ordenes proveedor'))
 
 //MÓDULO IGREDIENTES POR PLATO
 app.use('/api/mipp',routerMIPP)
 app.use('/api/mgpaab',routerMGPAA)
+app.use('/api/map',routerMAP)
+
 
 
 

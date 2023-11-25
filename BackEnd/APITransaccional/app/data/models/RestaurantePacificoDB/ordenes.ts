@@ -1,27 +1,28 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
 import type { detalleordenes, detalleordenesId } from './detalleordenes';
-import type { ordenesproveedor, ordenesproveedorId } from './ordenesproveedor';
 
 export interface ordenesAttributes {
   orden_id: number;
   fecha_orden: string;
-  estado: string;
-  subtotal: number;
-  total: number;
+  estado?: 'En espera' | 'Enviado' | 'Cancelado' | 'Aprobado' | 'Recibido';
+  estado_edicion?: number;
+  subtotal?: number;
+  total?: number;
 }
 
 export type ordenesPk = "orden_id";
 export type ordenesId = ordenes[ordenesPk];
-export type ordenesOptionalAttributes = "orden_id";
+export type ordenesOptionalAttributes = "orden_id" | "estado" | "estado_edicion" | "subtotal" | "total";
 export type ordenesCreationAttributes = Optional<ordenesAttributes, ordenesOptionalAttributes>;
 
 export class ordenes extends Model<ordenesAttributes, ordenesCreationAttributes> implements ordenesAttributes {
   orden_id!: number;
   fecha_orden!: string;
-  estado!: string;
-  subtotal!: number;
-  total!: number;
+  estado?: 'En espera' | 'Enviado' | 'Cancelado' | 'Aprobado' | 'Recibido';
+  estado_edicion?: number;
+  subtotal?: number;
+  total?: number;
 
   // ordenes hasMany detalleordenes via orden_id
   detalleordenes!: detalleordenes[];
@@ -35,18 +36,6 @@ export class ordenes extends Model<ordenesAttributes, ordenesCreationAttributes>
   hasDetalleordene!: Sequelize.HasManyHasAssociationMixin<detalleordenes, detalleordenesId>;
   hasDetalleordenes!: Sequelize.HasManyHasAssociationsMixin<detalleordenes, detalleordenesId>;
   countDetalleordenes!: Sequelize.HasManyCountAssociationsMixin;
-  // ordenes hasMany ordenesproveedor via orden_id
-  ordenesproveedors!: ordenesproveedor[];
-  getOrdenesproveedors!: Sequelize.HasManyGetAssociationsMixin<ordenesproveedor>;
-  setOrdenesproveedors!: Sequelize.HasManySetAssociationsMixin<ordenesproveedor, ordenesproveedorId>;
-  addOrdenesproveedor!: Sequelize.HasManyAddAssociationMixin<ordenesproveedor, ordenesproveedorId>;
-  addOrdenesproveedors!: Sequelize.HasManyAddAssociationsMixin<ordenesproveedor, ordenesproveedorId>;
-  createOrdenesproveedor!: Sequelize.HasManyCreateAssociationMixin<ordenesproveedor>;
-  removeOrdenesproveedor!: Sequelize.HasManyRemoveAssociationMixin<ordenesproveedor, ordenesproveedorId>;
-  removeOrdenesproveedors!: Sequelize.HasManyRemoveAssociationsMixin<ordenesproveedor, ordenesproveedorId>;
-  hasOrdenesproveedor!: Sequelize.HasManyHasAssociationMixin<ordenesproveedor, ordenesproveedorId>;
-  hasOrdenesproveedors!: Sequelize.HasManyHasAssociationsMixin<ordenesproveedor, ordenesproveedorId>;
-  countOrdenesproveedors!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof ordenes {
     return ordenes.init({
@@ -61,20 +50,29 @@ export class ordenes extends Model<ordenesAttributes, ordenesCreationAttributes>
       allowNull: false
     },
     estado: {
-      type: DataTypes.CHAR(20),
-      allowNull: false
+      type: DataTypes.ENUM('En espera','Enviado','Cancelado','Aprobado','Recibido'),
+      allowNull: true,
+      defaultValue: "En espera"
+    },
+    estado_edicion: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: 0
     },
     subtotal: {
       type: DataTypes.DECIMAL(6,2),
-      allowNull: false
+      allowNull: true,
+      defaultValue: 0.00
     },
     total: {
       type: DataTypes.DECIMAL(6,2),
-      allowNull: false
+      allowNull: true,
+      defaultValue: 0.00
     }
   }, {
     sequelize,
     tableName: 'ordenes',
+    hasTrigger: true,
     timestamps: false,
     indexes: [
       {
