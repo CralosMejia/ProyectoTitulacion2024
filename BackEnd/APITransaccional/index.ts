@@ -1,4 +1,5 @@
 import express, { Express} from 'express';
+import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import {PacificoDB,DataScienceDB} from './config/db'
 
@@ -11,6 +12,7 @@ import * as modelPacifico from './app/data/models/RestaurantePacificoDB/init-mod
 import * as modelDataScience from './app/data/models/DataScienceDB/init-models'
 import { routerMGPAA } from './app/presentation/routes/MGPAAB/mgpaabRoutes';
 import { routerMAP } from './app/presentation/routes/MAP/mapRoutes';
+import { routerVentas } from './app/presentation/routes/common/ventasRoutes';
 
 
 
@@ -19,7 +21,9 @@ dotenv.config();
 const port = process.env.PORT;
 const app: Express = express();
 
-
+//Configs
+app.use(bodyParser.json({ limit: '5mb' }));  // Ajusta el límite según tus necesidades
+app.use(bodyParser.urlencoded({ extended: true, limit: '5mb' }));
 app.use(express.json())//middleware que transforma la req.body a un json
 
 
@@ -38,6 +42,7 @@ app.use('/api/detalleOrden',getCrudRouter('Detalle orden'))
 app.use('/api/mipp',routerMIPP)
 app.use('/api/mgpaab',routerMGPAA)
 app.use('/api/map',routerMAP)
+app.use('/api/common/ventas',routerVentas)
 
 
 
