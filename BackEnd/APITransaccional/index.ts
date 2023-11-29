@@ -36,7 +36,6 @@ app.use('/api/productoBodega',getCrudRouter('Producto bodega'))
 app.use('/api/ingredientesPorPlato',getCrudRouter('Ingredientes por plato'))
 app.use('/api/lote',getCrudRouter('Lotes'))
 app.use('/api/orden',getCrudRouter('Ordenes'))
-app.use('/api/detalleOrden',getCrudRouter('Detalle orden'))
 
 //MÓDULO IGREDIENTES POR PLATO
 app.use('/api/mipp',routerMIPP)

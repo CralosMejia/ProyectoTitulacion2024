@@ -30,20 +30,20 @@ df_fecha = pd.read_sql(f'SELECT * FROM DimFecha', con=ses_db_data_science.bind)
 df_producto = pd.read_sql(f'SELECT * FROM DimProducto', con=ses_db_data_science.bind)
 df_demanda = pd.read_sql(f'SELECT * FROM HechosDemandaProducto', con=ses_db_data_science.bind)
 
-# df_train=ia.preparate_train_data(df_fecha,df_producto,df_demanda)
-# print(df_train.head(10))
-# print(df_train.tail(10))
-#
-#
-# ia.train_models(df_train)
+df_train=ia.preparate_train_data(df_fecha,df_producto,df_demanda)
+print(df_train.head(10))
+print(df_train.tail(10))
+
+
+ia.train_models(df_train)
 
 
 
-#
-# df_predictions = ia.predict_demand_by_num_periods(5)
-#
-# print(df_predictions.head(10))
-# print(df_predictions.tail(10))
+
+df_predictions = ia.predict_demand_by_num_periods(5)
+
+print(df_predictions.head(10))
+print(df_predictions.tail(10))
 
 
 try:

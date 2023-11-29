@@ -7,13 +7,12 @@ export interface ordenesAttributes {
   fecha_orden: string;
   estado?: 'En espera' | 'Enviado' | 'Cancelado' | 'Aprobado' | 'Recibido';
   estado_edicion?: number;
-  subtotal?: number;
   total?: number;
 }
 
 export type ordenesPk = "orden_id";
 export type ordenesId = ordenes[ordenesPk];
-export type ordenesOptionalAttributes = "orden_id" | "estado" | "estado_edicion" | "subtotal" | "total";
+export type ordenesOptionalAttributes = "orden_id" | "estado" | "estado_edicion" | "total";
 export type ordenesCreationAttributes = Optional<ordenesAttributes, ordenesOptionalAttributes>;
 
 export class ordenes extends Model<ordenesAttributes, ordenesCreationAttributes> implements ordenesAttributes {
@@ -21,7 +20,6 @@ export class ordenes extends Model<ordenesAttributes, ordenesCreationAttributes>
   fecha_orden!: string;
   estado?: 'En espera' | 'Enviado' | 'Cancelado' | 'Aprobado' | 'Recibido';
   estado_edicion?: number;
-  subtotal?: number;
   total?: number;
 
   // ordenes hasMany detalleordenes via orden_id
@@ -58,11 +56,6 @@ export class ordenes extends Model<ordenesAttributes, ordenesCreationAttributes>
       type: DataTypes.BOOLEAN,
       allowNull: true,
       defaultValue: 0
-    },
-    subtotal: {
-      type: DataTypes.DECIMAL(6,2),
-      allowNull: true,
-      defaultValue: 0.00
     },
     total: {
       type: DataTypes.DECIMAL(6,2),

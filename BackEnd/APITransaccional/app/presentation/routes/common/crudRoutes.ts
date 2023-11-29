@@ -44,7 +44,6 @@ const modelMapping: { [key: string]: ModelStatic<Model> } = {
     'Ingredientes por plato': models.ingredientesporplato,
     'Lotes': models.lotes,
     'Ordenes': models.ordenes,
-    'Detalle orden': models.detalleordenes,
     // Agrega más modelos aquí según sea necesario
 };
 

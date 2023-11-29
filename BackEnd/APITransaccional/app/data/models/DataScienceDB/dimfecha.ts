@@ -7,26 +7,22 @@ import type { hechosventaplatos, hechosventaplatosId } from './hechosventaplatos
 export interface dimfechaAttributes {
   fecha_id: number;
   fecha: string;
-  dia?: number;
   semana?: number;
   mes?: number;
   anio?: number;
-  dia_semana: string;
 }
 
 export type dimfechaPk = "fecha_id";
 export type dimfechaId = dimfecha[dimfechaPk];
-export type dimfechaOptionalAttributes = "dia" | "semana" | "mes" | "anio";
+export type dimfechaOptionalAttributes = "semana" | "mes" | "anio";
 export type dimfechaCreationAttributes = Optional<dimfechaAttributes, dimfechaOptionalAttributes>;
 
 export class dimfecha extends Model<dimfechaAttributes, dimfechaCreationAttributes> implements dimfechaAttributes {
   fecha_id!: number;
   fecha!: string;
-  dia?: number;
   semana?: number;
   mes?: number;
   anio?: number;
-  dia_semana!: string;
 
   // dimfecha hasMany hechosdemandaproducto via fecha_id
   hechosdemandaproductos!: hechosdemandaproducto[];
@@ -76,10 +72,6 @@ export class dimfecha extends Model<dimfechaAttributes, dimfechaCreationAttribut
       type: DataTypes.DATEONLY,
       allowNull: false
     },
-    dia: {
-      type: DataTypes.INTEGER,
-      allowNull: true
-    },
     semana: {
       type: DataTypes.INTEGER,
       allowNull: true
@@ -91,10 +83,6 @@ export class dimfecha extends Model<dimfechaAttributes, dimfechaCreationAttribut
     anio: {
       type: DataTypes.INTEGER,
       allowNull: true
-    },
-    dia_semana: {
-      type: DataTypes.STRING(30),
-      allowNull: false
     }
   }, {
     sequelize,

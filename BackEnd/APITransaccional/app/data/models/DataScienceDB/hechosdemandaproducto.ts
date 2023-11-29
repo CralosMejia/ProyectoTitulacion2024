@@ -7,20 +7,22 @@ export interface hechosdemandaproductoAttributes {
   demanda_id: number;
   fecha_id?: number;
   producto_id?: number;
-  cantidad_predicha?: number;
+  cantidad_predicha_modelo_1?: number;
+  cantidad_predicha_modelo_2?: number;
   cantidad_real?: number;
 }
 
 export type hechosdemandaproductoPk = "demanda_id";
 export type hechosdemandaproductoId = hechosdemandaproducto[hechosdemandaproductoPk];
-export type hechosdemandaproductoOptionalAttributes = "demanda_id" | "fecha_id" | "producto_id" | "cantidad_predicha" | "cantidad_real";
+export type hechosdemandaproductoOptionalAttributes = "demanda_id" | "fecha_id" | "producto_id" | "cantidad_predicha_modelo_1" | "cantidad_predicha_modelo_2" | "cantidad_real";
 export type hechosdemandaproductoCreationAttributes = Optional<hechosdemandaproductoAttributes, hechosdemandaproductoOptionalAttributes>;
 
 export class hechosdemandaproducto extends Model<hechosdemandaproductoAttributes, hechosdemandaproductoCreationAttributes> implements hechosdemandaproductoAttributes {
   demanda_id!: number;
   fecha_id?: number;
   producto_id?: number;
-  cantidad_predicha?: number;
+  cantidad_predicha_modelo_1?: number;
+  cantidad_predicha_modelo_2?: number;
   cantidad_real?: number;
 
   // hechosdemandaproducto belongsTo dimfecha via fecha_id
@@ -58,7 +60,12 @@ export class hechosdemandaproducto extends Model<hechosdemandaproductoAttributes
         key: 'producto_id'
       }
     },
-    cantidad_predicha: {
+    cantidad_predicha_modelo_1: {
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+      defaultValue: 0.00
+    },
+    cantidad_predicha_modelo_2: {
       type: DataTypes.DECIMAL(10,2),
       allowNull: true,
       defaultValue: 0.00

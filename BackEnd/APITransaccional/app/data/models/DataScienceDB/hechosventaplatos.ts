@@ -5,7 +5,7 @@ import type { dimplato, dimplatoId } from './dimplato';
 
 export interface hechosventaplatosAttributes {
   venta_plato_id: number;
-  factura_id: number;
+  venta_id: number;
   fecha_id?: number;
   plato_id?: number;
   unidades_vendidas?: number;
@@ -19,7 +19,7 @@ export type hechosventaplatosCreationAttributes = Optional<hechosventaplatosAttr
 
 export class hechosventaplatos extends Model<hechosventaplatosAttributes, hechosventaplatosCreationAttributes> implements hechosventaplatosAttributes {
   venta_plato_id!: number;
-  factura_id!: number;
+  venta_id!: number;
   fecha_id?: number;
   plato_id?: number;
   unidades_vendidas?: number;
@@ -44,7 +44,7 @@ export class hechosventaplatos extends Model<hechosventaplatosAttributes, hechos
       allowNull: false,
       primaryKey: true
     },
-    factura_id: {
+    venta_id: {
       type: DataTypes.INTEGER,
       allowNull: false
     },

@@ -1,6 +1,5 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
-import type { detalleordenes, detalleordenesId } from './detalleordenes';
 import type { productosbodega, productosbodegaId } from './productosbodega';
 
 export interface proveedorAttributes {
@@ -25,18 +24,6 @@ export class proveedor extends Model<proveedorAttributes, proveedorCreationAttri
   nivel?: '1' | '2' | '3';
   estado?: 'activo' | 'inactivo';
 
-  // proveedor hasMany detalleordenes via proveedor_id
-  detalleordenes!: detalleordenes[];
-  getDetalleordenes!: Sequelize.HasManyGetAssociationsMixin<detalleordenes>;
-  setDetalleordenes!: Sequelize.HasManySetAssociationsMixin<detalleordenes, detalleordenesId>;
-  addDetalleordene!: Sequelize.HasManyAddAssociationMixin<detalleordenes, detalleordenesId>;
-  addDetalleordenes!: Sequelize.HasManyAddAssociationsMixin<detalleordenes, detalleordenesId>;
-  createDetalleordene!: Sequelize.HasManyCreateAssociationMixin<detalleordenes>;
-  removeDetalleordene!: Sequelize.HasManyRemoveAssociationMixin<detalleordenes, detalleordenesId>;
-  removeDetalleordenes!: Sequelize.HasManyRemoveAssociationsMixin<detalleordenes, detalleordenesId>;
-  hasDetalleordene!: Sequelize.HasManyHasAssociationMixin<detalleordenes, detalleordenesId>;
-  hasDetalleordenes!: Sequelize.HasManyHasAssociationsMixin<detalleordenes, detalleordenesId>;
-  countDetalleordenes!: Sequelize.HasManyCountAssociationsMixin;
   // proveedor hasMany productosbodega via proveedor_id
   productosbodegas!: productosbodega[];
   getProductosbodegas!: Sequelize.HasManyGetAssociationsMixin<productosbodega>;

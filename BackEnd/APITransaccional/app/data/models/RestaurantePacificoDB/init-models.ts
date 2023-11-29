@@ -88,8 +88,6 @@ export function initModels(sequelize: Sequelize) {
   productosbodega.hasMany(ingredientesporplato, { as: "ingredientesporplatos", foreignKey: "producto_bodega_id"});
   lotes.belongsTo(productosbodega, { as: "producto_bodega", foreignKey: "producto_bodega_id"});
   productosbodega.hasMany(lotes, { as: "lotes", foreignKey: "producto_bodega_id"});
-  detalleordenes.belongsTo(proveedor, { as: "proveedor", foreignKey: "proveedor_id"});
-  proveedor.hasMany(detalleordenes, { as: "detalleordenes", foreignKey: "proveedor_id"});
   productosbodega.belongsTo(proveedor, { as: "proveedor", foreignKey: "proveedor_id"});
   proveedor.hasMany(productosbodega, { as: "productosbodegas", foreignKey: "proveedor_id"});
 

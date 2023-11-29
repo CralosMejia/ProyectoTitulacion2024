@@ -6,6 +6,7 @@ export interface dimunidadmedidaAttributes {
   unidad_medida_id: number;
   unidad?: string;
   simbolo?: string;
+  tipo: string;
 }
 
 export type dimunidadmedidaPk = "unidad_medida_id";
@@ -17,6 +18,7 @@ export class dimunidadmedida extends Model<dimunidadmedidaAttributes, dimunidadm
   unidad_medida_id!: number;
   unidad?: string;
   simbolo?: string;
+  tipo!: string;
 
   // dimunidadmedida hasMany dimproducto via unidad_medida_id
   dimproductos!: dimproducto[];
@@ -46,6 +48,10 @@ export class dimunidadmedida extends Model<dimunidadmedidaAttributes, dimunidadm
     simbolo: {
       type: DataTypes.STRING(10),
       allowNull: true
+    },
+    tipo: {
+      type: DataTypes.STRING(50),
+      allowNull: false
     }
   }, {
     sequelize,

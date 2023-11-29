@@ -2,13 +2,11 @@ import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
 import type { ordenes, ordenesId } from './ordenes';
 import type { productosbodega, productosbodegaId } from './productosbodega';
-import type { proveedor, proveedorId } from './proveedor';
 
 export interface detalleordenesAttributes {
   detalle_orden_id: number;
   producto_bodega_id: number;
   orden_id: number;
-  proveedor_id: number;
   cantidad_necesaria?: number;
 }
 
@@ -21,7 +19,6 @@ export class detalleordenes extends Model<detalleordenesAttributes, detalleorden
   detalle_orden_id!: number;
   producto_bodega_id!: number;
   orden_id!: number;
-  proveedor_id!: number;
   cantidad_necesaria?: number;
 
   // detalleordenes belongsTo ordenes via orden_id
@@ -34,11 +31,6 @@ export class detalleordenes extends Model<detalleordenesAttributes, detalleorden
   getProducto_bodega!: Sequelize.BelongsToGetAssociationMixin<productosbodega>;
   setProducto_bodega!: Sequelize.BelongsToSetAssociationMixin<productosbodega, productosbodegaId>;
   createProducto_bodega!: Sequelize.BelongsToCreateAssociationMixin<productosbodega>;
-  // detalleordenes belongsTo proveedor via proveedor_id
-  proveedor!: proveedor;
-  getProveedor!: Sequelize.BelongsToGetAssociationMixin<proveedor>;
-  setProveedor!: Sequelize.BelongsToSetAssociationMixin<proveedor, proveedorId>;
-  createProveedor!: Sequelize.BelongsToCreateAssociationMixin<proveedor>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof detalleordenes {
     return detalleordenes.init({
@@ -62,14 +54,6 @@ export class detalleordenes extends Model<detalleordenesAttributes, detalleorden
       references: {
         model: 'ordenes',
         key: 'orden_id'
-      }
-    },
-    proveedor_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'proveedor',
-        key: 'proveedor_id'
       }
     },
     cantidad_necesaria: {
@@ -103,13 +87,6 @@ export class detalleordenes extends Model<detalleordenesAttributes, detalleorden
         using: "BTREE",
         fields: [
           { name: "orden_id" },
-        ]
-      },
-      {
-        name: "fk_proveedor_id_detalle_orden",
-        using: "BTREE",
-        fields: [
-          { name: "proveedor_id" },
         ]
       },
     ]
