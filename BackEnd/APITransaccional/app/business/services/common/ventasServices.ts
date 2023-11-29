@@ -35,7 +35,7 @@ export class VentasServices {
             for (const sale of salesList) {
                 const platoId = await this.getPlatoIdByNombre(sale.nombre_plato);
 
-                if (platoId !== null && !(await this.checkExistingSale(platoId, sale.fecha_fin_semana))) {
+                if (platoId !== null && !(await this.checkExistingSale(platoId, sale.fecha_inicio_semana))) {
                     const ventaToAdd = {
                         plato_id: platoId,
                         cantidad: sale.cantidad,
@@ -83,11 +83,11 @@ export class VentasServices {
      * Checks whether a sale for a specific dish already exists for a given end-of-week date.
      * 
      * @param platoId - The ID of the dish.
-     * @param fechaFinSemana - The end-of-week date.
+     * @param fechaInicioSemana - The end-of-week date.
      * @returns True if an existing sale is found, otherwise false.
      */
-    private async checkExistingSale(platoId: number, fechaFinSemana: string): Promise<boolean> {
-        const existingSales = await this.repositoryVentas.getAllByField("fecha_fin_semana", fechaFinSemana);
+    private async checkExistingSale(platoId: number, fechaInicioSemana: string): Promise<boolean> {
+        const existingSales = await this.repositoryVentas.getAllByField("fecha_inicio_semana", fechaInicioSemana);
         return existingSales.some(sale => sale.plato_id === platoId);
     }
 }

@@ -2,16 +2,23 @@ import { ingredientesporplato } from "../../../data/models/RestaurantePacificoDB
 import { platos } from "../../../data/models/RestaurantePacificoDB/platos";
 import { productosbodega } from "../../../data/models/RestaurantePacificoDB/productosbodega";
 import { EntrieRepository } from "../../../data/repository/entrieRepository";
+import { ValidatorPlatosServices } from "../../validators/MIPP/validatorPlatosServices";
 
 /**
  * Service class for managing 'platos' (dishes) and their related entities.
  */
 export class PlatosServices {
+
+    private readonly validator: ValidatorPlatosServices;
+
     private readonly respositoryPlato: EntrieRepository<platos>;
     private readonly respositoryIPP: EntrieRepository<ingredientesporplato>;
     private readonly repositoryProductoBodega: EntrieRepository<productosbodega>;
+    
 
     constructor(){
+        this.validator = new ValidatorPlatosServices()
+
         this.respositoryPlato = new EntrieRepository(platos);
         this.respositoryIPP = new EntrieRepository(ingredientesporplato);
         this.repositoryProductoBodega =  new EntrieRepository(productosbodega);
@@ -24,8 +31,15 @@ export class PlatosServices {
      * @param listIppInter - The list of ingredients to associate with the 'plato'.
      * @returns An object containing the created 'plato' and its ingredients.
      */
-    async createPlatoComplete(plato: platos, listIppInter: ingredientesporplato[] | null) {
+    async createPlatoComplete(plato: platos, listIppInter: ingredientesporplato[]) {
         try {
+
+            await Promise.all(
+                listIppInter.map(ingrediente => 
+                    this.validator.validateWeightConversion(ingrediente.producto_bodega_id, ingrediente.peso_id)
+                )
+            );
+
             const createdPlato = await this.respositoryPlato.create(plato);
             let ingredientsResult = null;
 
@@ -39,7 +53,7 @@ export class PlatosServices {
                 "lista de ingredientes": ingredientsResult
             };
         } catch (error) {
-            console.error('Error al crear el plato y sus ingredientes:', error);
+            console.error('Error when creating the dish and its ingredients:', error);
             throw error;
         }
     }
@@ -80,6 +94,14 @@ export class PlatosServices {
             const results = [];
     
             for (const item of platosWithIngredients) {
+
+                await Promise.all(
+                    item.ingredientes.map(ingrediente => 
+                        this.validator.validateWeightConversion(ingrediente.producto_bodega_id, ingrediente.peso_id)
+                    )
+                );
+
+
                 const createdPlato = await this.respositoryPlato.create(item.plato);
                 let ingredientsResult = null;
     

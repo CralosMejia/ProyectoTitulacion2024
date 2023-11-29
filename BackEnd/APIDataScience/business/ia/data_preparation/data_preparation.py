@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from pandas.tseries.offsets import Week
 
 from datetime import datetime, timedelta
 from sklearn.model_selection import train_test_split
@@ -7,133 +8,82 @@ from sklearn.model_selection import train_test_split
 
 def preparate_train_data(df_fecha, df_producto, df_demanda):
     """
-    Prepares data to be sent to the ia model for training or validation
-    
+    Prepares data to be sent to the AI model for training or validation.
+
     Args:
-    df_fecha (DataFrame): fecha data to be prepared
-    df_producto (DataFrame): producto data to be prepared
-    df_demanda (DataFrame): demanda data to be prepared
+        df_fecha (DataFrame): Data for fecha to be prepared.
+        df_producto (DataFrame): Data for producto to be prepared.
+        df_demanda (DataFrame): Data for demanda to be prepared.
 
     Returns:
-        df_modelo(DataFrame):returns a df with the structure and data needed to train the model
+        DataFrame: A DataFrame with the structure and data needed to train the model.
     """
-    #Red neuronal:
+
     # Unir los dataframes
     df_merged = pd.merge(df_demanda[['fecha_id', 'producto_id', 'cantidad_real']],
                          df_fecha[['fecha_id', 'fecha']], on='fecha_id')
     df_merged = pd.merge(df_merged, df_producto[['producto_id']], on='producto_id')
 
-    # Convertir la columna de fecha a timestamps
-    df_merged['fecha'] = pd.to_datetime(df_merged['fecha']).astype(np.int64) // 10 ** 9
+    columnas_a_eliminar = ['fecha_id']
+    df_merged = df_merged.drop(columnas_a_eliminar, axis=1)
 
-    # Convertir el 'producto_id' a una variable categórica si aún no lo es
-    df_merged['producto_id'] = df_merged['producto_id'].astype('category')
+    df_merged['fecha'] = pd.to_datetime(df_merged['fecha'])
 
-    df_merged.to_csv('archivo.csv',index=False)
-    # Separar características y objetivo
-    x = df_merged[['fecha', 'producto_id']]
-    y = df_merged['cantidad_real']
-    x_train, x_val, y_train, y_val = train_test_split(x, y, test_size=0.2, random_state=42)
+    # Crear un PeriodIndex para representar las semanas
+    #df_merged['fecha'] = df_merged['fecha'].dt.to_period('W')
 
-    return x_train, y_train, x_val, y_val
+    # Agrupar por 'producto_id' y 'semana' y calcular la media para cada grupo
+    df_agrupado = df_merged.groupby(['producto_id', 'fecha']).mean()
+
+    # Opcional: resetear el índice si necesitas 'producto_id' y 'semana' como columnas
+    df_agrupado = df_agrupado.reset_index()
+
+    #df_agrupado['fecha'] = df_agrupado['fecha'].astype(str).str.split('/').str[-1]
+    df_agrupado['fecha'] = pd.to_datetime(df_agrupado['fecha'])
+
+    df_agrupado.to_csv('mi_archivo.csv', index=False)
+
+    return df_agrupado
 
 
-def preparate_train_data_prophet(df_fecha, df_producto, df_demanda):
+
+def prepare_data_for_prediction(fecha_inicio, df_productos, num_periodos):
     """
-    Prepares data to be sent to the ia model for training or validation
+    Prepara un DataFrame para hacer predicciones.
 
     Args:
-    df_fecha (DataFrame): fecha data to be prepared
-    df_producto (DataFrame): producto data to be prepared
-    df_demanda (DataFrame): demanda data to be prepared
+        fecha_inicio (str): Fecha de inicio en formato 'YYYY-MM-DD'.
+        df_productos (DataFrame): DataFrame con los productos.
+        num_periodos (int): Número de periodos (semanas) a generar.
 
     Returns:
-        df_modelo(DataFrame):returns a df with the structure and data needed to train the model
+        DataFrame: DataFrame preparado para la predicción.
     """
-    #Fusiona las tablas en un solo DataFrame en base a las claves foráneas
-    df = pd.merge(df_demanda, df_fecha, how='left', on='fecha_id')
-    df = pd.merge(df, df_producto, how='left', on='producto_id')
 
-    # Renombra las columnas para cumplir con los requisitos de Prophet
-    df.rename(columns={'fecha': 'ds', 'cantidad_real': 'y', 'producto_id': 'producto'}, inplace=True)
+    # Convertir la fecha de inicio en un objeto datetime
+    fecha_inicio = pd.to_datetime(fecha_inicio)
 
-    # Convertir el 'producto_id' a una variable categórica si aún no lo es
-    df['producto'] = df['producto'].astype('category')
+    # Generar las fechas para el número de periodos especificado
+    fechas = pd.date_range(start=fecha_inicio, periods=num_periodos, freq='W')
 
-    # Convirtiendo las categorías en códigos para que Prophet pueda manejarlas como regresores numéricos
-    df['producto'] = df['producto'].cat.codes
+    # Crear un DataFrame a partir del rango de fechas
+    df_fechas = pd.DataFrame(fechas, columns=['fecha'])
 
-    # Selecciona solo las columnas necesarias para el modelo
-    df_modelo = df[['ds', 'y', 'producto']]
+    # Convertir las fechas a tipo 'Period' semanal
+    df_fechas['fecha'] = df_fechas['fecha'].dt.to_period('W')
 
-    split_point = int(len(df) * 0.8)
-    train_df = df_modelo[:split_point]
-    test_df = df_modelo[split_point:]
+    # Crear un DataFrame con todas las combinaciones de productos y fechas
+    df_prediccion = pd.merge(df_productos.assign(key=0), df_fechas.assign(key=0), on='key').drop('key', axis=1)
 
-    return train_df,test_df
+    # Seleccionar solo las columnas 'fecha' y 'producto_id'
+    df_prediccion = df_prediccion[['fecha', 'producto_id']]
 
-def preparate_inference_data(start_date_str, df_productos, num_periods):
-    """
-        Prepare data for Prophet model forecasts for multiple products and dates.
+    # Resetear el índice si es necesario
+    df_prediccion = df_prediccion.reset_index(drop=True)
 
-        Args:
-        start_date_str (str): The start date for predictions in 'YYYYY-MM-DD' format.
-        df_productos (DataFrame): DataFrame with the list of products.
-        num_periods (int): Number of days to generate dates from the start date.
-
-        Returns:
-            DataFrame: A DataFrame ready to use in Prophet predictions.
-        """
-    #red neuronal
-    # Generar fechas para la predicción
-    fechas_prediccion = pd.date_range(start=start_date_str, periods=num_periods)
-
-    # Crear un dataframe para cada combinación de fecha y producto
-    df_prediccion = pd.DataFrame([(fecha, prod) for fecha in fechas_prediccion for prod in df_productos['producto_id']],
-                                 columns=['fecha', 'producto_id'])
-
-    # Convertir el 'producto_id' a una variable categórica si aún no lo es
-    df_prediccion['producto_id'] = df_prediccion['producto_id'].astype('category')
-
-    # Convertir la columna de fecha a timestamps numéricos
-    df_prediccion['fecha'] = pd.to_datetime(df_prediccion['fecha']).astype(np.int64) // 10 ** 9
-
-    return df_prediccion
-
-
-def preparate_inference_data_prophet(start_date_str, df_productos, num_periods):
-    """
-        Prepare data for Prophet model forecasts for multiple products and dates.
-
-        Args:
-        start_date_str (str): The start date for predictions in 'YYYYY-MM-DD' format.
-        df_productos (DataFrame): DataFrame with the list of products.
-        num_periods (int): Number of days to generate dates from the start date.
-
-        Returns:
-            DataFrame: A DataFrame ready to use in Prophet predictions.
-        """
-    #prophet
-    # Convert start_date from str to datetime
-    start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
-    # Generate a range of future dates
-    fechas_futuras = [start_date + timedelta(days=x) for x in range(num_periods)]
-    df_fechas_futuras = pd.DataFrame(fechas_futuras, columns=['ds'])
-
-    # Create a DataFrame with all date and product combinations
-    df_prediccion = pd.merge(df_fechas_futuras.assign(key=1), df_productos.assign(key=1), on='key').drop('key', axis=1)
-
-    # Renombra las columnas para cumplir con los requisitos de Prophet
-    df_prediccion.rename(columns={'producto_id': 'producto'}, inplace=True)
-
-    # Convertir el 'producto_id' a una variable categórica si aún no lo es
-    df_prediccion['producto'] = df_prediccion['producto'].astype('category')
-
-    # Convirtiendo las categorías en códigos para que Prophet pueda manejarlas como regresores numéricos
-    df_prediccion['producto'] = df_prediccion['producto'].cat.codes
-
-    # Selecciona solo las columnas necesarias para el modelo
-    df_prediccion = df_prediccion[['ds','producto']]
+    # Convertir 'fecha' a string y luego a datetime para emular la estructura de 'preparate_train_data'
+    df_prediccion['fecha'] = df_prediccion['fecha'].astype(str).str.split('/').str[-1]
+    df_prediccion['fecha'] = pd.to_datetime(df_prediccion['fecha'])
 
     return df_prediccion
 

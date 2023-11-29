@@ -9,36 +9,36 @@ import type { proveedor, proveedorId } from './proveedor';
 export interface productosbodegaAttributes {
   producto_bodega_id: number;
   proveedor_id: number;
-  peso_id: number;
+  peso_proveedor_id: number;
   nombre_producto: string;
   cantidad_actual?: number;
   cantidad_minima?: number;
   cantidad_maxima?: number;
-  tipo: string;
+  tipo?: 'liquidos' | 'solidos';
   precio_proveedor?: number;
 }
 
 export type productosbodegaPk = "producto_bodega_id";
 export type productosbodegaId = productosbodega[productosbodegaPk];
-export type productosbodegaOptionalAttributes = "producto_bodega_id" | "cantidad_actual" | "cantidad_minima" | "cantidad_maxima" | "precio_proveedor";
+export type productosbodegaOptionalAttributes = "producto_bodega_id" | "cantidad_actual" | "cantidad_minima" | "cantidad_maxima" | "tipo" | "precio_proveedor";
 export type productosbodegaCreationAttributes = Optional<productosbodegaAttributes, productosbodegaOptionalAttributes>;
 
 export class productosbodega extends Model<productosbodegaAttributes, productosbodegaCreationAttributes> implements productosbodegaAttributes {
   producto_bodega_id!: number;
   proveedor_id!: number;
-  peso_id!: number;
+  peso_proveedor_id!: number;
   nombre_producto!: string;
   cantidad_actual?: number;
   cantidad_minima?: number;
   cantidad_maxima?: number;
-  tipo!: string;
+  tipo?: 'liquidos' | 'solidos';
   precio_proveedor?: number;
 
-  // productosbodega belongsTo peso via peso_id
-  peso!: peso;
-  getPeso!: Sequelize.BelongsToGetAssociationMixin<peso>;
-  setPeso!: Sequelize.BelongsToSetAssociationMixin<peso, pesoId>;
-  createPeso!: Sequelize.BelongsToCreateAssociationMixin<peso>;
+  // productosbodega belongsTo peso via peso_proveedor_id
+  peso_proveedor!: peso;
+  getPeso_proveedor!: Sequelize.BelongsToGetAssociationMixin<peso>;
+  setPeso_proveedor!: Sequelize.BelongsToSetAssociationMixin<peso, pesoId>;
+  createPeso_proveedor!: Sequelize.BelongsToCreateAssociationMixin<peso>;
   // productosbodega hasMany detalleordenes via producto_bodega_id
   detalleordenes!: detalleordenes[];
   getDetalleordenes!: Sequelize.HasManyGetAssociationsMixin<detalleordenes>;
@@ -97,7 +97,7 @@ export class productosbodega extends Model<productosbodegaAttributes, productosb
         key: 'proveedor_id'
       }
     },
-    peso_id: {
+    peso_proveedor_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -125,8 +125,9 @@ export class productosbodega extends Model<productosbodegaAttributes, productosb
       defaultValue: 0.00
     },
     tipo: {
-      type: DataTypes.CHAR(10),
-      allowNull: false
+      type: DataTypes.ENUM('liquidos','solidos'),
+      allowNull: true,
+      defaultValue: "solidos"
     },
     precio_proveedor: {
       type: DataTypes.DECIMAL(6,2),
@@ -154,10 +155,10 @@ export class productosbodega extends Model<productosbodegaAttributes, productosb
         ]
       },
       {
-        name: "fk_peso_producto_bodega",
+        name: "fk_peso_proveedor_id_producto_bodega",
         using: "BTREE",
         fields: [
-          { name: "peso_id" },
+          { name: "peso_proveedor_id" },
         ]
       },
     ]

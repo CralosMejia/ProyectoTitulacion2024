@@ -8,17 +8,19 @@ export interface pesoAttributes {
   peso_id: number;
   unidad: string;
   simbolo: string;
+  tipo?: 'liquidos' | 'solidos';
 }
 
 export type pesoPk = "peso_id";
 export type pesoId = peso[pesoPk];
-export type pesoOptionalAttributes = "peso_id";
+export type pesoOptionalAttributes = "peso_id" | "tipo";
 export type pesoCreationAttributes = Optional<pesoAttributes, pesoOptionalAttributes>;
 
 export class peso extends Model<pesoAttributes, pesoCreationAttributes> implements pesoAttributes {
   peso_id!: number;
   unidad!: string;
   simbolo!: string;
+  tipo?: 'liquidos' | 'solidos';
 
   // peso hasMany conversionpeso via peso_id_origen
   conversionpesos!: conversionpeso[];
@@ -56,7 +58,7 @@ export class peso extends Model<pesoAttributes, pesoCreationAttributes> implemen
   hasIngredientesporplato!: Sequelize.HasManyHasAssociationMixin<ingredientesporplato, ingredientesporplatoId>;
   hasIngredientesporplatos!: Sequelize.HasManyHasAssociationsMixin<ingredientesporplato, ingredientesporplatoId>;
   countIngredientesporplatos!: Sequelize.HasManyCountAssociationsMixin;
-  // peso hasMany productosbodega via peso_id
+  // peso hasMany productosbodega via peso_proveedor_id
   productosbodegas!: productosbodega[];
   getProductosbodegas!: Sequelize.HasManyGetAssociationsMixin<productosbodega>;
   setProductosbodegas!: Sequelize.HasManySetAssociationsMixin<productosbodega, productosbodegaId>;
@@ -84,6 +86,11 @@ export class peso extends Model<pesoAttributes, pesoCreationAttributes> implemen
     simbolo: {
       type: DataTypes.STRING(50),
       allowNull: false
+    },
+    tipo: {
+      type: DataTypes.ENUM('liquidos','solidos'),
+      allowNull: true,
+      defaultValue: "solidos"
     }
   }, {
     sequelize,

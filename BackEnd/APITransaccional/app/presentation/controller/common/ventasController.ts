@@ -13,7 +13,6 @@ export const loadVentas = async (req: Request, res: Response): Promise<Response>
 
     try {
         const resp = await ventassServ.addMultipleSales(ventas);
-        console.log(`Created correctly: ${JSON.stringify(resp)}`);
         return res.status(200).json(resp);
     } catch (error) {
         console.error('Error when loading sales:', error);

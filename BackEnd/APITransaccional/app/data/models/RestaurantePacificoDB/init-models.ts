@@ -76,8 +76,8 @@ export function initModels(sequelize: Sequelize) {
   peso.hasMany(conversionpeso, { as: "peso_id_destino_conversionpesos", foreignKey: "peso_id_destino"});
   ingredientesporplato.belongsTo(peso, { as: "peso", foreignKey: "peso_id"});
   peso.hasMany(ingredientesporplato, { as: "ingredientesporplatos", foreignKey: "peso_id"});
-  productosbodega.belongsTo(peso, { as: "peso", foreignKey: "peso_id"});
-  peso.hasMany(productosbodega, { as: "productosbodegas", foreignKey: "peso_id"});
+  productosbodega.belongsTo(peso, { as: "peso_proveedor", foreignKey: "peso_proveedor_id"});
+  peso.hasMany(productosbodega, { as: "productosbodegas", foreignKey: "peso_proveedor_id"});
   ingredientesporplato.belongsTo(platos, { as: "plato", foreignKey: "plato_id"});
   platos.hasMany(ingredientesporplato, { as: "ingredientesporplatos", foreignKey: "plato_id"});
   ventas.belongsTo(platos, { as: "plato", foreignKey: "plato_id"});
