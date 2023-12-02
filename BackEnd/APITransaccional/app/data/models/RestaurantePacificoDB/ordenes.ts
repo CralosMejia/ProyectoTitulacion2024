@@ -8,11 +8,12 @@ export interface ordenesAttributes {
   estado?: 'En espera' | 'Enviado' | 'Cancelado' | 'Aprobado' | 'Recibido';
   estado_edicion?: number;
   total?: number;
+  modo_creacion?: 'Manual' | 'Automatico';
 }
 
 export type ordenesPk = "orden_id";
 export type ordenesId = ordenes[ordenesPk];
-export type ordenesOptionalAttributes = "orden_id" | "estado" | "estado_edicion" | "total";
+export type ordenesOptionalAttributes = "orden_id" | "estado" | "estado_edicion" | "total" | "modo_creacion";
 export type ordenesCreationAttributes = Optional<ordenesAttributes, ordenesOptionalAttributes>;
 
 export class ordenes extends Model<ordenesAttributes, ordenesCreationAttributes> implements ordenesAttributes {
@@ -21,6 +22,7 @@ export class ordenes extends Model<ordenesAttributes, ordenesCreationAttributes>
   estado?: 'En espera' | 'Enviado' | 'Cancelado' | 'Aprobado' | 'Recibido';
   estado_edicion?: number;
   total?: number;
+  modo_creacion?: 'Manual' | 'Automatico';
 
   // ordenes hasMany detalleordenes via orden_id
   detalleordenes!: detalleordenes[];
@@ -61,6 +63,11 @@ export class ordenes extends Model<ordenesAttributes, ordenesCreationAttributes>
       type: DataTypes.DECIMAL(6,2),
       allowNull: true,
       defaultValue: 0.00
+    },
+    modo_creacion: {
+      type: DataTypes.ENUM('Manual','Automatico'),
+      allowNull: true,
+      defaultValue: "Manual"
     }
   }, {
     sequelize,

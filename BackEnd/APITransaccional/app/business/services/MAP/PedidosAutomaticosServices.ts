@@ -60,7 +60,7 @@ export class PedidoAutomaticoService {
 
             // Create the order
             const pedido: any = {
-                // Define the order object structure here
+                modo_creacion:'Automatico'
             };
 
             return await this.pedidosService.createOrdenComplete(pedido, detallesPedido);

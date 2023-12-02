@@ -13,6 +13,7 @@ import * as modelDataScience from './app/data/models/DataScienceDB/init-models'
 import { routerMGPAA } from './app/presentation/routes/MGPAAB/mgpaabRoutes';
 import { routerMAP } from './app/presentation/routes/MAP/mapRoutes';
 import { routerVentas } from './app/presentation/routes/common/ventasRoutes';
+import { routerMVD } from './app/presentation/routes/MVD/mvdRoutes';
 
 
 
@@ -41,6 +42,7 @@ app.use('/api/orden',getCrudRouter('Ordenes'))
 app.use('/api/mipp',routerMIPP)
 app.use('/api/mgpaab',routerMGPAA)
 app.use('/api/map',routerMAP)
+app.use('/api/mvd',routerMVD)
 app.use('/api/common/ventas',routerVentas)
 
 
