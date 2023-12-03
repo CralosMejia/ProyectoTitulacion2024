@@ -28,7 +28,7 @@ export class PedidoAutomaticoService {
      * @param fechaEspecifica - The specific date for which to generate orders.
      * @returns The result of creating the order based on predicted demand.
      */
-    async crearPedidosAutomaticos(fechaEspecifica: string){
+    async createAutomaticOrders(fechaEspecifica: string){
         try {
             const fechaHoyFormat = new Date(fechaEspecifica).toISOString().split('T')[0];
 

@@ -15,7 +15,8 @@ import { routerMAP } from './app/presentation/routes/MAP/mapRoutes';
 import { routerVentas } from './app/presentation/routes/common/ventasRoutes';
 import { routerMVD } from './app/presentation/routes/MVD/mvdRoutes';
 
-
+//Jobs imports
+import { initializeJobs } from './config/jobsInitializer';
 
 dotenv.config();
 
@@ -45,6 +46,9 @@ app.use('/api/map',routerMAP)
 app.use('/api/mvd',routerMVD)
 app.use('/api/common/ventas',routerVentas)
 
+
+// Inicializar cron jobs
+initializeJobs();
 
 
 

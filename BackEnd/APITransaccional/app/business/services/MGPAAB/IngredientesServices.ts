@@ -31,7 +31,7 @@ export class IngredientesServices{
         let loteExpirationDate = new Date(lote.fecha_vencimiento);
     
         if (loteExpirationDate.getTime() <= currentDate.getTime()) {
-            throw new Error('La fecha de vencimiento es menor o igual a la fecha actual');
+            throw new Error('The expiration date is less than or equal to the current date');
         }
 
         lote.fecha_ingreso = currentDateISO;

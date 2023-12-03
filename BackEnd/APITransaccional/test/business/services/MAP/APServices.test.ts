@@ -17,7 +17,7 @@ describe('PedidosAutomaticosServices', () => {
         let errorOccurred = false;
 
         try {
-            await paServices.crearPedidosAutomaticos('2023-01-01');
+            await paServices.createAutomaticOrders('2023-01-01');
         } catch (error) {
             errorOccurred = true;
             console.error('Error during test:', error);
