@@ -1,13 +1,16 @@
+import { injectable } from "inversify";
 import { dimfecha } from "../../../data/models/DataScienceDB/dimfecha";
 import { dimproducto } from "../../../data/models/DataScienceDB/dimproducto";
 import { hechosdemandaproducto } from "../../../data/models/DataScienceDB/hechosdemandaproducto";
 import { EntrieRepository } from "../../../data/repository/entrieRepository";
+import { Observable } from "../common/Observable";
 import { PedidosServices } from "./PedidosServices";
 
 /**
  * Service class for automatically generating orders based on predicted demand.
  */
-export class PedidoAutomaticoService {
+@injectable()
+export class PedidoAutomaticoService extends Observable {
     // Repositories for relevant tables
     private repositoryFecha: EntrieRepository<dimfecha>;
     private repositoryProducto: EntrieRepository<dimproducto>;
@@ -16,6 +19,7 @@ export class PedidoAutomaticoService {
     private pedidosService: PedidosServices;
 
     constructor() {
+        super();
         this.repositoryFecha = new EntrieRepository(dimfecha);
         this.repositoryProducto = new EntrieRepository(dimproducto);
         this.repositoryDemanda = new EntrieRepository(hechosdemandaproducto);
@@ -63,7 +67,10 @@ export class PedidoAutomaticoService {
                 modo_creacion:'Automatico'
             };
 
-            return await this.pedidosService.createOrdenComplete(pedido, detallesPedido);
+            const orderComplete=await this.pedidosService.createOrdenComplete(pedido, detallesPedido);
+            if(orderComplete !== null) this.notify(orderComplete)
+
+            return orderComplete
         } catch (error) {
             console.error('Error while creating automatic orders:', error);
             throw error;

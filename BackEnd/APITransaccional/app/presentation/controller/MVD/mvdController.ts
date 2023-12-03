@@ -1,5 +1,9 @@
 import { Request, Response } from 'express';
 import { VisualizationManagerServices } from '../../../business/services/MVD/VisualizationManagerServices';
+import { container } from '../../../../config/inversify.config';
+
+const gmServices = container.get<VisualizationManagerServices>(VisualizationManagerServices)
+
 
 /**
  * Retrieves data for a demand prediction graphic.
@@ -8,7 +12,6 @@ import { VisualizationManagerServices } from '../../../business/services/MVD/Vis
  * @param res - The response object used to send back the data for plotting or an error message.
  */
 export const getGraficPredictionDemand = async (req: Request, res: Response): Promise<Response> => {
-    const gmServices = new VisualizationManagerServices();
     const {id,fechaDesde,fechaHasta} = req.body;
 
     try {
@@ -28,7 +31,6 @@ export const getGraficPredictionDemand = async (req: Request, res: Response): Pr
  * @param res - The response object used to send back the sales trend data or an error message.
  */
 export const getGraficTrendSales = async (req: Request, res: Response): Promise<Response> => {
-    const gmServices = new VisualizationManagerServices();
     const {id,fechaDesde,fechaHasta} = req.body;
 
     try {
@@ -48,7 +50,6 @@ export const getGraficTrendSales = async (req: Request, res: Response): Promise<
  * @param res - The response object used to send back the inventory data or an error message.
  */
 export const getinventoryProduct = async (req: Request, res: Response): Promise<Response> => {
-    const gmServices = new VisualizationManagerServices();
     const {id} = req.params;
 
     try {
@@ -68,7 +69,6 @@ export const getinventoryProduct = async (req: Request, res: Response): Promise<
  * @param res - The response object used to send back the order summary or an error message.
  */
 export const getOrdenesState = async (req: Request, res: Response): Promise<Response> => {
-    const gmServices = new VisualizationManagerServices();
     const {fechaDesde,fechaHasta} = req.body;
 
     try {

@@ -1,3 +1,4 @@
+import { injectable } from "inversify";
 import { OrderStatus } from "../../../data/models/AuxModels/OrderStatus";
 import { detalleordenes } from "../../../data/models/RestaurantePacificoDB/detalleordenes";
 import { ordenes } from "../../../data/models/RestaurantePacificoDB/ordenes";
@@ -8,6 +9,7 @@ import { ValidatorPedidosServices } from "../../validators/MAP/validatorPedidosS
 /**
  * Service class for managing orders and order details in a restaurant.
  */
+@injectable()
 export class PedidosServices{
 
     private readonly repositoryOrdenes: EntrieRepository<ordenes>;

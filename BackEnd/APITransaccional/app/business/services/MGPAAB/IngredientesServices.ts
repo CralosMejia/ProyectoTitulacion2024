@@ -1,17 +1,26 @@
+import { injectable } from "inversify";
 import { lotes } from "../../../data/models/RestaurantePacificoDB/lotes";
 import { productosbodega } from "../../../data/models/RestaurantePacificoDB/productosbodega";
 import { EntrieRepository } from "../../../data/repository/entrieRepository";
+import dotenv from 'dotenv';
+import { Observable } from "../common/Observable";
 
+dotenv.config();
+  
 /**
  * Service class for managing 'ingredientes' (ingredients) and related entities.
  */
-export class IngredientesServices{
+@injectable()
+export class IngredientesServices extends Observable{
     
     private readonly repositoryProductoBodega: EntrieRepository<productosbodega>;
     private readonly repositoryLotes: EntrieRepository<lotes>;
+    private DIFMINORMAX:number = Number(process.env.DIFMINORMAX) || 5;
+    private DIFDAYSTOEXPIRED:number = Number(process.env.DIFDAYSTOEXPIRED) || 2;
 
 
     constructor(){
+        super()
         this.repositoryProductoBodega =  new EntrieRepository(productosbodega);
         this.repositoryLotes =  new EntrieRepository(lotes);
 
@@ -64,7 +73,8 @@ export class IngredientesServices{
      * @param daysBeforeExpire - The number of days before expiration to filter the lotes.
      * @returns An array of lotes that are about to expire.
      */
-    async getLotestoExpire(daysBeforeExpire: number) {
+    async getLotestoExpire() {
+        const daysBeforeExpire = this.DIFDAYSTOEXPIRED;
         let currentDate = new Date();
     
         // Establecer la fecha límite para 'diasAntesCaducidad' días a partir de ahora
@@ -78,6 +88,9 @@ export class IngredientesServices{
             let loteExpirationDate = new Date(lote.fecha_vencimiento);
             return loteExpirationDate > currentDate && loteExpirationDate <= limitDate;
         });
+
+        if(lotesToExpire !== null ) this.notify(lotesToExpire)
+
     
         return lotesToExpire;
     }
@@ -88,7 +101,8 @@ export class IngredientesServices{
      * @param difference - The quantity difference from the minimum stock level to consider.
      * @returns An array of products near or below their minimum stock level.
      */
-    async getProductsNearOrBelowMinimum(difference: number) {
+    async getProductsNearOrBelowMinimum() {
+        const difference = this.DIFMINORMAX;
         // Get all products from the repository
         const allProducts = await this.repositoryProductoBodega.getAll();
     
@@ -110,7 +124,8 @@ export class IngredientesServices{
      * @param difference - The quantity difference from the maximum stock level to consider.
      * @returns An array of products near or above their maximum stock level.
      */
-    async getProductsNearOrAboveMaximum(difference: number) {
+    async getProductsNearOrAboveMaximum() {
+        const difference = this.DIFMINORMAX;
         // Get all products from the repository
         const allProducts = await this.repositoryProductoBodega.getAll();
     

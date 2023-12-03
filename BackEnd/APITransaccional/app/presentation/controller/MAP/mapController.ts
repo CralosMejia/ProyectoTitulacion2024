@@ -1,6 +1,8 @@
+import { container } from "../../../../config/inversify.config";
 import { PedidosServices } from "../../../business/services/MAP/PedidosServices";
 import { Request, Response } from 'express';
 
+const pedidosServ = container.get<PedidosServices>(PedidosServices)
 
 /**
  * Creates a complete order with its details.
@@ -9,7 +11,6 @@ import { Request, Response } from 'express';
  * @param res - The response object used to send back the created order data or an error message.
  */
 export const create = async (req: Request, res: Response): Promise<Response> => {
-    const pedidosServ = new PedidosServices();
     const orden = req.body.orden;
     const detalleOrden = req.body.detallesOrden;
 
@@ -30,7 +31,6 @@ export const create = async (req: Request, res: Response): Promise<Response> => 
  * @param res - The response object used to send back the order information or an error message.
  */
 export const getOrdenComplete = async (req: Request, res: Response): Promise<Response> => {
-    const pedidosServ = new PedidosServices();
     const {id} = req.params
 
     try {
@@ -50,7 +50,6 @@ export const getOrdenComplete = async (req: Request, res: Response): Promise<Res
  * @param res - The response object used to send back the updated order detail or an error message.
  */
 export const updatedetalleOrden = async (req: Request, res: Response): Promise<Response> => {
-    const pedidosServ = new PedidosServices();
     const {id} = req.params
     const detalleOrd= req.body
 
@@ -72,7 +71,6 @@ export const updatedetalleOrden = async (req: Request, res: Response): Promise<R
  */
 
 export const createdetalleOrden = async (req: Request, res: Response): Promise<Response> => {
-    const pedidosServ = new PedidosServices();
     const detalleOrden= req.body
 
     try {
@@ -92,7 +90,6 @@ export const createdetalleOrden = async (req: Request, res: Response): Promise<R
  * @param res - The response object used to confirm the deletion or send an error message.
  */
 export const deletedetalleOrden = async (req: Request, res: Response): Promise<Response> => {
-    const pedidosServ = new PedidosServices();
     const {id} = req.params
 
     try {
@@ -112,7 +109,6 @@ export const deletedetalleOrden = async (req: Request, res: Response): Promise<R
  * @param res - The response object used to confirm the status change or send an error message.
  */
 export const updateOrdenState = async (req: Request, res: Response): Promise<Response> => {
-    const pedidosServ = new PedidosServices();
     const {id} = req.params
     const orden= req.body.estado
 
@@ -133,7 +129,6 @@ export const updateOrdenState = async (req: Request, res: Response): Promise<Res
  * @param res - The response object used to confirm the completion or send an error message.
  */
 export const finalizeOrder = async (req: Request, res: Response): Promise<Response> => {
-    const pedidosServ = new PedidosServices();
     const {id} = req.params
 
     try {

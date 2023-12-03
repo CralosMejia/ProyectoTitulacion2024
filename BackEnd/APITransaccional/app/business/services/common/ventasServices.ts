@@ -1,10 +1,12 @@
 import { ventas } from "../../../data/models/RestaurantePacificoDB/ventas";
 import { platos } from "../../../data/models/RestaurantePacificoDB/platos"; // Import the Platos model
 import { EntrieRepository } from "../../../data/repository/entrieRepository";
+import { injectable } from "inversify";
 
 /**
  * Service class for managing 'ventas' (sales) and related entities.
  */
+@injectable()
 export class VentasServices {
     private readonly repositoryVentas: EntrieRepository<ventas>;
     private readonly repositoryPlatos: EntrieRepository<platos>; // Repository for Platos

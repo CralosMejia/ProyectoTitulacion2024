@@ -1,6 +1,8 @@
+import { container } from "../../../../config/inversify.config";
 import { IngredientesServices } from "../../../business/services/MGPAAB/IngredientesServices";
 import { Request, Response } from 'express';
 
+const ingredientesServ = container.get<IngredientesServices>(IngredientesServices);
 
 /**
  * Creates a new lote (batch) of ingredients.
@@ -10,7 +12,6 @@ import { Request, Response } from 'express';
  * @returns A promise resolving to the response object.
  */
 export const createLote = async (req: Request, res: Response): Promise<Response> => {
-    const ingredientesServ = new IngredientesServices();
     const lote = req.body;
 
     try {
@@ -31,7 +32,6 @@ export const createLote = async (req: Request, res: Response): Promise<Response>
  * @returns A promise resolving to the response object.
  */
 export const getExpiredLotes = async (_req: Request, res: Response): Promise<Response> => {
-    const ingredientesServ = new IngredientesServices();
 
     try {
         const resp = await ingredientesServ.getExpiredLotes();
@@ -50,10 +50,9 @@ export const getExpiredLotes = async (_req: Request, res: Response): Promise<Res
  * @returns A promise resolving to the response object.
  */
 export const getLotesToExpire = async (_req: Request, res: Response): Promise<Response> => {
-    const ingredientesServ = new IngredientesServices();
 
     try {
-        const resp = await ingredientesServ.getLotestoExpire(2);
+        const resp = await ingredientesServ.getLotestoExpire();
         return res.status(200).json(resp);
     } catch (error) {
         console.error('error when gettinglotes to expireexpired lote:', error);
@@ -69,10 +68,9 @@ export const getLotesToExpire = async (_req: Request, res: Response): Promise<Re
  * @returns A promise resolving to the response object.
  */
 export const getProductsNearOrBelowMinimum = async (_req: Request, res: Response): Promise<Response> => {
-    const ingredientesServ = new IngredientesServices();
 
     try {
-        const resp = await ingredientesServ.getProductsNearOrBelowMinimum(2);
+        const resp = await ingredientesServ.getProductsNearOrBelowMinimum();
         return res.status(200).json(resp);
     } catch (error) {
         console.error('error when gettinglotes to expireexpired lote:', error);
@@ -89,10 +87,9 @@ export const getProductsNearOrBelowMinimum = async (_req: Request, res: Response
  * @returns A promise resolving to the response object.
  */
 export const getProductsNearOrAboveMaximum = async (_req: Request, res: Response): Promise<Response> => {
-    const ingredientesServ = new IngredientesServices();
 
     try {
-        const resp = await ingredientesServ.getProductsNearOrAboveMaximum(2);
+        const resp = await ingredientesServ.getProductsNearOrAboveMaximum();
         return res.status(200).json(resp);
     } catch (error) {
         console.error('error when gettinglotes to expireexpired lote:', error);
@@ -108,7 +105,6 @@ export const getProductsNearOrAboveMaximum = async (_req: Request, res: Response
  * @returns A promise resolving to the response object.
  */
 export const searchProduct = async (req: Request, res: Response): Promise<Response> => {
-    const ingredientesServ = new IngredientesServices();
     const{paramSeacrh,atributeSearch} = req.body
 
     try {

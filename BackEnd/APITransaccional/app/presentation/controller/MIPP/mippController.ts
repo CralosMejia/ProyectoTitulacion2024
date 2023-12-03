@@ -1,5 +1,9 @@
 import { Request, Response } from 'express';
 import { PlatosServices } from '../../../business/services/MIPP/platoServices';
+import { container } from '../../../../config/inversify.config';
+
+
+const platosServ = container.get<PlatosServices>(PlatosServices)
 
 /**
  * Creates a new plato (dish) along with its ingredients.
@@ -8,7 +12,6 @@ import { PlatosServices } from '../../../business/services/MIPP/platoServices';
  * @param res - The response object used to send back the created plato data or an error message.
  */
 export const create = async (req: Request, res: Response): Promise<Response> => {
-    const platosServ = new PlatosServices();
     const plato = req.body.plato;
     const ingredientesList = req.body.ingredientes;
 
@@ -30,7 +33,6 @@ export const create = async (req: Request, res: Response): Promise<Response> => 
  * @returns A promise resolving to the response object.
  */
 export const createMultiple = async (req: Request, res: Response): Promise<Response> => {
-    const platosServ = new PlatosServices();
     const platos = req.body;
 
     try {
@@ -50,7 +52,6 @@ export const createMultiple = async (req: Request, res: Response): Promise<Respo
  * @param res - The response object used to send back the platos data or an error message.
  */
 export const getInfoPlatos = async (_req: Request, res: Response): Promise<Response> => {
-    const platosServ = new PlatosServices();
 
     try {
         const resp = await platosServ.showInfoPlatos();
@@ -68,7 +69,6 @@ export const getInfoPlatos = async (_req: Request, res: Response): Promise<Respo
  * @param res - The response object used to confirm the deletion or send an error message.
  */
 export const deletePlatoComplete = async (req: Request, res: Response): Promise<Response> => {
-    const platosServ = new PlatosServices();
     const { id } = req.params;
 
     try {

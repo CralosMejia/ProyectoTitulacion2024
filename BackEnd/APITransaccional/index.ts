@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import express, { Express} from 'express';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
@@ -15,8 +16,9 @@ import { routerMAP } from './app/presentation/routes/MAP/mapRoutes';
 import { routerVentas } from './app/presentation/routes/common/ventasRoutes';
 import { routerMVD } from './app/presentation/routes/MVD/mvdRoutes';
 
-//Jobs imports
+//CONFIGS IMPORTS
 import { initializeJobs } from './config/jobsInitializer';
+import { configureObservers } from './config/observerConfig';
 
 dotenv.config();
 
@@ -50,6 +52,8 @@ app.use('/api/common/ventas',routerVentas)
 // Inicializar cron jobs
 initializeJobs();
 
+//Config observer pattern
+configureObservers();
 
 
 

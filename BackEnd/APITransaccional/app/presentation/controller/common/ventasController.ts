@@ -1,5 +1,9 @@
 import { Request, Response } from 'express';
 import { VentasServices } from '../../../business/services/common/ventasServices';
+import { container } from '../../../../config/inversify.config';
+
+const ventassServ = container.get<VentasServices>(VentasServices)
+
 
 /**
  * Loads multiple sales into the database.
@@ -8,7 +12,6 @@ import { VentasServices } from '../../../business/services/common/ventasServices
  * @param res - The response object used to send back the result of the sales loading or an error message.
  */
 export const loadVentas = async (req: Request, res: Response): Promise<Response> => {
-    const ventassServ = new VentasServices();
     const ventas = req.body;
 
     try {

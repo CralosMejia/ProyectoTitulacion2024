@@ -1,3 +1,4 @@
+import { injectable } from "inversify";
 import { ingredientesporplato } from "../../../data/models/RestaurantePacificoDB/ingredientesporplato";
 import { platos } from "../../../data/models/RestaurantePacificoDB/platos";
 import { productosbodega } from "../../../data/models/RestaurantePacificoDB/productosbodega";
@@ -7,6 +8,7 @@ import { ValidatorPlatosServices } from "../../validators/MIPP/validatorPlatosSe
 /**
  * Service class for managing 'platos' (dishes) and their related entities.
  */
+@injectable()
 export class PlatosServices {
 
     private readonly validator: ValidatorPlatosServices;

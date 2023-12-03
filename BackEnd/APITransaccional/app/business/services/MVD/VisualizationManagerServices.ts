@@ -1,3 +1,4 @@
+import { injectable } from "inversify";
 import { dimfecha } from "../../../data/models/DataScienceDB/dimfecha";
 import { dimplato } from "../../../data/models/DataScienceDB/dimplato";
 import { hechosdemandaproducto } from "../../../data/models/DataScienceDB/hechosdemandaproducto";
@@ -10,6 +11,7 @@ import { ValidatorVisualizationManagerServices } from "../../validators/MVD/Vali
 /**
  * Service class for managing and retrieving various data visualizations.
  */
+@injectable()
 export class VisualizationManagerServices{
 
     private repositoryFecha: EntrieRepository<dimfecha>;
