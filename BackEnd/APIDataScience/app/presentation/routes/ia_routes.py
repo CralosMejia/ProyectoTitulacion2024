@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from api.controller.ia_controller import train_model_api_linear_regresion, validate_model_api_linear_regresion
+from app.presentation.controller import train_model_api_linear_regresion, validate_model_api_linear_regresion
 import json
 
 

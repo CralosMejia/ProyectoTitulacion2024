@@ -2,8 +2,8 @@ import pandas as pd
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from business.etl.utils.etl_funtions import find_peso_id_by_ingredienteid, find_value_by_two_ids, get_id_by_dates, \
-    exists_row_in_df, get_value_in_df_by_list, update_value_by_filters, exists_date_in_df
+from app.business.etl.utils.etl_funtions import find_peso_id_by_ingredienteid, find_value_by_two_ids, get_id_by_dates, \
+    exists_row_in_df, get_value_in_df_by_list, update_value_by_filters
 
 
 def transform_demanda(ses_db_etls: Session):

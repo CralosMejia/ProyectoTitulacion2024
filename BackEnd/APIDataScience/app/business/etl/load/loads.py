@@ -4,9 +4,9 @@ import pandas as pd
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from business.etl.utils.etl_funtions import exists_row_in_df, get_value_in_df_by_list, exists_date_in_df, \
+from app.business.etl.utils.etl_funtions import exists_row_in_df, get_value_in_df_by_list, exists_date_in_df, \
     exists_value_in_df_by_column
-from data.Models.DataScienceDBModels import Dimfecha, Hechosdemandaproducto
+from app.data.Models.DataScienceDBModels import Dimfecha, Hechosdemandaproducto
 
 
 def load_demanda_producto_facts(ses_db_etls: Session, ses_db_data_science: Session, table_name_extraction: str, table_name_load: str):

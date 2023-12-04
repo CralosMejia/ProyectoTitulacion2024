@@ -1,10 +1,11 @@
 import time
 
-from business.etl.load.loads import *
-from business.etl.transform.transformations import *
-from business.etl.utils.etl_funtions import extract_load_function
-from data.GenericRepository import GenericRepository
-from data.Models.DataScienceDBModels import Dimfecha, Hechosdemandaproducto,Hechosventaplato,Hechosestadopedido
+from app.business.etl.load.loads import load_fecha_dim, load_plato_dim, load_unidad_medida_dim, load_producto_dim, \
+    load_venta_platos_facts, load_demanda_producto_facts
+from app.business.etl.transform.transformations import *
+from app.business.etl.utils.etl_funtions import extract_load_function
+from app.data.GenericRepository import GenericRepository
+from app.data.Models.DataScienceDBModels import Dimfecha, Hechosdemandaproducto,Hechosventaplato,Hechosestadopedido
 
 
 class ETL:

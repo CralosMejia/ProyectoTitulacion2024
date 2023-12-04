@@ -2,7 +2,6 @@ import os
 import time
 import pandas as pd
 import pickle
-from datetime import datetime
 from sqlalchemy import func
 
 
@@ -16,8 +15,8 @@ from window_ops.ewm import ewm_mean
 from window_ops.rolling import rolling_min, rolling_max
 from xgboost import XGBRegressor
 
-from data.GenericRepository import GenericRepository
-from data.Models.DataScienceDBModels import Dimfecha, Hechosdemandaproducto
+from app.data.GenericRepository import GenericRepository
+from app.data.Models.DataScienceDBModels import Dimfecha, Hechosdemandaproducto
 
 
 class IAManager:
@@ -26,8 +25,11 @@ class IAManager:
         self.model = None
         self.repoFecha= GenericRepository(ses_db_data_science, Dimfecha)
         self.repoDemanda=GenericRepository(ses_db_data_science, Hechosdemandaproducto)
+        self.df_fecha = pd.read_sql(f'SELECT * FROM DimFecha', con=ses_db_data_science.bind)
+        self.df_producto = pd.read_sql(f'SELECT * FROM DimProducto', con=ses_db_data_science.bind)
+        self.df_demanda = pd.read_sql(f'SELECT * FROM HechosDemandaProducto', con=ses_db_data_science.bind)
 
-    def preparate_train_data(self, df_fecha, df_producto, df_demanda):
+    def preparate_train_data(self):
         """
         Prepares data to be sent to the AI model for training or validation.
 
@@ -40,9 +42,9 @@ class IAManager:
             DataFrame: A DataFrame with the structure and data needed to train the model.
         """
         # Unir los dataframes
-        df_merged = pd.merge(df_demanda[['fecha_id', 'producto_id', 'cantidad_real']],
-                             df_fecha[['fecha_id', 'fecha']], on='fecha_id')
-        df_merged = pd.merge(df_merged, df_producto[['producto_id']], on='producto_id')
+        df_merged = pd.merge(self.df_demanda[['fecha_id', 'producto_id', 'cantidad_real']],
+                             self.df_fecha[['fecha_id', 'fecha']], on='fecha_id')
+        df_merged = pd.merge(df_merged, self.df_producto[['producto_id']], on='producto_id')
         columnas_a_eliminar = ['fecha_id']
         df_merged = df_merged.drop(columnas_a_eliminar, axis=1)
         df_merged['fecha'] = pd.to_datetime(df_merged['fecha'])

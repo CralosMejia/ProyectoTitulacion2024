@@ -1,4 +1,4 @@
-from business.etl.utils.etl_funtions import extract_load_function
+from app.business.etl.utils.etl_funtions import extract_load_function
 import time
 
 
