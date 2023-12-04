@@ -31,9 +31,9 @@ export class ValidatorPlatosServices{
 
         // Check if there exists a weight conversion
         const conversiones = await this.repositoryConversionPeso.getAllByField('peso_id_origen', pesoId);
-        const conversionValida = conversiones.some(conversion => conversion.peso_id_destino === producto.peso_proveedor_id || producto.peso_proveedor_id === pesoId);
+        const conversionValida = conversiones.some(conversion => conversion.peso_id_destino === producto.peso_proveedor_id  );
 
-        if (!conversionValida) {
+        if (!conversionValida && producto.peso_proveedor_id !== pesoId) {
             throw new Error(`There is no id weight conversion ${pesoId} a ${producto.peso_proveedor_id}`);
         }
 

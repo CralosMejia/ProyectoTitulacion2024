@@ -72,15 +72,22 @@ export class PlatosServices {
     }
 
     /**
-     * Deletes a 'plato' (dish) and its associated ingredients by the given ID.
+     * Changes the status of a 'plato' (dish) to 'No disponible' and its associated ingredients by the given ID.
      *
-     * @param plato_id - The ID of the 'plato' to delete.
-     * @returns A boolean indicating if the 'plato' was deleted successfully.
+     * @param plato_id - The ID of the 'plato' to update.
+     * @returns A boolean indicating if the 'plato' was updated successfully.
      */
-    async deletePlato(plato_id:number) {
-        await this.respositoryIPP.deleteAllByField('plato_id',plato_id);
-        const platoDeleted = await this.respositoryPlato.delete(plato_id);
-        return platoDeleted;
+    async changeState(plato_id:number) {
+        try {
+            // Update the status of the plato
+            const affectedRows = await this.respositoryPlato.updateSingleFieldById('plato_id', plato_id, 'estado', 'No disponible');
+    
+            // Check if the update was successful
+            return affectedRows > 0;
+        } catch (error) {
+            console.error(`Error updating the status of the plato with ID ${plato_id}:`, error);
+            throw error;
+        }
     }
 
 

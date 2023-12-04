@@ -72,7 +72,7 @@ export const deletePlatoComplete = async (req: Request, res: Response): Promise<
     const { id } = req.params;
 
     try {
-        const resp = await platosServ.deletePlato(Number(id));
+        const resp = await platosServ.changeState(Number(id));
         console.log(`Deleted correctly: ${JSON.stringify(resp)}`);
         return res.status(200).json(resp);
     } catch (error) {

@@ -32,3 +32,6 @@ class MPD_Manager:
     def predict_demand(self):
         df_predictions = self.iaManager.predict_demand_by_num_periods(5)
 
+    def prueba(selfd):
+        return 1
+

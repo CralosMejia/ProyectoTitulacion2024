@@ -15,7 +15,7 @@ def train_model():
         mpdServ.train()
 
 def run_etl():
-    mpdServ.etl()
+    mpdServ.run_etl()
 
 def predict_demand():
     today = datetime.date.today()
@@ -29,7 +29,7 @@ def configure_cron_jobs():
     schedule.every().day.at("22:00").do(train_model)
     schedule.every().day.at("22:00").do(predict_demand)
     schedule.every().day.at("22:00").do(run_etl)
-    # schedule.every(1).minutes.do(prueba)
+    #schedule.every(5).minutes.do(run_etl)
 
 
 
