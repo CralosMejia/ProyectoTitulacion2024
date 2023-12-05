@@ -4,6 +4,7 @@ import { platos } from "../../../data/models/RestaurantePacificoDB/platos";
 import { productosbodega } from "../../../data/models/RestaurantePacificoDB/productosbodega";
 import { EntrieRepository } from "../../../data/repository/entrieRepository";
 import { ValidatorPlatosServices } from "../../validators/MIPP/validatorPlatosServices";
+import { peso } from "../../../data/models/RestaurantePacificoDB/peso";
 
 /**
  * Service class for managing 'platos' (dishes) and their related entities.
@@ -16,6 +17,7 @@ export class PlatosServices {
     private readonly respositoryPlato: EntrieRepository<platos>;
     private readonly respositoryIPP: EntrieRepository<ingredientesporplato>;
     private readonly repositoryProductoBodega: EntrieRepository<productosbodega>;
+    private readonly repositoryPeso: EntrieRepository<peso>;
     
 
     constructor(){
@@ -24,6 +26,7 @@ export class PlatosServices {
         this.respositoryPlato = new EntrieRepository(platos);
         this.respositoryIPP = new EntrieRepository(ingredientesporplato);
         this.repositoryProductoBodega =  new EntrieRepository(productosbodega);
+        this.repositoryPeso = new EntrieRepository(peso)
     }
 
     /**
@@ -79,9 +82,18 @@ export class PlatosServices {
      */
     async changeState(plato_id:number) {
         try {
-            // Update the status of the plato
-            const affectedRows = await this.respositoryPlato.updateSingleFieldById('plato_id', plato_id, 'estado', 'No disponible');
-    
+            // Retrieve the plato
+            const plato = await this.respositoryPlato.getById(plato_id);
+            if (!plato) {
+                throw new Error(`Plato with ID ${plato_id} not found.`);
+            }
+
+            // Toggle the state
+            const newState = plato.estado === 'Disponible' ? 'No disponible' : 'Disponible';
+
+            // Update the plato
+            const affectedRows = await this.respositoryPlato.updateSingleFieldById('plato_id', plato_id, 'estado', newState);
+
             // Check if the update was successful
             return affectedRows > 0;
         } catch (error) {
@@ -131,6 +143,113 @@ export class PlatosServices {
             throw error;
         }
     }
+
+    /**
+     * Retrieves complete information about a specific dish, including its associated ingredients.
+     * 
+     * @param plato_id - The ID of the dish.
+     * @returns An object containing detailed information about the dish and its ingredients.
+     */
+    async getPlatoCompleteInfo(plato_id: number): Promise<any> {
+        try {
+            // Buscar el plato
+            const plato = await this.respositoryPlato.getById(plato_id);
+            if (!plato) {
+                throw new Error(`Plato with ID ${plato_id} not found.`);
+            }
+    
+            // Extraer y formatear datos relevantes del plato
+            const platoInfo = {
+                plato_id: plato.plato_id,
+                nombre_plato: plato.nombre_plato,
+                descripcion: plato.descripcion,
+                precio: plato.precio,
+                imagen: plato.imagen,
+                estado: plato.estado
+            };
+    
+            // Buscar ingredientes asociados al plato
+            const ingredientes = await this.respositoryIPP.getAllByField('plato_id', plato_id);
+    
+            // Obtener información adicional de cada ingrediente
+            const ingredientesConInfo = await Promise.all(ingredientes.map(async (ingrediente) => {
+                const producto = await this.repositoryProductoBodega.getById(ingrediente.producto_bodega_id);
+                const peso = await this.repositoryPeso.getById(ingrediente.peso_id);
+    
+                return {
+                    ingrediente_plato_id: ingrediente.ingrediente_plato_id,
+                    producto_bodega_id: ingrediente.producto_bodega_id,
+                    peso_id: ingrediente.peso_id,
+                    cantidad_necesaria: ingrediente.cantidad_necesaria,
+                    nombreProducto: producto ? producto.nombre_producto : '',
+                    unidadPeso: peso ? peso.unidad : '',
+                    simboloPeso: peso ? peso.simbolo : '',
+                    tipoPeso: peso ? peso.tipo : ''
+                };
+            }));
+    
+            // Construir el objeto de respuesta
+            return {
+                plato: platoInfo,
+                ingredientes: ingredientesConInfo
+            };
+        } catch (error) {
+            console.error(`Error retrieving complete info for plato with ID ${plato_id}:`, error);
+            throw error;
+        }
+    }
+
+
+    /**
+     * Adds a new ingredient to a dish.
+     * 
+     * @param newIngrediente - The ingredient to be added.
+     * @returns The newly added ingredient.
+     */
+    async addIngredientToPlato(newIngrediente: ingredientesporplato): Promise<ingredientesporplato> {
+        await this.validator.validateWeightConversion(newIngrediente.producto_bodega_id, newIngrediente.peso_id);
+        return await this.respositoryIPP.create(newIngrediente);
+    }
+
+    /**
+     * Deletes an ingredient from a dish.
+     * 
+     * @param ingrediente_id - The ID of the ingredient to be deleted.
+     * @returns True if the deletion was successful, false otherwise.
+     */
+    async deleteIngredientOfPlato(ingrediente_id: number): Promise<boolean> {
+        const ingrediente = await this.respositoryIPP.getById(ingrediente_id);
+        if (!ingrediente) {
+            throw new Error(`Ingrediente with ID ${ingrediente_id} not found.`);
+        }
+        return await this.respositoryIPP.delete(ingrediente_id);
+    }
+
+
+
+    /**
+     * Updates an existing ingredient of a dish.
+     * 
+     * @param ingrediente_id - The ID of the ingredient to be updated.
+     * @param updatedData - The new data for the ingredient.
+     * @returns The updated ingredient, or null if not found.
+     */
+    async updateIngredientOfPlato(ingrediente_id: number, updatedData: Partial<ingredientesporplato>): Promise<ingredientesporplato | null> {
+        
+        const ingrediente = await this.respositoryIPP.getById(ingrediente_id);
+
+        if(ingrediente !== null && updatedData.peso_id !== undefined ){ 
+            await this.validator.validateWeightConversion(ingrediente.producto_bodega_id, updatedData.peso_id);
+        }
+        if (!ingrediente) {
+            throw new Error(`Ingrediente with ID ${ingrediente_id} not found.`);
+        }
+        return await this.respositoryIPP.update(ingrediente_id, updatedData);
+    }
+
+
+
+    
 
     /**
      * Associates a list of ingredients with a 'plato' (dish).

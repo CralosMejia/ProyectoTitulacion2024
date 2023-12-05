@@ -68,15 +68,65 @@ export const getInfoPlatos = async (_req: Request, res: Response): Promise<Respo
  * @param req - The request object containing the ID of the plato to delete.
  * @param res - The response object used to confirm the deletion or send an error message.
  */
-export const deletePlatoComplete = async (req: Request, res: Response): Promise<Response> => {
+export const chageStatus = async (req: Request, res: Response): Promise<Response> => {
     const { id } = req.params;
 
     try {
         const resp = await platosServ.changeState(Number(id));
-        console.log(`Deleted correctly: ${JSON.stringify(resp)}`);
+        console.log(`Status chaged correctly: ${JSON.stringify(resp)}`);
         return res.status(200).json(resp);
     } catch (error) {
         console.error('Error when eliminating the dish and its ingredients:', error);
+        return res.status(400).send(error);
+    }
+};
+
+
+export const getInfoPlato = async (req: Request, res: Response): Promise<Response> => {
+    const { id } = req.params;
+    try {
+        const resp = await platosServ.getPlatoCompleteInfo(Number(id));
+        return res.status(200).json(resp);
+    } catch (error) {
+        console.error('Error in obtaining the information of the dish and its ingredients:', error);
+        return res.status(400).send(error);
+    }
+};
+
+export const addIngredienteToPlate = async (req: Request, res: Response): Promise<Response> => {
+    const ingrediente = req.body;
+    try {
+        const resp = await platosServ.addIngredientToPlato(ingrediente);
+        console.log(`Ingrediete added correctly: ${JSON.stringify(resp)}`);
+        return res.status(200).json(resp);
+    } catch (error) {
+        console.error('Error while adding an ingredient:', error);
+        return res.status(400).send(error);
+    }
+};
+
+export const deleteIngredienteToPlate = async (req: Request, res: Response): Promise<Response> => {
+    const {id} = req.params;
+    try {
+        const resp = await platosServ.deleteIngredientOfPlato(Number(id));
+        console.log(`Ingrediete deleted correctly: ${JSON.stringify(resp)}`);
+        return res.status(200).json(resp);
+    } catch (error) {
+        console.error('Error while deleted an ingredient:', error);
+        return res.status(400).send(error);
+    }
+};
+
+
+export const updateIngredienteToPlate = async (req: Request, res: Response): Promise<Response> => {
+    const {id} = req.params;
+    const ingrediente = req.body;
+    try {
+        const resp = await platosServ.updateIngredientOfPlato(Number(id),ingrediente);
+        console.log(`Ingrediete updated correctly: ${JSON.stringify(resp)}`);
+        return res.status(200).json(resp);
+    } catch (error) {
+        console.error('Error while updated an ingredient:', error);
         return res.status(400).send(error);
     }
 };

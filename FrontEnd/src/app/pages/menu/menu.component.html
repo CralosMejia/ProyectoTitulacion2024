@@ -7,22 +7,25 @@
 
   <table class="platos-table">
     <tbody>
-      <tr>
+      <tr *ngFor="let plato of platos">
         <td class="td_img">
           <img
             src="https://i.ibb.co/2vPrtTn/image-3.jpg"
-            alt="Imagen del Desayuno #1"
+            alt={{plato.descripcion}}
           />
         </td>
         <td>
-          <h3>Desayuno #1</h3>
-          <h4>Bolón mixto, café, jugo y huevos.</h4>
+          <h3>{{plato.nombre_plato}}</h3>
+          <h4>{{plato.precio}}$</h4>
+          <h4>{{plato.ingredientes}}</h4>
         </td>
-        <td>
-            <span class="disponible-btn active-status">DISPONIBLE</span>
+        <td class="td_btn">
+            <span
+              [ngClass]="{'disponible-btn':plato.estado==='Disponible','no-disponible-btn':plato.estado==='No disponible'}"
+            >{{plato.estado}}</span>
         </td>
-        <td><button class="eliminar-btn">Inhabilitar</button></td>
-        <td><button class="editar-btn">Editar</button></td>
+        <td><button class="eliminar-btn" (click)="changeStatus(plato.plato_id)">Cambiar estado</button></td>
+        <td><button class="editar-btn" (click)="editPlato(plato.plato_id)">Editar</button></td>
       </tr>
     </tbody>
   </table>

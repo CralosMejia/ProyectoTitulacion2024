@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import express, { Express} from 'express';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import {PacificoDB,DataScienceDB} from './config/db'
 
 //Routes imports
@@ -20,12 +21,15 @@ import { routerMVD } from './app/presentation/routes/MVD/mvdRoutes';
 import { initializeJobs } from './config/jobsInitializer';
 import { configureObservers } from './config/observerConfig';
 
+
 dotenv.config();
 
 const port = process.env.PORT;
 const app: Express = express();
 
 //Configs
+// Use CORS middleware
+app.use(cors());
 app.use(bodyParser.json({ limit: '5mb' }));  // Ajusta el límite según tus necesidades
 app.use(bodyParser.urlencoded({ extended: true, limit: '5mb' }));
 app.use(express.json())//middleware que transforma la req.body a un json

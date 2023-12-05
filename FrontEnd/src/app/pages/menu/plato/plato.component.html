@@ -4,12 +4,16 @@
         <form action="#" method="post">
             <div class="input-group">
                 <label for="nombrePlato">Nombre del Plato</label>
-                <input type="text" id="nombrePlato" name="nombrePlato" placeholder="Escribir aquí">
+                <input type="text" id="nombrePlato" name="nombrePlato"  [value]="plato?.plato.nombre_plato" [(ngModel)]="nombrePlato" placeholder="Escribir aquí">
             </div>
     
             <div class="input-group">
                 <label for="descripcionPlato">Descripción</label>
-                <textarea id="descripcionPlato" name="descripcionPlato" placeholder="Escribir aquí"></textarea>
+                <textarea id="descripcionPlato" name="descripcionPlato" [value]="plato?.plato.descripcion" [(ngModel)]="descripcionPlato" placeholder="Escribir aquí"></textarea>
+            </div>
+            <div class="input-group">
+                <label for="precioPlato">Precio</label>
+                <input type="number" id="precioPlato" name="nombrePlato"  [value]="plato?.plato.precio"  [(ngModel)]="precioPlato" placeholder="0">
             </div>
         </form>
     </section>
@@ -20,7 +24,7 @@
             (click)="fileInput.click()" 
             style="cursor: pointer;">
             <label for="fotoPlato">Agregar foto del plato</label>
-            <input type="file" #fileInput id="fotoPlato" name="fotoPlato" (change)="mostrarVistaPrevia($event)">
+            <input type="file" #fileInput id="fotoPlato" name="fotoPlato" (change)="showPreview($event)">
         </div>
     </section>
     
@@ -29,11 +33,14 @@
         <h2>Ingredientes del Plato</h2>
         <div class="ingrediente-item-container">
             <div *ngFor="let ingredient of ingredients; let i = index" class="ingredient-item">
-                <span class="ingredient-name">{{ ingredient.name }}</span>
-                <span class="ingredient-quantity">{{ ingredient.amount }}</span>
-                <span class="ingredient-weight">{{ ingredient.weight }}</span>
-                <button class="icon-btn" (click)="editIngredient(i)"><i class="fas fa-edit"></i></button>
-                <app-deleted-button></app-deleted-button>
+                <span class="ingredient-name">{{ ingredient.nombreProducto }}</span>
+                <span class="ingredient-quantity">{{ ingredient.cantidad_necesaria }}</span>
+                <span class="ingredient-weight">{{ ingredient.simboloPeso }}</span>
+                <button class="icon-btn" (click)="loadDataUpdate(i)"><i class="fas fa-edit"></i></button>
+                <app-deleted-button 
+                [functionDelete]="deleteIngredient.bind(this)"
+                [ingredientId]="idPlato !== '0'?ingredient.ingrediente_plato_id:i"
+                ></app-deleted-button>
             </div>
         </div>
         
@@ -41,27 +48,29 @@
     
         <div class="ingredient-inputs">
     
-            <select name="producto">
-                <option value="" disabled selected>PRODUCTO</option>
-                <option value="producto1">Producto 1</option>
-                <option value="producto2">Producto 2</option>
+            <select name="producto" [(ngModel)]="selectedProductoId" [disabled]="isIngredienteUpdate">
+                <option value="" disabled selected hidden>PRODUCTO</option>
+                <option *ngFor="let producto of listProductosBodega" value="{{producto.producto_bodega_id}}" >{{producto.nombre_producto}}</option>
                 <!-- ... -->
             </select>
-            <input type="number" placeholder="Cantidad">
+            <input type="number" placeholder="Cantidad" [(ngModel)]="selectedCantidad">
             <!-- Lista desplegable de Peso -->
-            <select name="peso">
+            <select name="peso" [(ngModel)]="selectedPesoId">
                 <option value="" disabled selected>PESO</option>
-                <option value="Kg">Kg</option>
-                <option value="gr">gr</option>
+                <option *ngFor="let peso of listpeso" value="{{peso.peso_id}}">{{peso.simbolo}}</option>
                 <!-- ... -->
             </select>
             
     
-            <button (click)="addIngredient()">AGREGAR</button>
+            <button (click)="isIngredienteUpdate ? editIngredient() : addIngredient()">{{ isIngredienteUpdate ? 'Actualizar' : 'Agregar' }}</button>
         </div>
     
     </div>
     
-    <button class="generate-btn">GENERAR</button>
+    <button class="generate-btn"
+    (click)="idPlato === '0' ? createPlatoComplete() :editPlato()"
+    >
+        {{ idPlato === "0" ? 'Crear' : 'Actualizar' }}
+    </button>
 </div>
 

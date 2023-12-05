@@ -81,11 +81,17 @@ header .agregar-btn {
     border-radius: 1rem;
     font-size: 14px;
     text-align: center;
+    cursor: default;
 }
 
 .no-disponible-btn {
     background-color: #A8B8D8; /* Color amarillo */
     color: #ffffff;
+    padding: 5px 15px;
+    border-radius: 1rem;
+    font-size: 14px;
+    text-align: center;
+    cursor: default;
 }
 
 .eliminar-btn, .editar-btn {
@@ -97,3 +103,8 @@ header .agregar-btn {
     background-color: #e0e0e0;
 }
 
+.td_btn{
+    margin-top: 1rem;
+    width: 13vw;
+    display: flex;
+}

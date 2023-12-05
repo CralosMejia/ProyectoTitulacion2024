@@ -1,4 +1,4 @@
-import { Component,ElementRef, ViewChild } from '@angular/core';
+import { Component,ElementRef, Input, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-deleted-button',
@@ -6,6 +6,8 @@ import { Component,ElementRef, ViewChild } from '@angular/core';
   styleUrls: ['./deleted-button.component.css']
 })
 export class DeletedButtonComponent {
+  @Input() functionDelete!: (id: number) => void;
+  @Input() ingredientId!: number;
 
   @ViewChild('myModal')
   modal!: ElementRef;
@@ -21,5 +23,9 @@ export class DeletedButtonComponent {
 
   closeModal() {
     this.modal.nativeElement.style.display = 'none';
+  }
+
+  emitEvent() {
+    this.functionDelete(this.ingredientId);
   }
 }

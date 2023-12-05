@@ -29,13 +29,19 @@ export class ValidatorPlatosServices{
         const producto = await this.repositoryProductosBodega.getById(productoBodegaId);
         if (!producto) throw new Error('Warehouse product not found.');
 
+        if(producto.peso_proveedor_id == pesoId){
+            return true
+        }
+
         // Check if there exists a weight conversion
         const conversiones = await this.repositoryConversionPeso.getAllByField('peso_id_origen', pesoId);
         const conversionValida = conversiones.some(conversion => conversion.peso_id_destino === producto.peso_proveedor_id  );
 
-        if (!conversionValida && producto.peso_proveedor_id !== pesoId) {
+        if (!conversionValida) {
             throw new Error(`There is no id weight conversion ${pesoId} a ${producto.peso_proveedor_id}`);
         }
+
+        
 
         return true; // La conversión existe
     }
