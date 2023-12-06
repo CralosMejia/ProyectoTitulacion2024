@@ -1,7 +1,5 @@
 
-<div class="subtitle-container" >
-  <h3>Producto 1</h3>
-</div>
+
 <label class="checkbox-container" *ngIf="!isFilter">
   Seleccionar
   <input type="checkbox">
@@ -11,12 +9,14 @@
   <!-- app.component.html -->
 
   <!-- Rango de fechas -->
-  Desde: <input type="date" >
-  Hasta: <input type="date">
+  Desde: <input type="date" [(ngModel)]="fechaDesde" (ngModelChange)="changeFilter()">
+  Hasta: <input type="date" [(ngModel)]="fechaHasta" (ngModelChange)="changeFilter()">
   
   <!-- Filtro de productos -->
-  <select >
-    <option *ngFor="let product of products">{{ product }}</option>
+  <select [(ngModel)]="productoSeleccionado" (ngModelChange)="changeFilter()">
+    <option *ngFor="let producto of listProductosBodega" [value]="producto.producto_bodega_id">
+      {{producto.nombre_producto}}
+    </option>
   </select>
 </div>
 <div class="canvas_container">

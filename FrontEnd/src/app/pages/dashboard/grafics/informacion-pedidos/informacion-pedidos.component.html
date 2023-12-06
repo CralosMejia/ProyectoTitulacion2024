@@ -5,8 +5,8 @@
 </label>
 <div class="filter-container" *ngIf="isFilter">
   <!-- Rango de fechas -->
-  Desde: <input type="date" >
-  Hasta: <input type="date">
+  Desde: <input type="date" [(ngModel)]="fechaDesde" (ngModelChange)="changeFilter()">
+  Hasta: <input type="date" [(ngModel)]="fechaHasta" (ngModelChange)="changeFilter()">
 
 </div>
 <div class="canvas_container">

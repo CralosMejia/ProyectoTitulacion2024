@@ -18,9 +18,9 @@ class MPD_Manager:
 
 
     def train(self):
-        df_fecha = pd.read_sql(f'SELECT * FROM DimFecha', con=self.con_db_data_science)
-        df_producto = pd.read_sql(f'SELECT * FROM DimProducto', con=self.con_db_data_science)
-        df_demanda = pd.read_sql(f'SELECT * FROM HechosDemandaProducto', con=self.con_db_data_science)
+        df_fecha = pd.read_sql(f'SELECT * FROM DimFecha', con=self.con_db_data_science.get_session().bind)
+        df_producto = pd.read_sql(f'SELECT * FROM DimProducto', con=self.con_db_data_science.get_session().bind)
+        df_demanda = pd.read_sql(f'SELECT * FROM HechosDemandaProducto', con=self.con_db_data_science.get_session().bind)
 
         df_train = self.iaManager.preparate_train_data(df_fecha, df_producto, df_demanda)
 

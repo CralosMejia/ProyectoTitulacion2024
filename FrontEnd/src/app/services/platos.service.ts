@@ -67,4 +67,9 @@ export class PlatosService {
 
   }
 
+  getAllPlatos(){
+    const url = `${base_url}/plato`
+    return this.http.get(url)
+  }
+
 }

@@ -1,14 +1,21 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import DatalabelsPlugin from 'chartjs-plugin-datalabels';
 import { ChartConfiguration, ChartData, ChartEvent, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
+import { GraficsService } from 'src/app/services/grafics.service';
+import { PlatosService } from 'src/app/services/platos.service';
 
 @Component({
   selector: 'app-informacion-pedidos',
   templateUrl: './informacion-pedidos.component.html',
   styleUrls: ['./informacion-pedidos.component.css']
 })
-export class InformacionPedidosComponent {
+export class InformacionPedidosComponent implements OnInit {
+
+
+  public fechaDesde!: string;
+  public fechaHasta!: string;
+
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
 
   @Input() isFilter: boolean = true;
@@ -20,13 +27,7 @@ export class InformacionPedidosComponent {
         display: true,
         position: 'left',
       },
-      // datalabels: {
-      //   formatter: (value: any, ctx: any) => {
-      //     if (ctx.chart.data.labels) {
-      //       return ctx.chart.data.labels[ctx.dataIndex];
-      //     }
-      //   },
-      // },
+
     },
   };
   public pieChartData: ChartData<'pie', number[], string | string[]> = {
@@ -40,6 +41,27 @@ export class InformacionPedidosComponent {
   public pieChartType: ChartType = 'pie';
   public pieChartPlugins = [DatalabelsPlugin];
 
+  constructor(
+    private platoServices:PlatosService,
+    private graficsServices:GraficsService
+  ){}
+  ngOnInit(): void {
+    this.updatedata()
+  }
+  updatedata(){
+    const data ={
+      "fechaDesde":this.fechaDesde,
+      "fechaHasta":this.fechaHasta
+    
+    }
+    this.graficsServices.getSummaryOrders(data).subscribe((resp:any)=>{
+      this.pieChartData= resp;
+    })
+  }
+
+  changeFilter(){
+    this.updatedata()
+  }
   // events
   public chartClicked({
     event,
@@ -48,7 +70,6 @@ export class InformacionPedidosComponent {
     event: ChartEvent;
     active: object[];
   }): void {
-    console.log(event, active);
   }
 
   public chartHovered({
@@ -58,6 +79,5 @@ export class InformacionPedidosComponent {
     event: ChartEvent;
     active: object[];
   }): void {
-    console.log(event, active);
   }
 }

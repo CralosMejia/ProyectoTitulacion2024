@@ -80,3 +80,15 @@ export const getOrdenesState = async (req: Request, res: Response): Promise<Resp
         return res.status(400).send(error);
     }
 };
+
+export const getDates = async (_req: Request, res: Response): Promise<Response> => {
+
+    try {
+        const resp = await gmServices.getOldestAndMostRecentDates();
+        console.log(`Data: ${JSON.stringify(resp)}`);
+        return res.status(200).json(resp);
+    } catch (error) {
+        console.error('Error getting dates:', error);
+        return res.status(400).send(error);
+    }
+};

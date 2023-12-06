@@ -81,7 +81,12 @@ export const chageStatus = async (req: Request, res: Response): Promise<Response
     }
 };
 
-
+/**
+ * Gets complete information about a dish, including its ingredients.
+ * 
+ * @param req - The request object containing the dish ID.
+ * @param res - The response object used to send back the dish information or an error message.
+ */
 export const getInfoPlato = async (req: Request, res: Response): Promise<Response> => {
     const { id } = req.params;
     try {
@@ -93,6 +98,12 @@ export const getInfoPlato = async (req: Request, res: Response): Promise<Respons
     }
 };
 
+/**
+ * Adds a new ingredient to a dish.
+ * 
+ * @param req - The request object containing the ingredient data.
+ * @param res - The response object used to send back the added ingredient or an error message.
+ */
 export const addIngredienteToPlate = async (req: Request, res: Response): Promise<Response> => {
     const ingrediente = req.body;
     try {
@@ -105,6 +116,12 @@ export const addIngredienteToPlate = async (req: Request, res: Response): Promis
     }
 };
 
+/**
+ * Deletes an ingredient from a dish.
+ * 
+ * @param req - The request object containing the ingredient ID.
+ * @param res - The response object used to confirm the deletion or send an error message.
+ */
 export const deleteIngredienteToPlate = async (req: Request, res: Response): Promise<Response> => {
     const {id} = req.params;
     try {
@@ -118,6 +135,12 @@ export const deleteIngredienteToPlate = async (req: Request, res: Response): Pro
 };
 
 
+/**
+ * Updates an existing ingredient of a dish.
+ * 
+ * @param req - The request object containing the ingredient ID and new data.
+ * @param res - The response object used to send back the updated ingredient or an error message.
+ */
 export const updateIngredienteToPlate = async (req: Request, res: Response): Promise<Response> => {
     const {id} = req.params;
     const ingrediente = req.body;

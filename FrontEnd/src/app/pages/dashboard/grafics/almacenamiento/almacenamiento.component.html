@@ -7,8 +7,10 @@
 
   
   <!-- Filtro de productos -->
-  <select >
-    <option *ngFor="let product of products">{{ product }}</option>
+  <select [(ngModel)]="productoSeleccionado" (ngModelChange)="changeFilter()">
+    <option *ngFor="let producto of listProductosBodega" [value]="producto.producto_bodega_id">
+      {{producto.nombre_producto}}
+    </option>
   </select>
 </div>
 <div class="canvas_container">

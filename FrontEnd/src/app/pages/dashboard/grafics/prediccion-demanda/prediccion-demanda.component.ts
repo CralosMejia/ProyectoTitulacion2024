@@ -1,6 +1,8 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import {  ChartConfiguration, ChartEvent, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
+import { GraficsService } from 'src/app/services/grafics.service';
+import { PlatosService } from 'src/app/services/platos.service';
 
 
 @Component({
@@ -8,23 +10,18 @@ import { BaseChartDirective } from 'ng2-charts';
   templateUrl: './prediccion-demanda.component.html',
   styleUrls: ['./prediccion-demanda.component.css']
 })
-export class PrediccionDemandaComponent {
+export class PrediccionDemandaComponent implements OnInit{
 
-  /////Filtros
-    //-----------------
+  public listProductosBodega:any[]=[]
+  public fechaDesde!: string;
+  public fechaHasta!: string;
+  public productoSeleccionado: number=1;
 
-    products = [
-      'Producto 1',
-      'Producto 2'
-      // Añade más productos según lo necesario
-    ];  
   
   @Input() isFilter: boolean = true;
+  @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
-  private newLabel? = 'New label';
-
-  constructor() {
-  }
+ 
 
   public lineChartData: ChartConfiguration['data'] = {
     datasets: [
@@ -50,21 +47,10 @@ export class PrediccionDemandaComponent {
         pointHoverBorderColor: 'rgba(77,83,96,1)',
         fill: 'origin',
       },
-      // {
-      //   data: [180, 480, 770, 90, 1000, 270, 400],
-      //   label: 'Cebolla',
-      //   yAxisID: 'y1',
-      //   backgroundColor: 'rgba(255,0,0,0.3)',
-      //   borderColor: 'red',
-      //   pointBackgroundColor: 'rgba(148,159,177,1)',
-      //   pointBorderColor: '#fff',
-      //   pointHoverBackgroundColor: '#fff',
-      //   pointHoverBorderColor: 'rgba(148,159,177,0.8)',
-      //   fill: 'origin',
-      // },
     ],
     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
   };
+
 
   public lineChartOptions: ChartConfiguration['options'] = {
     responsive: true,
@@ -94,8 +80,44 @@ export class PrediccionDemandaComponent {
 
   public lineChartType: ChartType = 'line';
 
-  @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
+
+  constructor(
+    private platoServices:PlatosService,
+    private graficsServices:GraficsService
+  ) {}
+
+  ngOnInit(): void {
+    this.loaddata()
+    this.updatedata()
+  }
+
+
+  loaddata(){
+    this.platoServices.getAllProducts().subscribe((resp:any)=>{
+      this.listProductosBodega= resp.entriesList;
+    })
+    this.graficsServices.getDates().subscribe((resp:any)=>{
+      this.fechaDesde = resp.oldestDate
+      this.fechaHasta = resp.mostRecentDate
+    })
+  }
+
+  updatedata(){
+    const data ={
+      "id":this.productoSeleccionado,
+      "fechaDesde":this.fechaDesde,
+      "fechaHasta":this.fechaHasta
+    
+    }
+    this.graficsServices.getPredictDemandGrafic(data).subscribe((resp:any)=>{
+      this.lineChartData= resp;
+    })
+  }
+
+  changeFilter(){
+    this.updatedata()
+  }
 
   // events
   public chartClicked({
@@ -105,7 +127,6 @@ export class PrediccionDemandaComponent {
     event?: ChartEvent;
     active?: object[];
   }): void {
-    console.log(event, active);
   }
 
   public chartHovered({
@@ -115,7 +136,6 @@ export class PrediccionDemandaComponent {
     event?: ChartEvent;
     active?: object[];
   }): void {
-    console.log(event, active);
   }
 
 

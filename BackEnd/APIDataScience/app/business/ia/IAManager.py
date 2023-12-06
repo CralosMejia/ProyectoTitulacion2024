@@ -29,7 +29,7 @@ class IAManager:
         self.df_producto = pd.read_sql(f'SELECT * FROM DimProducto', con=ses_db_data_science.bind)
         self.df_demanda = pd.read_sql(f'SELECT * FROM HechosDemandaProducto', con=ses_db_data_science.bind)
 
-    def preparate_train_data(self):
+    def preparate_train_data(self,df_fecha,df_producto,df_demanda):
         """
         Prepares data to be sent to the AI model for training or validation.
 
@@ -67,7 +67,7 @@ class IAManager:
         """
 
         global model
-        model_route = f"business/ia/models/trained_model.joblib"
+        model_route = f"app/business/ia/models/trained_model.joblib"
         if os.path.exists(model_route):
             os.remove(model_route)
 
@@ -116,7 +116,7 @@ class IAManager:
         Array of predictions.
         """
 
-        model_route = f"business/ia/models/trained_model.joblib"
+        model_route = f"app/business/ia/models/trained_model.joblib"
         # Check if the model exists.
         if not os.path.exists(model_route):
             raise Exception(f"The model trained_model.joblib does not exist. Train it before making predictions.")
@@ -156,6 +156,7 @@ class IAManager:
                     'cantidad_real': 0  # Suponiendo que inicialmente es 0
                 }
                 self.repoDemanda.create(nueva_demanda)
+        print('Demand forecasting process completed')
 
 
     def _get_or_create_fecha(self, fecha_ts):

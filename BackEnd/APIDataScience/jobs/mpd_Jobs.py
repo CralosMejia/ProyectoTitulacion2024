@@ -29,7 +29,7 @@ def configure_cron_jobs():
     schedule.every().day.at("22:00").do(train_model)
     schedule.every().day.at("22:00").do(predict_demand)
     schedule.every().day.at("22:00").do(run_etl)
-    #schedule.every(5).minutes.do(run_etl)
+    #schedule.every(2).minutes.do(run_etl)
 
 
 
@@ -41,4 +41,6 @@ def start_cron_jobs():
 
     tarea_hilo = threading.Thread(target=run_schedule)
     tarea_hilo.start()
+
+    tarea_hilo.join()
 

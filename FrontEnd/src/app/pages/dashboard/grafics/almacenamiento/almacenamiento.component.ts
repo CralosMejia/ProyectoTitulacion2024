@@ -1,24 +1,25 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { ChartConfiguration, ChartData, ChartEvent, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 
 import DataLabelsPlugin from 'chartjs-plugin-datalabels';
+import { PlatosService } from 'src/app/services/platos.service';
+import { GraficsService } from 'src/app/services/grafics.service';
 
 @Component({
   selector: 'app-almacenamiento',
   templateUrl: './almacenamiento.component.html',
   styleUrls: ['./almacenamiento.component.css']
 })
-export class AlmacenamientoComponent {
-  /////Filtros
-    //-----------------
+export class AlmacenamientoComponent  implements OnInit{
 
-    products = [
-      'Producto 1',
-      'Producto 2'
-      // Añade más productos según lo necesario
-    ];  
-    
+
+
+  public listProductosBodega:any[]=[]
+  public productoSeleccionado: number=1;
+
+
+
   @Input() isFilter: boolean = true;
 
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
@@ -55,6 +56,36 @@ export class AlmacenamientoComponent {
     ],
   };
 
+  constructor(
+    private platoServices:PlatosService,
+    private graficsServices:GraficsService
+    ){}
+
+
+  ngOnInit(): void {
+    this.loaddata()
+    this.updatedata()
+  }
+
+  loaddata(){
+    this.platoServices.getAllProducts().subscribe((resp:any)=>{
+      this.listProductosBodega= resp.entriesList;
+    })
+    this.graficsServices.getDates().subscribe((resp:any)=>{
+
+    })
+  }
+
+  updatedata(){
+    this.graficsServices.getInventory(this.productoSeleccionado).subscribe((resp:any)=>{
+      this.barChartData= resp;
+    })
+  }
+
+  changeFilter(){
+    this.updatedata()
+  }
+
   // events
   public chartClicked({
     event,
@@ -63,7 +94,6 @@ export class AlmacenamientoComponent {
     event?: ChartEvent;
     active?: object[];
   }): void {
-    console.log(event, active);
   }
 
   public chartHovered({
@@ -73,7 +103,6 @@ export class AlmacenamientoComponent {
     event?: ChartEvent;
     active?: object[];
   }): void {
-    console.log(event, active);
   }
 
   public randomize(): void {

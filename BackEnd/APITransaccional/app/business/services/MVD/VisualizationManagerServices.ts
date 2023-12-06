@@ -244,4 +244,39 @@ export class VisualizationManagerServices{
             throw error;
         }
     }
+
+    /**
+     * Retrieves the oldest and most recent dates.
+     * 
+     * @returns An object containing the oldest and most recent dates.
+     */
+    async getOldestAndMostRecentDates() {
+        try {
+            const allDates = await this.repositoryFecha.getAll();
+            if (allDates.length === 0) {
+                throw new Error('No hay fechas disponibles');
+            }
+
+            // Suponiendo que 'fecha' es un campo de tipo Date o string en formato de fecha
+            let oldestDate = new Date(allDates[0].fecha);
+            let mostRecentDate = new Date(allDates[0].fecha);
+
+            allDates.forEach(dateEntry => {
+                const currentDate = new Date(dateEntry.fecha);
+                if (currentDate < oldestDate) {
+                    oldestDate = currentDate;
+                }
+                if (currentDate > mostRecentDate) {
+                    mostRecentDate = currentDate;
+                }
+            });
+
+            return {
+                oldestDate: oldestDate.toISOString().split('T')[0], // Formatear como 'YYYY-MM-DD'
+                mostRecentDate: mostRecentDate.toISOString().split('T')[0] // Formatear como 'YYYY-MM-DD'
+            };
+        } catch (error) {
+            throw new Error(`Error al obtener las fechas más antiguas y recientes: ${error}`);
+        }
+    }
 }
