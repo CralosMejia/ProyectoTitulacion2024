@@ -18,4 +18,15 @@ export class ProveedoresService {
     const url = `${base_url}/proveedor`
     return this.http.get(url)
   }
+
+  createProv(data:any){
+    const url= `${base_url}/proveedor/create`
+    return this.http.post(url,data)
+  }
+
+  updateProv(id:number,data:any){
+    const url= `${base_url}/proveedor/update/${id}`
+    return this.http.put(url,data)
+
+  }
 }

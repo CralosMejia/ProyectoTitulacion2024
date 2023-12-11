@@ -189,3 +189,26 @@ table.provider-table{
 .generate-btn:hover {
     background-color: #ff8c00;
 }
+
+/* FIltro */
+.input-group select {
+    padding: 0.8rem 1.2rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    appearance: none; /* Esto elimina el aspecto predeterminado del navegador para select */
+    background-color: #fff;
+    margin-right: 2rem;
+    color: #888;
+    margin-bottom: 1rem;
+}
+
+/* Para añadir un icono de flecha descendente a las listas desplegables si lo necesitas */
+.input-group select:after {
+    content: '\25BC';
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none; /* Asegura que no interfiera con los clics en el select */
+}
