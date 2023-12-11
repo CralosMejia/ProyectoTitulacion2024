@@ -140,6 +140,7 @@ export const deleteEntrie= <T extends ModelStatic<Model>> (
 
     
             await entrie.delete(idNumber).then(objectPar=>{
+                console.log('Record successfully deleted')
                 return res.status(200).json({
                     deletedEntrie: objectPar
                 })

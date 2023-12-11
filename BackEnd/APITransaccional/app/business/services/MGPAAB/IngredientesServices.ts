@@ -4,6 +4,7 @@ import { productosbodega } from "../../../data/models/RestaurantePacificoDB/prod
 import { EntrieRepository } from "../../../data/repository/entrieRepository";
 import dotenv from 'dotenv';
 import { Observable } from "../common/Observable";
+import { peso } from "../../../data/models/RestaurantePacificoDB/peso";
 
 dotenv.config();
   
@@ -15,6 +16,8 @@ export class IngredientesServices extends Observable{
     
     private readonly repositoryProductoBodega: EntrieRepository<productosbodega>;
     private readonly repositoryLotes: EntrieRepository<lotes>;
+    private readonly repositoryPeso: EntrieRepository<peso>;
+
     private DIFMINORMAX:number = Number(process.env.DIFMINORMAX) || 5;
     private DIFDAYSTOEXPIRED:number = Number(process.env.DIFDAYSTOEXPIRED) || 2;
 
@@ -23,6 +26,8 @@ export class IngredientesServices extends Observable{
         super()
         this.repositoryProductoBodega =  new EntrieRepository(productosbodega);
         this.repositoryLotes =  new EntrieRepository(lotes);
+        this.repositoryPeso =  new EntrieRepository(peso);
+
 
     }
 
@@ -164,7 +169,37 @@ export class IngredientesServices extends Observable{
         return filteredProducts;
     }
     
+    async getProductosBodegaWithLotes() {
+        try {
+            // Obtener todos los productos de bodega
+            const productosBodega = await this.repositoryProductoBodega.getAll();
     
+            // Construir la información completa para cada producto
+            const productosConLotes = await Promise.all(productosBodega.map(async (producto) => {
+                // Obtener el peso asociado al producto
+                const peso = await this.repositoryPeso.getById(producto.peso_proveedor_id);
+    
+                // Obtener los lotes asociados a este producto
+                const lotes = await this.repositoryLotes.getAllByField('producto_bodega_id', producto.producto_bodega_id);
+    
+                // Construir el objeto con información del producto, sus lotes y el peso
+                return {
+                    prodbodega: {
+                        ...producto,
+                        unidadPeso: peso ? peso.unidad : '',
+                        simboloPeso: peso ? peso.simbolo : '',
+                        tipoPeso: peso ? peso.tipo : '',
+                        lotes: lotes,
+                        isIconoX: false
+                    }
+                };
+            }));
+    
+            return productosConLotes;
+        } catch (error) {
+            throw new Error(`Error al obtener productos con lotes y peso: ${error}`);
+        }
+    }
     
     
     

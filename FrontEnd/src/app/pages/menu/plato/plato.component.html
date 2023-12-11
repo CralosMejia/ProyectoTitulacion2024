@@ -39,7 +39,7 @@
                 <button class="icon-btn" (click)="loadDataUpdate(i)"><i class="fas fa-edit"></i></button>
                 <app-deleted-button 
                 [functionDelete]="deleteIngredient.bind(this)"
-                [ingredientId]="idPlato !== '0'?ingredient.ingrediente_plato_id:i"
+                [entrieId]="idPlato !== '0'?ingredient.ingrediente_plato_id:i"
                 ></app-deleted-button>
             </div>
         </div>

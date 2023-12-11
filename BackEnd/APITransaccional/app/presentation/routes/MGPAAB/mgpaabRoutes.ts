@@ -1,6 +1,6 @@
 
 import { Router } from 'express';
-import { createLote, getExpiredLotes, getLotesToExpire, getProductsNearOrAboveMaximum, getProductsNearOrBelowMinimum, searchProduct } from '../../controller/MGPAAB/mgpaabController';
+import { createLote, getAllInfoProducts, getExpiredLotes, getLotesToExpire, getProductsNearOrAboveMaximum, getProductsNearOrBelowMinimum, searchProduct } from '../../controller/MGPAAB/mgpaabController';
 
 
 
@@ -12,6 +12,8 @@ routerMGPAA.get('/getLotesToExpire',getLotesToExpire);
 routerMGPAA.get('/getProductosMinimum',getProductsNearOrBelowMinimum);
 routerMGPAA.get('/getProductosMax',getProductsNearOrAboveMaximum);
 routerMGPAA.put('/searchProduct',searchProduct);
+routerMGPAA.get('/getAllInfoProducts',getAllInfoProducts);
+
 
 
 

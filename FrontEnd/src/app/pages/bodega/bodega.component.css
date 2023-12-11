@@ -29,6 +29,23 @@
     z-index: 100;
 }
 
+.info-desplegable table tr th{
+    background-color: #ffffff;
+    padding: 10px;
+    text-align: center;
+    border-radius: 0rem;
+    height: 100%;
+    font-family: 'Rosario';
+    color: #8392AB;
+    font-size: 1.4rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.info-desplegable table tr{
+    background-color: #ffffff;
+}
+
 .bodega-table td {
     padding: 1.5rem;
     border-bottom: 1px solid #e1e1e1;
@@ -185,4 +202,13 @@
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none; /* Asegura que no interfiera con los clics en el select */
+}
+
+input[type="date"] {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.5rem;
+    width: 150px;
+    font-size: 14px;
+    color: #777;
 }

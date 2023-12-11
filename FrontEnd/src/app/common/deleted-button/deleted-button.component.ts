@@ -7,7 +7,7 @@ import { Component,ElementRef, Input, ViewChild } from '@angular/core';
 })
 export class DeletedButtonComponent {
   @Input() functionDelete!: (id: number) => void;
-  @Input() ingredientId!: number;
+  @Input() entrieId!: number;
 
   @ViewChild('myModal')
   modal!: ElementRef;
@@ -26,6 +26,6 @@ export class DeletedButtonComponent {
   }
 
   emitEvent() {
-    this.functionDelete(this.ingredientId);
+    this.functionDelete(this.entrieId);
   }
 }
