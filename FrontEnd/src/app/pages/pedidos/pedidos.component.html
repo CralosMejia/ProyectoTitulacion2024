@@ -17,25 +17,28 @@
             </tr>
           </thead>
           <tbody>
-              <tr *ngFor="let pedido of pedidos">
-                <td>{{pedido.numPedido}}</td>
-                <td>{{pedido.valorOrden}}</td>
-                <td>{{pedido.fechaCreacion}}</td>
+              <tr *ngFor="let pedido of listPedido">
+                <td>{{pedido.orden_id}}</td>
+                <td>{{pedido.total}}</td>
+                <td>{{pedido.fecha_orden}}</td>
                 <td>
                     <span
                     [ngClass]="{'en-espera-btn': pedido.estado=='En espera', 
                                 'enviado-btn': pedido.estado=='Enviado',
                                 'cancelado-btn': pedido.estado=='Cancelado',
-                                'aprobado-btn': pedido.estado=='Aprobado',}"
+                                'aprobado-btn': pedido.estado=='Aprobado',
+                                'recibido-btn': pedido.estado=='Recibido',}"
                                 
                     >{{pedido.estado}}</span>
                 </td>
                 <td>
                     <button
-                    [ngClass]="{'inactive-btn': pedido.estado=='Cancelado' || pedido.estado=='Enviado' }"
+                    [ngClass]="{'inactive-btn': pedido.estado=='Cancelado' || pedido.estado=='Enviado' || pedido.estado=='Recibido' }"
+                    (click)="editPedido(pedido.orden_id)"
                     ><i class="fas fa-pencil-alt "></i></button>
                     <button
                     [ngClass]="{'inactive-btn': pedido.estado=='En espera' || pedido.estado=='Aprobado' }"
+                    (click)="seenPedido(pedido.orden_id)"
                     ><i class="fa-solid fa-eye"></i></button>
                 </td>
               </tr>

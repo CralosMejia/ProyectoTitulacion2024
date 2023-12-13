@@ -169,6 +169,11 @@ export class IngredientesServices extends Observable{
         return filteredProducts;
     }
     
+    /**
+     * Retrieves detailed information about all products in the warehouse, including their weight and associated lots.
+     * 
+     * @returns An array of objects, each containing detailed information about a warehouse product, its weight, and its lots.
+     */
     async getProductosBodegaWithLotes() {
         try {
             // Obtener todos los productos de bodega

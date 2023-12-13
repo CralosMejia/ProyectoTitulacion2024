@@ -85,7 +85,7 @@ header .agregar-btn {
 }
 
 .aprobado-btn{
-    background-color: rgb(213, 213, 30); /* Color verde */
+    background-color: rgba(209, 209, 64, 0.781); /* Color verde */
     color: #ffffff;
     padding: 5px 15px;
     border-radius: 1rem;
@@ -103,7 +103,7 @@ header .agregar-btn {
 }
 
 .enviado-btn{
-    background-color: #4cc650; /* Color verde */
+    background-color: #33a437; /* Color verde */
     color: #ffffff;
     padding: 5px 15px;
     border-radius: 1rem;
@@ -113,6 +113,15 @@ header .agregar-btn {
 
 .en-espera-btn{
     background-color: rgb(104, 104, 104); /* Color verde */
+    color: #ffffff;
+    padding: 5px 15px;
+    border-radius: 1rem;
+    font-size: 14px;
+    text-align: center;
+}
+
+.recibido-btn{
+    background-color: rgb(24, 148, 215); /* Color verde */
     color: #ffffff;
     padding: 5px 15px;
     border-radius: 1rem;

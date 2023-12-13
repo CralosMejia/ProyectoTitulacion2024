@@ -5,6 +5,8 @@ import { ordenes } from "../../../data/models/RestaurantePacificoDB/ordenes";
 import { productosbodega } from "../../../data/models/RestaurantePacificoDB/productosbodega";
 import { EntrieRepository } from "../../../data/repository/entrieRepository";
 import { ValidatorPedidosServices } from "../../validators/MAP/validatorPedidosServices";
+import { proveedor } from "../../../data/models/RestaurantePacificoDB/proveedor";
+import { peso } from "../../../data/models/RestaurantePacificoDB/peso";
 
 /**
  * Service class for managing orders and order details in a restaurant.
@@ -15,6 +17,9 @@ export class PedidosServices{
     private readonly repositoryOrdenes: EntrieRepository<ordenes>;
     private readonly repositoryDetalleOrden: EntrieRepository<detalleordenes>;
     private readonly repositoryProductosBodega: EntrieRepository<productosbodega>;
+    private readonly repositoryProveedor: EntrieRepository<proveedor>;
+    private readonly repositoryPeso: EntrieRepository<peso>;
+
     private readonly validator:ValidatorPedidosServices;
 
 
@@ -23,6 +28,9 @@ export class PedidosServices{
         this.repositoryOrdenes =  new EntrieRepository(ordenes);
         this.repositoryDetalleOrden =  new EntrieRepository(detalleordenes);
         this.repositoryProductosBodega =  new EntrieRepository(productosbodega);
+        this.repositoryPeso =  new EntrieRepository(peso);
+        this.repositoryProveedor =  new EntrieRepository(proveedor);
+
         this.validator= new ValidatorPedidosServices();
     }
 
@@ -95,9 +103,21 @@ export class PedidosServices{
             const productsInfo = await Promise.all(
                 orderDetails.map(async (detail) => {
                     const product = await this.repositoryProductosBodega.getById(detail.producto_bodega_id);
+                    if (product === null){
+                        throw new Error('Product not found');
+                    }
+                    const proveedor = await this.repositoryProveedor.getById(product.proveedor_id);
+                    const peso = await this.repositoryPeso.getById(product.peso_proveedor_id);
+    
                     return {
                         ...detail,
-                        productInfo: product
+                        productInfo: product,
+                        proveedorNombre: proveedor ? proveedor.nombre_proveedor : '',
+                        pesoInfo: {
+                            unidad: peso ? peso.unidad : '',
+                            simbolo: peso ? peso.simbolo : '',
+                            tipo: peso ? peso.tipo : ''
+                        }
                     };
                 })
             );
@@ -111,6 +131,7 @@ export class PedidosServices{
             throw error;
         }
     }
+    
 
     /**
      * Updates a specific order detail.
@@ -230,6 +251,50 @@ export class PedidosServices{
             }
         } catch (error) {
             await this.repositoryOrdenes.updateSingleFieldById('orden_id', orderId, 'estado', 'Enviado');
+            throw error;
+        }
+    }
+    
+    /**
+     * Retrieves complete information about a specific product in the warehouse.
+     * 
+     * @param productoBodegaId - The ID of the product to retrieve information for.
+     * @returns An object containing detailed information about the product, its supplier, and weight details.
+     */
+    async getProductCompleteInfo(productoBodegaId: number) {
+        try {
+            // Obtener la información del producto de bodega
+            const product = await this.repositoryProductosBodega.getById(productoBodegaId);
+            if (!product) {
+                throw new Error('Product not found');
+            }
+    
+            // Obtener la información del proveedor asociado con el producto
+            const proveedor = await this.repositoryProveedor.getById(product.proveedor_id);
+            if (!proveedor) {
+                throw new Error('Supplier not found');
+            }
+    
+            // Obtener la información del peso asociado con el producto
+            const peso = await this.repositoryPeso.getById(product.peso_proveedor_id);
+            if (!peso) {
+                throw new Error('Weight information not found');
+            }
+    
+            // Construir y retornar la respuesta
+            return {
+                producto_bodega_id: product.producto_bodega_id,
+                cantidad_necesaria: null, // este valor puede ser ajustado según sea necesario
+                productInfo: product,
+                proveedorNombre: proveedor.nombre_proveedor,
+                pesoInfo: {
+                    unidad: peso.unidad,
+                    simbolo: peso.simbolo,
+                    tipo: peso.tipo
+                }
+            };
+        } catch (error) {
+            console.error('Error retrieving complete product info:', error);
             throw error;
         }
     }

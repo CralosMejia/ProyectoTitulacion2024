@@ -141,3 +141,21 @@ export const finalizeOrder = async (req: Request, res: Response): Promise<Respon
     }
 };
 
+/**
+ * Retrieves detailed information about a specific product from the warehouse.
+ * 
+ * @param req - The request object containing the product ID.
+ * @param res - The response object used to send back the product information or an error message.
+ */
+export const getDetalleInfo = async (req: Request, res: Response): Promise<Response> => {
+    const {id} = req.params
+
+    try {
+        const resp = await pedidosServ.getProductCompleteInfo(Number(id));
+        return res.status(200).json(resp);
+    } catch (error) {
+        console.error('Error finalizing the order:', error);
+        return res.status(400).send(error);
+    }
+};
+

@@ -1,6 +1,6 @@
 
 import { Router } from 'express';
-import { create, createdetalleOrden, deletedetalleOrden, finalizeOrder, getOrdenComplete, updateOrdenState, updatedetalleOrden } from '../../controller/MAP/mapController';
+import { create, createdetalleOrden, deletedetalleOrden, finalizeOrder, getDetalleInfo, getOrdenComplete, updateOrdenState, updatedetalleOrden } from '../../controller/MAP/mapController';
 
 
 
@@ -13,6 +13,8 @@ routerMAP.post('/createDetalleOrden',createdetalleOrden);
 routerMAP.delete('/deleteDetalleOrden/:id',deletedetalleOrden);
 routerMAP.put('/updateOrderStatus/:id',updateOrdenState);
 routerMAP.post('/finalizeOrder/:id',finalizeOrder);
+routerMAP.get('/getInfoDetalleOrder/:id',getDetalleInfo);
+
 
 
 

@@ -115,7 +115,12 @@ export const searchProduct = async (req: Request, res: Response): Promise<Respon
         return res.status(400).send(error);
     }
 };
-
+/**
+ * Retrieves detailed information about all products in the warehouse.
+ * 
+ * @param _req - The request object (not used in this function).
+ * @param res - The response object used to send back the product information or an error message.
+ */
 export const getAllInfoProducts = async (_req: Request, res: Response): Promise<Response> => {
 
     try {

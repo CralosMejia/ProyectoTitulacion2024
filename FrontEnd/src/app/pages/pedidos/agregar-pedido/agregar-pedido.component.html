@@ -1,8 +1,8 @@
 <div class="pedidos-container">
     <header>
-      <h2>Numero de Pedido: 12345</h2>
-      <h2>fecha de Creación: 12/10/2023</h2>
-      <h2>Estado del Pedido: Aprobado</h2>
+      <h2>Numero de Pedido: {{orden!==undefined?orden.orden_id:''}}</h2>
+      <h2>fecha de Creación: {{orden!==undefined?orden.fecha_orden:''}}</h2>
+      <h2>Estado del Pedido: {{orden!==undefined?orden.estado:''}}</h2>
     </header>
   
     <div class="table-container">
@@ -12,21 +12,28 @@
               <th>Nombre</th>
               <th>Cantidad</th>
               <th>Peso</th>
+              <th>Precio provedor</th>
               <th>Proveedor</th>
               <th>Valor</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-              <tr>
-                <td>Papa chola</td>
-                <td>3</td>
-                <td>Kg</td>
-                <td>Pronaca</td>
-                <td>120$</td>
-                <td>
-                    <button class="btn-icon"><i class="fas fa-pencil-alt"></i></button>
-                    <app-deleted-button></app-deleted-button>
+              <tr  *ngFor="let prod of listdetalles;let i=index">
+                <td>{{prod.productInfo.nombre_producto}}</td>
+                <td>{{prod.cantidad_necesaria}}</td>
+                <td>{{prod.pesoInfo.unidad}}</td>
+                <td>{{prod.productInfo.precio_proveedor}}</td>
+                <td>{{prod.proveedorNombre}}</td>
+                <td>{{toNumber(prod.cantidad_necesaria)*toNumber(prod.productInfo.precio_proveedor)}}</td>
+                <td *ngIf="!isSeen">
+                    <button class="btn-icon" (click)="prod.detalle_orden_id===undefined?
+                      peparateDataToEdit(i,prod.productInfo.producto_bodega_id,prod.productInfo.proveedor_id,prod.cantidad_necesaria):peparateDataToEdit(prod.detalle_orden_id,prod.productInfo.producto_bodega_id,prod.productInfo.proveedor_id,prod.cantidad_necesaria)
+                      "><i class="fas fa-pencil-alt"></i></button>
+                    <app-deleted-button
+                    [functionDelete]="deleteDetalle.bind(this)"
+                    [entrieId]="idPedido !== '0'?prod.detalle_orden_id:i"
+                    ></app-deleted-button>
                 </td>
               </tr>
           </tbody>
@@ -35,47 +42,46 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td>Subtotal:</td>
-                <td>120$</td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
                 <td></td>
                 <td>total:</td>
-                <td>132$</td>
+                <td>{{orden!==undefined?orden.total:valorTotal}}</td>
             </tr>
           </tfoot>
         </table>
     </div>
 
 
-    <div class="ingredients-section">
-        <h2>Ingredientes del Plato</h2>
+    <div class="ingredients-section" *ngIf="!isSeen">
+        <h2>Productos del pedido</h2>
         <div class="ingredient-inputs">
     
-            <select name="producto">
-                <option value="" disabled selected>PRODUCTO</option>
-                <option value="producto1">Producto 1</option>
-                <option value="producto2">Producto 2</option>
+            <select name="producto" [(ngModel)]="prodSelect" [disabled]="isEdit">
+                <option *ngFor="let prod of listProd" value="{{prod.producto_bodega_id}}" >{{prod.nombre_producto}}</option>
             </select>
-            <input type="number" placeholder="Cantidad">
-            <select name="Proveedor">
-                <option value="" disabled selected>Proveedor</option>
-                <option value="Pronaca">Pronaca</option>
-                <option value="Buena Vida">Buena Vida</option>
-            </select>
+            <input type="number" placeholder="Cantidad" [(ngModel)]="cantidad">
+            <select name="proveedor" [(ngModel)]="provSelect" [disabled]="isEdit">
+              <option *ngFor="let prov of listProv" value="{{prov.proveedor_id}}" >{{prov.nombre_proveedor}}</option>
+          </select>
             
     
         </div>
-        <button class="btn-add">AGREGAR</button>
+
+        <button class="btn-add" (click)="isEdit?updateDetalle():createDetalle()">{{isEdit?"Editar":"Agregar"}}</button>
+        <button *ngIf="isEdit" class="cancel" (click)="cleanfrom()">Cancelar</button>
+
     </div>
     
-    <div class="button-container">
-        <h3>ENVIAR O PONER EN ESPERA </h3>
+    <div [ngClass]="{'button-container-seen':isSeen,               'button-container':!isSeen}" *ngIf="!(orden.estado==='Recibido' || orden.estado==='Cancelado')">
+        <h3>Acciones </h3>
         <div class="buttons">
-            <button class="approve-btn">ENVIAR EL PEDIDO</button>
-            <button class="reject-btn">PONER EN ESPERA PEDIDO</button>
+            <button *ngIf="orden===undefined" class="approve-btn" (click)="createPedidoCompleto()">CREAR PEDIDO</button>
+            <button *ngIf="orden!==undefined &&(orden.estado==='Aprobado' ) " class="approve-btn" (click)="changeStatuS('Enviado')">ENVIAR EL PEDIDO</button>
+            <button *ngIf="orden!==undefined &&(orden.estado==='En espera')" class="approve-btn" (click)="changeStatuS('Aprobado')">APROBAR PEDIDO</button>
+            <button *ngIf="orden!==undefined &&(orden.estado==='Enviado' )" class="approve-btn" (click)="changeStatuS('Recibido')">RECIBIR PEDIDO</button>
+            <button *ngIf="orden!==undefined &&(orden.estado==='Aprobado')" class="reject-btn" (click)="changeStatuS('En espera')">PONER EN ESPERA PEDIDO</button>
+            <button *ngIf="orden!==undefined &&(orden.estado==='En espera' || orden.estado==='Aprobado' )" class="reject-btn" (click)="changeStatuS('Cancelado')">CANCELAR PEDIDO</button>
+
+
         </div>
     </div>
     

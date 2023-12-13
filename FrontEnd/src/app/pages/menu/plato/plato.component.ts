@@ -78,7 +78,6 @@ export class PlatoComponent implements OnInit{
     if(this.idPlato !== "0"){
       this.ingredients = this.plato.ingredientes
     }
-    console.log(this.ingredients)
 
   }
 

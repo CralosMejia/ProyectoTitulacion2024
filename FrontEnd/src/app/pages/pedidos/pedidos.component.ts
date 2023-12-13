@@ -1,45 +1,41 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { OrdenesService } from 'src/app/services/ordenes.service';
 
 @Component({
   selector: 'app-pedidos',
   templateUrl: './pedidos.component.html',
   styleUrls: ['./pedidos.component.css']
 })
-export class PedidosComponent {
+export class PedidosComponent implements OnInit {
 
-  public pedidos=[
-    {
-      numPedido:'1234',
-      valorOrden:300,
-      fechaCreacion:'10/10/2023',
-      estado:'En espera'
-    },
-    {
-      numPedido:'1234',
-      valorOrden:300,
-      fechaCreacion:'10/10/2023',
-      estado:'Enviado'
-    },
-    {
-      numPedido:'1234',
-      valorOrden:300,
-      fechaCreacion:'10/10/2023',
-      estado:'Cancelado'
-    },
-    {
-      numPedido:'1234',
-      valorOrden:300,
-      fechaCreacion:'10/10/2023',
-      estado:'Aprobado'
-    },
-  ]
+  public listPedido!:any[]
+
   constructor(
     private router:Router,
+    private ordenServices:OrdenesService,
   ){}
 
+  ngOnInit(): void {
+    this.loadData()
+  }
+
+  loadData(){
+    this.ordenServices.getOrders().subscribe((resp:any)=>{
+      this.listPedido= resp.entriesList
+    })
+  }
+
   addPedido(){
-    this.router.navigate(['pedidos/agregar'])
+    this.router.navigate([`pedidos/agregar`])
+  }
+
+  editPedido(id:number){
+    this.router.navigate([`pedidos/agregar`],{queryParams: {id}})
+  }
+
+  seenPedido(id:number){
+    this.router.navigate([`pedidos/agregar`],{queryParams: {id,modo:"-1"}})
   }
 
 }
