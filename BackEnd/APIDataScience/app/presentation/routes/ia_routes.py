@@ -1,25 +1,16 @@
 from fastapi import APIRouter
-from app.presentation.controller import train_model_api_linear_regresion, validate_model_api_linear_regresion
-import json
 
-
+from app.presentation.controller.ia_controller import training_model, forcasting_demand
 
 ia_router = APIRouter()
 
-@ia_router.get("/trainLinear")
-async def train_model_linear_regresion():
-    train_model_api_linear_regresion()
-    return "Se entreno con exito el modelo de Regresion Lienar"
-
-@ia_router.get("/validateLinear")
-async def train_model_linear_regresion():
-    serialized = json.dumps(validate_model_api_linear_regresion())
-    return serialized
+@ia_router.get("/mpd/trainModel")
+async def train_model():
+    training_model()
+    return 'OK'
 
 
-
-@ia_router.get("/trainRandom")
-async def train_model_random_forest():
-    return 
-
-
+@ia_router.get("/mpd/forcast")
+async def forecast_demand():
+    forcasting_demand()
+    return 'OK'

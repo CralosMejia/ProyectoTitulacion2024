@@ -1,8 +1,11 @@
 import { container } from "../../../../config/inversify.config";
+import { PedidoAutomaticoService } from "../../../business/services/MAP/PedidosAutomaticosServices";
 import { PedidosServices } from "../../../business/services/MAP/PedidosServices";
 import { Request, Response } from 'express';
 
 const pedidosServ = container.get<PedidosServices>(PedidosServices)
+const paServices = container.get<PedidoAutomaticoService>(PedidoAutomaticoService)
+
 
 /**
  * Creates a complete order with its details.
@@ -130,9 +133,11 @@ export const updateOrdenState = async (req: Request, res: Response): Promise<Res
  */
 export const finalizeOrder = async (req: Request, res: Response): Promise<Response> => {
     const {id} = req.params
+    const {idProv} = req.body
+
 
     try {
-        const resp = await pedidosServ.finalizeOrder(Number(id));
+        const resp = await pedidosServ.finalizeOrder(Number(id),Number(idProv));
         console.log(`Order completed successfully`);
         return res.status(200).json(resp);
     } catch (error) {
@@ -155,6 +160,77 @@ export const getDetalleInfo = async (req: Request, res: Response): Promise<Respo
         return res.status(200).json(resp);
     } catch (error) {
         console.error('Error finalizing the order:', error);
+        return res.status(400).send(error);
+    }
+};
+
+
+export const generateAutomaticOrder = async (req: Request, res: Response): Promise<Response> => {
+    const date= req.body.fecha
+
+    try {
+        const resp = await paServices.createAutomaticOrders(date);
+        return res.status(200).json(resp);
+    } catch (error) {
+        console.error('Error generate order:', error);
+        return res.status(400).send(error);
+    }
+};
+
+export const approveOrder = async (req: Request, res: Response): Promise<Response> => {
+    const {id} = req.params
+
+    try {
+        const resp = await pedidosServ.changeOrderStatus(Number(id),'Aprobado');
+        console.log(`Updated correctly: ${JSON.stringify(resp)}`);
+        return res.status(200).json(resp);
+    } catch (error) {
+        console.error('Error changing order status:', error);
+        return res.status(400).send(error);
+    }
+};
+
+export const sendAllOrder = async (_req: Request, res: Response): Promise<Response> => {
+    try {
+        const resp = await pedidosServ.processAndNotifyApprovedOrders();
+        console.log(`Updated correctly: ${JSON.stringify(resp)}`);
+        return res.status(200).json(resp);
+    } catch (error) {
+        console.error('Error when changing the status of orders:', error);
+        return res.status(400).send(error);
+    }
+};
+
+export const searchProve = async (req: Request, res: Response): Promise<Response> => {
+    const{paramSeacrh,atributeSearch} = req.body
+    try {
+        const resp = await pedidosServ.searchProveedoresByAttribute(atributeSearch,paramSeacrh);
+        return res.status(200).json(resp);
+    } catch (error) {
+        console.error('Not found', error);
+        return res.status(400).send(error);
+    }
+};
+
+export const searchOrdenes = async (req: Request, res: Response): Promise<Response> => {
+    const{paramSeacrh,atributeSearch} = req.body
+    try {
+        const resp = await pedidosServ.searchOrdenesByAttribute(atributeSearch,paramSeacrh);
+        return res.status(200).json(resp);
+    } catch (error) {
+        console.error('Not found', error);
+        return res.status(400).send(error);
+    }
+};
+
+export const searchOrden = async (req: Request, res: Response): Promise<Response> => {
+    const {id} = req.params
+    const{paramSeacrh,atributeSearch} = req.body
+    try {
+        const resp = await pedidosServ.searchCompleteOrderInfoByAttributeAndId(Number(id),atributeSearch,paramSeacrh);
+        return res.status(200).json(resp);
+    } catch (error) {
+        console.error('Not found', error);
         return res.status(400).send(error);
     }
 };

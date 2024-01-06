@@ -5,13 +5,12 @@
 
 .pedidos-container header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     flex-direction: row-reverse;
     margin-bottom: 20px;
 }
-header .agregar-btn {
-    background-color: #4CAF50;
-    color: #fff;
+header button {
+    
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
@@ -19,6 +18,21 @@ header .agregar-btn {
     align-items: center;
     cursor: pointer;
     transition: background-color 0.3s;
+}
+
+.agregar-btn{
+    background-color: #4CAF50;
+    color: #fff;
+}
+
+.generar-btn{
+    margin-left: 1rem;
+    background-color: #4c77af;
+    color: #fff;
+}
+
+.generar-btn:hover {
+    background-color: #265189;
 }
 
 .agregar-btn i {

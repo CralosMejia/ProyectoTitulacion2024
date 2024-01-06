@@ -163,6 +163,7 @@ export class PlatosServices {
                 plato_id: plato.plato_id,
                 nombre_plato: plato.nombre_plato,
                 descripcion: plato.descripcion,
+                numero_platos: plato.numero_platos,
                 precio: plato.precio,
                 imagen: plato.imagen,
                 estado: plato.estado
@@ -247,6 +248,34 @@ export class PlatosServices {
         return await this.respositoryIPP.update(ingrediente_id, updatedData);
     }
 
+    async searchPlatosWithFullInfo(attributeName: keyof platos | 'Ingrediente', searchValue: string) {
+        const allPlatos = await this.respositoryPlato.getAll();
+        let filteredPlatos = [];
+    
+        if (attributeName === 'Ingrediente') {
+            const allIngredientes = await this.repositoryProductoBodega.getAll();
+            const filteredIngredientes = allIngredientes.filter(ingrediente => ingrediente.nombre_producto.toLowerCase().includes(searchValue.toLowerCase()));
+            const filteredIngredientIds = filteredIngredientes.map(ingrediente => ingrediente.producto_bodega_id);
+            const allIpp = await this.respositoryIPP.getAll();
+            const filteredIpp = allIpp.filter(ipp => filteredIngredientIds.includes(ipp.producto_bodega_id));
+            const filteredPlatoIds = filteredIpp.map(ipp => ipp.plato_id);
+            filteredPlatos = allPlatos.filter(plato => filteredPlatoIds.includes(plato.plato_id));
+        } else {
+            filteredPlatos = allPlatos.filter(plato => {
+                const attributeValue = plato[attributeName];
+                if (typeof attributeValue === 'string') {
+                    return attributeValue.toLowerCase().includes(searchValue.toLowerCase());
+                }
+                return false;
+            });
+        }
+    
+        // Utilizar completeInfoPlato para obtener información detallada de los platos filtrados
+        const platosConIngredientes = await this.completeInfoPlato(filteredPlatos);
+        return platosConIngredientes;
+    }
+    
+    
 
 
     
@@ -297,5 +326,41 @@ export class PlatosServices {
     
         return listInfoPlatosComplete;
     }
+
+
+    async searchIngredientsByProductName(platoId: number, productName: string) {
+        // Obtener todos los ingredientes asociados al plato específico
+        const allIngredients = await this.respositoryIPP.getAllByField('plato_id', platoId);
+    
+        // Preparar la lista de ingredientes filtrados con información detallada
+        const detailedIngredients = [];
+    
+        // Iterar sobre cada ingrediente y filtrar basándose en el nombre del producto
+        for (const ingredient of allIngredients) {
+            const product = await this.repositoryProductoBodega.getById(ingredient.producto_bodega_id);
+            
+            if (product && product.nombre_producto.toLowerCase().includes(productName.toLowerCase())) {
+                // Obtener información adicional del peso
+                const weightInfo = await this.repositoryPeso.getById(ingredient.peso_id);
+    
+                // Construir la información detallada del ingrediente
+                detailedIngredients.push({
+                    ingrediente_plato_id: ingredient.ingrediente_plato_id,
+                    producto_bodega_id: ingredient.producto_bodega_id,
+                    peso_id: ingredient.peso_id,
+                    cantidad_necesaria: ingredient.cantidad_necesaria,
+                    nombreProducto: product.nombre_producto,
+                    unidadPeso: weightInfo ? weightInfo.unidad : '',
+                    simboloPeso: weightInfo ? weightInfo.simbolo : '',
+                    tipoPeso: weightInfo ? weightInfo.tipo : ''
+                });
+            }
+        }
+    
+        return detailedIngredients;
+    }
+    
+    
+    
     
 }

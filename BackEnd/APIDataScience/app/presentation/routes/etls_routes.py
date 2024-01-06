@@ -5,9 +5,9 @@ from app.presentation.controller.etls_controller import run_etl_mpd_ctr
 
 etls_router = APIRouter()
 
-@etls_router.get("/mpd/run")
+@etls_router.get("/mpd/runEtl")
 async def run_etl():
     run_etl_mpd_ctr()
-    return 'OK etl del Modulo de prediccion de demanda se ha ejecutado con exito'
+    return 'The ETL process has been successfully executed.'
 
 

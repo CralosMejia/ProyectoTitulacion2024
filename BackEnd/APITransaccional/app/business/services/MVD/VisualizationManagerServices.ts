@@ -198,7 +198,6 @@ export class VisualizationManagerServices{
                 datasets: [
                     { data: [producto.cantidad_maxima || 0], label: 'Cantidad Máxima' },
                     { data: [producto.cantidad_actual || 0], label: 'Cantidad Actual' },
-                    { data: [producto.cantidad_minima || 0], label: 'Cantidad Mínima' },
                 ],
             };
         } catch (error) {

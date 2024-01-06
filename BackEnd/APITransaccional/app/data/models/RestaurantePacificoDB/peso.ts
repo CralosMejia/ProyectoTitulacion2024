@@ -9,11 +9,12 @@ export interface pesoAttributes {
   unidad: string;
   simbolo: string;
   tipo?: 'liquidos' | 'solidos';
+  tipo_uso?: 'proveedor' | 'uso' | 'ambos';
 }
 
 export type pesoPk = "peso_id";
 export type pesoId = peso[pesoPk];
-export type pesoOptionalAttributes = "peso_id" | "tipo";
+export type pesoOptionalAttributes = "peso_id" | "tipo" | "tipo_uso";
 export type pesoCreationAttributes = Optional<pesoAttributes, pesoOptionalAttributes>;
 
 export class peso extends Model<pesoAttributes, pesoCreationAttributes> implements pesoAttributes {
@@ -21,6 +22,7 @@ export class peso extends Model<pesoAttributes, pesoCreationAttributes> implemen
   unidad!: string;
   simbolo!: string;
   tipo?: 'liquidos' | 'solidos';
+  tipo_uso?: 'proveedor' | 'uso' | 'ambos';
 
   // peso hasMany conversionpeso via peso_id_origen
   conversionpesos!: conversionpeso[];
@@ -91,6 +93,11 @@ export class peso extends Model<pesoAttributes, pesoCreationAttributes> implemen
       type: DataTypes.ENUM('liquidos','solidos'),
       allowNull: true,
       defaultValue: "solidos"
+    },
+    tipo_uso: {
+      type: DataTypes.ENUM('proveedor','uso','ambos'),
+      allowNull: true,
+      defaultValue: "proveedor"
     }
   }, {
     sequelize,

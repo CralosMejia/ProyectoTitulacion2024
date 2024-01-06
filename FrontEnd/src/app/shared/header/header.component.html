@@ -7,13 +7,13 @@
     <h1>{{nameRoute}}</h1>
   </div>
   <div class="container_header_2">
-    <select >
-      <option *ngFor="let filtro of filtros">{{ filtro }}</option>
+    <select [(ngModel)]="filterSelected" (change)="changeFilter()">
+      <option  *ngFor="let filtro of filtros" [value]="filtro!==undefined?filtros.indexOf(filtro):-1">{{ filtro!==undefined?filtro.name:'' }}</option>
     </select>
     <div class="search-container">
       <i class="fa-solid fa-magnifying-glass search-icon"></i>
       
-      <input type="text" class="search-input" placeholder="Type here..." />
+      <input [type]="inputType" class="search-input" [placeholder]="placeHolder" [(ngModel)]="valueFilter" (input)="changeValueFilter()"/>
     </div>
     <!-- Contenido HTML -->
     <button class="btn" (click)='navigateToSettings()'>

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { SearchPedidosService } from 'src/app/services/communication/searchs/search-pedidos.service';
 import { OrdenesService } from 'src/app/services/ordenes.service';
 
 @Component({
@@ -14,10 +15,21 @@ export class PedidosComponent implements OnInit {
   constructor(
     private router:Router,
     private ordenServices:OrdenesService,
+    private pedidosSearch:SearchPedidosService,
   ){}
 
   ngOnInit(): void {
     this.loadData()
+    this.pedidosSearch.getSearchParameter$().subscribe((param:any)=>{
+      this.ordenServices.search(param).subscribe((resp:any)=>{
+        if(param.paramSeacrh !==''){
+          this.listPedido= resp;
+        }else{
+           this.loadData()   
+        }
+      })
+
+    })
   }
 
   loadData(){

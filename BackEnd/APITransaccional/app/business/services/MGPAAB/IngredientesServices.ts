@@ -5,6 +5,7 @@ import { EntrieRepository } from "../../../data/repository/entrieRepository";
 import dotenv from 'dotenv';
 import { Observable } from "../common/Observable";
 import { peso } from "../../../data/models/RestaurantePacificoDB/peso";
+import { proveedor } from "../../../data/models/RestaurantePacificoDB/proveedor";
 
 dotenv.config();
   
@@ -17,6 +18,8 @@ export class IngredientesServices extends Observable{
     private readonly repositoryProductoBodega: EntrieRepository<productosbodega>;
     private readonly repositoryLotes: EntrieRepository<lotes>;
     private readonly repositoryPeso: EntrieRepository<peso>;
+    private readonly repositoryProveedor: EntrieRepository<proveedor>;
+
 
     private DIFMINORMAX:number = Number(process.env.DIFMINORMAX) || 5;
     private DIFDAYSTOEXPIRED:number = Number(process.env.DIFDAYSTOEXPIRED) || 2;
@@ -27,6 +30,8 @@ export class IngredientesServices extends Observable{
         this.repositoryProductoBodega =  new EntrieRepository(productosbodega);
         this.repositoryLotes =  new EntrieRepository(lotes);
         this.repositoryPeso =  new EntrieRepository(peso);
+        this.repositoryProveedor =  new EntrieRepository(proveedor);
+
 
 
     }
@@ -69,8 +74,37 @@ export class IngredientesServices extends Observable{
             return loteExpirationDate <= currentDate;
         });
     
-        return expiredLotes;
+        // Obtener la información completa y eliminar cada lote vencido
+        const detailedExpiredLotes = [];
+        for (const lote of expiredLotes) {
+            // Obtener información del producto asociado al lote
+            const product = await this.repositoryProductoBodega.getById(lote.producto_bodega_id);
+    
+            // Obtener la información del peso asociado al producto
+            const peso = product ? await this.repositoryPeso.getById(product.peso_proveedor_id) : null;
+    
+            detailedExpiredLotes.push({
+                lote_id: lote.lote_id,
+                fecha_vencimiento: lote.fecha_vencimiento,
+                nombreProducto: product ? product.nombre_producto : '',
+                unidadPeso: peso ? peso.unidad : '',
+                cantidad: lote.cantidad
+            });
+    
+            // Eliminar el lote
+            await this.repositoryLotes.delete(lote.lote_id);
+        }
+    
+        if (detailedExpiredLotes.length > 0) {
+            this.notify({
+                type: 'ExpiredLotes',
+                detailedExpiredLotes
+            });
+        }
+    
+        return detailedExpiredLotes;
     }
+    
     
     /**
      * Retrieves all lotes (batches) that are about to expire within a given number of days.
@@ -94,7 +128,26 @@ export class IngredientesServices extends Observable{
             return loteExpirationDate > currentDate && loteExpirationDate <= limitDate;
         });
 
-        if(lotesToExpire !== null ) this.notify(lotesToExpire)
+        const detailedExpiredLotes = await Promise.all(lotesToExpire.map(async (lote) => {
+            // Obtener información del producto asociado al lote
+            const product = await this.repositoryProductoBodega.getById(lote.producto_bodega_id);
+    
+            // Obtener la información del peso asociado al producto
+            const peso = product ? await this.repositoryPeso.getById(product.peso_proveedor_id) : null;
+    
+            return {
+                lote_id: lote.lote_id,
+                fecha_vencimiento: lote.fecha_vencimiento,
+                nombreProducto: product ? product.nombre_producto : '',
+                unidadPeso: peso ? peso.unidad : '',
+                cantidad:lote.cantidad
+            };
+        }));
+
+        if(lotesToExpire !== null ) this.notify({
+            type: 'LotesToExpired',
+            detailedExpiredLotes
+        })
 
     
         return lotesToExpire;
@@ -106,22 +159,22 @@ export class IngredientesServices extends Observable{
      * @param difference - The quantity difference from the minimum stock level to consider.
      * @returns An array of products near or below their minimum stock level.
      */
-    async getProductsNearOrBelowMinimum() {
-        const difference = this.DIFMINORMAX;
-        // Get all products from the repository
-        const allProducts = await this.repositoryProductoBodega.getAll();
+    // async getProductsNearOrBelowMinimum() {
+    //     const difference = this.DIFMINORMAX;
+    //     // Get all products from the repository
+    //     const allProducts = await this.repositoryProductoBodega.getAll();
     
-        // Filter products that are near or below their minimum quantity
-        const productsNearOrBelowMinimum = allProducts.filter(product => {
-            const currentAmount = Number(product.cantidad_actual);
-            const minimumAmount = Number(product.cantidad_minima);
+    //     // Filter products that are near or below their minimum quantity
+    //     const productsNearOrBelowMinimum = allProducts.filter(product => {
+    //         const currentAmount = Number(product.cantidad_actual);
+    //         const minimumAmount = Number(product.cantidad_minima);
     
-            // Check if the current amount is within the specified difference of the minimum amount
-            return currentAmount <= (minimumAmount + difference);
-        });
+    //         // Check if the current amount is within the specified difference of the minimum amount
+    //         return currentAmount <= (minimumAmount + difference);
+    //     });
     
-        return productsNearOrBelowMinimum;
-    }
+    //     return productsNearOrBelowMinimum;
+    // }
 
     /**
      * Retrieves all products that are near or above their maximum stock level.
@@ -153,21 +206,53 @@ export class IngredientesServices extends Observable{
      * @param searchValue - The value to search for in the attribute.
      * @returns An array of products that match the search criteria.
      */
-    async searchProductsBodegaByAttribute(attributeName: keyof productosbodega, searchValue: string) {
-        // Get all products from the repository
+    async searchProductsBodegaByAttribute(attributeName: keyof productosbodega | 'Proveedor' | 'fecha_vencimiento', searchValue: string) {
         const allProducts = await this.repositoryProductoBodega.getAll();
+        let filteredProducts = [];
     
-        // Filter products based on the attribute and search value
-        const filteredProducts = allProducts.filter(product => {
-            const attributeValue = product[attributeName];
-            if (typeof attributeValue === 'string') {
-                return attributeValue.toLowerCase().includes(searchValue.toLowerCase());
-            }
-            return false;
-        });
+        if (attributeName === 'Proveedor') {
+            const allProveedores = await this.repositoryProveedor.getAll();
+            const filteredProveedores = allProveedores.filter(proveedor => proveedor.nombre_proveedor.toLowerCase().includes(searchValue.toLowerCase()));
+            const filteredProductIds = filteredProveedores.map(proveedor => proveedor.proveedor_id);
+            filteredProducts = allProducts.filter(product => filteredProductIds.includes(product.proveedor_id));
+        } else if (attributeName === 'fecha_vencimiento') {
+            const allLotes = await this.repositoryLotes.getAll();
+            const filteredLotes = allLotes.filter(lote => new Date(lote.fecha_vencimiento).toISOString().split('T')[0] === searchValue);
+            const filteredProductIds = filteredLotes.map(lote => lote.producto_bodega_id);
+            filteredProducts = allProducts.filter(product => filteredProductIds.includes(product.producto_bodega_id));
+        } else {
+            filteredProducts = allProducts.filter(product => {
+                const attributeValue = product[attributeName];
+                if (typeof attributeValue === 'string') {
+                    return attributeValue.toLowerCase().includes(searchValue.toLowerCase());
+                }
+                return false;
+            });
+        }
     
-        return filteredProducts;
+        // Construir la información completa para cada producto filtrado
+        const productosConLotes = await Promise.all(filteredProducts.map(async (producto) => {
+            const peso = await this.repositoryPeso.getById(producto.peso_proveedor_id);
+            const lotes = await this.repositoryLotes.getAllByField('producto_bodega_id', producto.producto_bodega_id);
+            const proveedor = await this.repositoryProveedor.getById(producto.proveedor_id);
+    
+            return {
+                prodbodega: {
+                    ...producto,
+                    unidadPeso: peso ? peso.unidad : '',
+                    simboloPeso: peso ? peso.simbolo : '',
+                    tipoPeso: peso ? peso.tipo : '',
+                    lotes: lotes,
+                    proveedor: proveedor || null,
+                    isIconoX: false
+                }
+            };
+        }));
+    
+        return productosConLotes;
     }
+    
+    
     
     /**
      * Retrieves detailed information about all products in the warehouse, including their weight and associated lots.
@@ -186,6 +271,9 @@ export class IngredientesServices extends Observable{
     
                 // Obtener los lotes asociados a este producto
                 const lotes = await this.repositoryLotes.getAllByField('producto_bodega_id', producto.producto_bodega_id);
+
+                const proveedor = await this.repositoryProveedor.getAllByField('proveedor_id', producto.proveedor_id);
+
     
                 // Construir el objeto con información del producto, sus lotes y el peso
                 return {
@@ -195,6 +283,7 @@ export class IngredientesServices extends Observable{
                         simboloPeso: peso ? peso.simbolo : '',
                         tipoPeso: peso ? peso.tipo : '',
                         lotes: lotes,
+                        proveedor:proveedor[0],
                         isIconoX: false
                     }
                 };

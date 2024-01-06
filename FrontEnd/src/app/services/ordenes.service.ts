@@ -57,4 +57,21 @@ export class OrdenesService {
     return this.http.put(url,data);
 
   }
+
+  reciveOrder(idOrder:number,idProv:number){
+    const url= `${base_url}/map/finalizeOrder/${idOrder}`
+    return this.http.post(url,{idProv});
+  }
+
+  search(data:any){
+    const url= `${base_url}/map/searchOrdenes`
+    return this.http.put(url,data);
+  }
+
+  searchPedido(id:string,data:any){
+    const url= `${base_url}/map/searchOrden/${id}`
+    return this.http.put(url,data);
+  }
+
+
 }

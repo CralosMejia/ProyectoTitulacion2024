@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { SearchProveedoresService } from 'src/app/services/communication/searchs/search-proveedores.service';
 import { ProveedoresService } from 'src/app/services/proveedores.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-proveedores',
@@ -23,11 +25,26 @@ export class ProveedoresComponent implements OnInit{
   public titleButton='Agregar'
 
   constructor(
-    private provServices:ProveedoresService
+    private provServices:ProveedoresService,
+    private proveedorSearch:SearchProveedoresService,
+
+
   ){}
 
   ngOnInit(): void {
     this.loaddata()
+
+    this.proveedorSearch.getSearchParameter$().subscribe((param:any)=>{
+      console.log(param)
+      this.provServices.searchProve(param).subscribe((resp:any)=>{
+        if(param.paramSeacrh !==''){
+          this.listProv= resp;
+        }else{
+           this.loaddata()   
+        }
+      })
+    })
+
   }
 
   loaddata(){
@@ -50,6 +67,14 @@ export class ProveedoresComponent implements OnInit{
   }
   
   updateProv(){
+    if(!this.validateForm()){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Todos los campos deben ser rellenados!"
+      });
+      return
+    }
     const data:any={
       "nombre_proveedor": this.nameProv,
       "email": this.emailprov,
@@ -62,6 +87,14 @@ export class ProveedoresComponent implements OnInit{
   }
 
   createProv(){
+    if(!this.validateForm()){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Todos los campos deben ser rellenados!"
+      });
+      return
+    }
     const data:any={
       "nombre_proveedor": this.nameProv,
       "email": this.emailprov,
@@ -74,7 +107,7 @@ export class ProveedoresComponent implements OnInit{
   }
 
 
-  private cleanFrom(){
+  public cleanFrom(){
     this.title='Agregar Nuevo Proveedor'
     this.titleButton='Agregar'
     this.nameProv=''
@@ -82,6 +115,12 @@ export class ProveedoresComponent implements OnInit{
     this.estadoProv='activo'
     this.nivelPov='1'
     this.telefonoProv=''
+  }
+
+  public validateForm(){
+    let resp =false;
+    (this.nameProv===''||this.emailprov===''||this.estadoProv===''||this.nivelPov===''||this.telefonoProv==='')?resp=false:resp=true;
+    return resp
   }
 
 

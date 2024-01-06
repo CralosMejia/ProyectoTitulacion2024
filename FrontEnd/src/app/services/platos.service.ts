@@ -72,4 +72,15 @@ export class PlatosService {
     return this.http.get(url)
   }
 
+  search(data:any){
+    const url = `${base_url}/mipp/search`;
+    return this.http.put(url,data)
+  }
+
+  searchIngredient(id:number,data:any){
+    const url = `${base_url}/mipp/searchIngredientes/${id}`;
+    return this.http.put(url,data)
+  }
+
+
 }

@@ -170,4 +170,20 @@ export class EntrieRepository<T extends Model> {
             throw new Error(`Error al actualizar la entrada con ${String(idFieldName)} = ${idValue}: ${error}`);
         }
     }
+
+    // Método adicional en EntrieRepository para soportar la búsqueda con múltiples criterios
+    async getAllByFieldMultipleCriteria(criteria: Record<string, any>): Promise<T[]> {
+        try {
+            return await this.model.findAll({
+                where: criteria,
+                raw: true
+            });
+        } catch (error) {
+            throw new Error(`Error retrieving entries: ${error}`);
+        }
+    }
+
+    getColumnNames(): string[] {
+        return Object.keys(this.model.rawAttributes);
+    }
 }

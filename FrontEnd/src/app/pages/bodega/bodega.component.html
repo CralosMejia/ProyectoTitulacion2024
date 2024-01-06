@@ -5,7 +5,7 @@
           <th></th>
           <th>Nombre del Producto</th>
           <th>Cantidad en Existencia</th>
-          <th>Cantidad Mínima</th>
+          <!-- <th>Cantidad Mínima</th> -->
           <th>Cantidad Máxima Recomendada</th>
           <th>Proveedor</th>
           <th>Precio</th>
@@ -23,13 +23,13 @@
                       }">
                 </i>
               </button>
-              <button (click)="preparateToEditProd(product.prodbodega.producto_bodega_id,product.prodbodega.cantidad_minima,product.prodbodega.cantidad_maxima,product.prodbodega.precio_proveedor,product.prodbodega.peso_proveedor_id)"><i class="fas fa-pencil-alt"></i></button>
+              <button (click)="preparateToEditProd(product.prodbodega.producto_bodega_id,product.prodbodega.cantidad_minima,product.prodbodega.cantidad_maxima,product.prodbodega.precio_proveedor,product.prodbodega.peso_proveedor_id,product.prodbodega.nombre_producto,product.prodbodega.proveedor_id)"><i class="fas fa-pencil-alt"></i></button>
             </td>
             <td class="td_image">{{product.prodbodega.nombre_producto}}</td>
             <td>{{product.prodbodega.cantidad_actual}} {{product.prodbodega.simboloPeso}}</td>
-            <td>{{product.prodbodega.cantidad_minima}} {{product.prodbodega.simboloPeso}}</td>
+            <!-- <td>{{product.prodbodega.cantidad_minima}} {{product.prodbodega.simboloPeso}}</td> -->
             <td>{{product.prodbodega.cantidad_maxima}} {{product.prodbodega.simboloPeso}}</td>
-            <td>{{product.prodbodega.proveedor}}</td>
+            <td>{{product.prodbodega.proveedor.nombre_proveedor}}</td>
             <td>{{product.prodbodega.precio_proveedor}}</td>
           </tr>
           <tr *ngIf="product.isIconoX">
@@ -46,7 +46,6 @@
                   <tr *ngFor="let lote of product.prodbodega.lotes">
                     <td>
                       <button (click)="peparateToEditLote(lote.lote_id,lote.cantidad,lote.fecha_vencimiento,product.prodbodega.producto_bodega_id)"><i class="fas fa-pencil-alt"></i></button>
-                      <!-- <button><i class="fas fa-trash-alt"></i></button> -->
                       <app-deleted-button
                       [functionDelete]="deleteLote.bind(this)"
                       [entrieId]="lote.lote_id"
@@ -75,17 +74,16 @@
     <div class="form-row">
         <div class="input-group">
             <label for="warehouse">NOMBRE DEL PRODUCTO</label>
-            <!--  -->
-            <select *ngIf="isLote || isProdUpdate" [(ngModel)]="productoSeleccionado"  [disabled]="isLoteUpdate">
+            <select *ngIf="isLote" [(ngModel)]="productoSeleccionado"  [disabled]="isLoteUpdate || isProdUpdate" >
               <option *ngFor="let producto of listProductosBodega" [value]="producto.producto_bodega_id">
                 {{producto.nombre_producto}}
               </option>
             </select>
-            <input *ngIf="!isLote && !isProdUpdate" type="text"  placeholder="Type here..." [(ngModel)]="nameProd">
+            <input *ngIf="!isLote" type="text"  placeholder="Type here..." [(ngModel)]="nameProd">
         </div>
         <div class="input-group" >
-            <label for="cant_min" *ngIf="!isLote" >CANTIDAD MINIMA</label>
-            <input class="input-weigth" type="number" id="cant_min" placeholder="Type here..." *ngIf="!isLote"  [(ngModel)]="minQuantityProd">
+            <!-- <label for="cant_min" *ngIf="!isLote" >CANTIDAD MINIMA</label>
+            <input class="input-weigth" type="number" id="cant_min" placeholder="Type here..." *ngIf="!isLote"  [(ngModel)]="minQuantityProd"> -->
             <!--  -->
             <label for="cant-lote" *ngIf="isLote" >CANTIDAD</label>
             <input  type="number" id="cant-lote" placeholder="Type here..." *ngIf="isLote"  [(ngModel)]="quantityNewLot">
@@ -103,7 +101,10 @@
       </div>
         <div class="input-group">
             <label for="phone"  *ngIf="!isLote" >PESO</label>
+
             <select [(ngModel)]="pesoSeleccionado"  [disabled]="isProdUpdate" *ngIf="!isLote">
+            <!-- <select [(ngModel)]="pesoSeleccionado"   *ngIf="!isLote"> -->
+
               <option *ngFor="let peso of pesoList" [value]="peso.peso_id">
                 {{peso.unidad}}
               </option>
@@ -124,6 +125,8 @@
     >
         {{NameButton}}
     </button>
+    <button  class="cancel" (click)="cancel()">Cancelar</button>
+
 </div>
 
 

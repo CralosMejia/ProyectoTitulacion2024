@@ -43,4 +43,10 @@ export class BodegaService {
     const url = `${base_url}/productoBodega/update/${id}`
     return this.http.put(url,data)
   }
+
+
+  search(data:any){
+    const url = `${base_url}/mgpaab/searchProduct`
+    return this.http.put(url,data)
+  }
 }

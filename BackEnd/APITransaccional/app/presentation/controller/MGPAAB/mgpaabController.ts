@@ -67,16 +67,16 @@ export const getLotesToExpire = async (_req: Request, res: Response): Promise<Re
  * @param res - The response object used to send back the products data or an error message.
  * @returns A promise resolving to the response object.
  */
-export const getProductsNearOrBelowMinimum = async (_req: Request, res: Response): Promise<Response> => {
+// export const getProductsNearOrBelowMinimum = async (_req: Request, res: Response): Promise<Response> => {
 
-    try {
-        const resp = await ingredientesServ.getProductsNearOrBelowMinimum();
-        return res.status(200).json(resp);
-    } catch (error) {
-        console.error('error when gettinglotes to expireexpired lote:', error);
-        return res.status(400).send(error);
-    }
-};
+//     try {
+//         const resp = await ingredientesServ.getProductsNearOrBelowMinimum();
+//         return res.status(200).json(resp);
+//     } catch (error) {
+//         console.error('error when gettinglotes to expireexpired lote:', error);
+//         return res.status(400).send(error);
+//     }
+// };
 
 
 /**
@@ -111,7 +111,7 @@ export const searchProduct = async (req: Request, res: Response): Promise<Respon
         const resp = await ingredientesServ.searchProductsBodegaByAttribute(atributeSearch,paramSeacrh);
         return res.status(200).json(resp);
     } catch (error) {
-        console.error('error when gettinglotes to expireexpired lote:', error);
+        console.error('Not found', error);
         return res.status(400).send(error);
     }
 };

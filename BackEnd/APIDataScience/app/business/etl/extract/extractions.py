@@ -2,6 +2,7 @@ from app.business.etl.utils.etl_funtions import extract_load_function
 import time
 
 
+
 def run_extractions(ses_db_pacifico,ses_db_etls):
     """
     extracts all the information from each of the tables

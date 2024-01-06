@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { MenuService } from 'src/app/services/communication/menu.service';
 
@@ -19,7 +19,7 @@ export class SidebarComponent implements OnInit {
     },
     {
       id:1,
-      name:'Menú',
+      name:'Recetario',
       icon:'fa-utensils',
       url:'menu/listar/plato'
     },
@@ -55,16 +55,40 @@ export class SidebarComponent implements OnInit {
     private menuSrv: MenuService
   ){}
 
+
   ngOnInit() {
     // Obtiene la URL actual
     const url = this.router.url;
-    //this.setActive(2,'bodega')
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        if(this.getValueFromLocalStorage('index')!==null && this.getValueFromLocalStorage('url')!==null && this.getValueFromLocalStorage('name')!==null){
+          this.activeItem=Number(this.getValueFromLocalStorage('index'))
+          const name=this.getValueFromLocalStorage('name') || ''
+          this.comunicateNavigation('',name)
+        }else{
+          this.setActive(2,'bodega','Bodega')
+        }
+      }
+    });
+    window.addEventListener('unload', function (event) {
+      localStorage.removeItem("index");
+      localStorage.removeItem("url");
+      localStorage.removeItem("name");
+
+    });
+    
   }
 
   // Método para cambiar el ítem activo
-  setActive(index: number,url:string,name:string) {
-    this.activeItem = index;
-    this.navigateByURL(url,name)
+  setActive(index: number|null,url:string|null,name:string|null) {
+    if(index!==null&&url!==null && name !==null){
+      this.activeItem = index;
+      this.navigateByURL(url,name)
+      localStorage.setItem('index', index.toString());
+      localStorage.setItem('url', url);
+      localStorage.setItem('name', name);
+    }
+
   }
 
   navigateByURL(url:string,name:string){
@@ -73,8 +97,15 @@ export class SidebarComponent implements OnInit {
 
   }
 
+  clickButton(index: number|null,url:string|null,name:string|null){
+    
+  }
+
   comunicateNavigation(routeUrl:string,name:string){
     this.menuSrv.changeurlNavigationParameter(routeUrl,name)
   }
 
+  getValueFromLocalStorage(clave: string): string | null {
+    return localStorage.getItem(clave);
+  }
 }

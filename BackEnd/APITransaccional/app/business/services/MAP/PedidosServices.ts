@@ -1,4 +1,4 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { OrderStatus } from "../../../data/models/AuxModels/OrderStatus";
 import { detalleordenes } from "../../../data/models/RestaurantePacificoDB/detalleordenes";
 import { ordenes } from "../../../data/models/RestaurantePacificoDB/ordenes";
@@ -7,30 +7,31 @@ import { EntrieRepository } from "../../../data/repository/entrieRepository";
 import { ValidatorPedidosServices } from "../../validators/MAP/validatorPedidosServices";
 import { proveedor } from "../../../data/models/RestaurantePacificoDB/proveedor";
 import { peso } from "../../../data/models/RestaurantePacificoDB/peso";
+import { Observable } from "../common/Observable";
+import { IngredientesServices } from "../MGPAAB/IngredientesServices";
 
 /**
  * Service class for managing orders and order details in a restaurant.
  */
 @injectable()
-export class PedidosServices{
+export class PedidosServices extends Observable{
 
     private readonly repositoryOrdenes: EntrieRepository<ordenes>;
     private readonly repositoryDetalleOrden: EntrieRepository<detalleordenes>;
     private readonly repositoryProductosBodega: EntrieRepository<productosbodega>;
     private readonly repositoryProveedor: EntrieRepository<proveedor>;
     private readonly repositoryPeso: EntrieRepository<peso>;
-
     private readonly validator:ValidatorPedidosServices;
 
 
 
-    constructor(){
+    constructor(@inject(IngredientesServices) private ingredietesServices: IngredientesServices,){
+        super()
         this.repositoryOrdenes =  new EntrieRepository(ordenes);
         this.repositoryDetalleOrden =  new EntrieRepository(detalleordenes);
         this.repositoryProductosBodega =  new EntrieRepository(productosbodega);
         this.repositoryPeso =  new EntrieRepository(peso);
         this.repositoryProveedor =  new EntrieRepository(proveedor);
-
         this.validator= new ValidatorPedidosServices();
     }
 
@@ -170,7 +171,21 @@ export class PedidosServices{
             // Validar el estado de la orden antes de crear el detalle
             await this.validator.validateManageDeatelleOrden(detalleOrden.orden_id);
     
-            return await this.repositoryDetalleOrden.create(detalleOrden);
+            // Buscar si existe un detalle de orden con el mismo producto y orden
+            const existingDetail = await this.repositoryDetalleOrden.getAllByFieldMultipleCriteria({
+                orden_id: detalleOrden.orden_id,
+                producto_bodega_id: detalleOrden.producto_bodega_id
+            });
+    
+            if (existingDetail && existingDetail.length > 0  && detalleOrden.cantidad_necesaria !== undefined) {
+                // Si existe, actualizar la cantidad
+                const updatedCantidad = Number(existingDetail[0].cantidad_necesaria) + detalleOrden.cantidad_necesaria ;
+                await this.repositoryDetalleOrden.update(existingDetail[0].detalle_orden_id, { cantidad_necesaria: updatedCantidad });
+                return existingDetail[0];
+            } else {
+                // Si no existe, crear un nuevo detalle de orden
+                return await this.repositoryDetalleOrden.create(detalleOrden);
+            }
         } catch (error) {
             throw error;
         }
@@ -213,8 +228,14 @@ export class PedidosServices{
             if (!order) {
                 throw new Error(`Order with ID ${orderId} not found.`);
             }
-    
+            
             this.validator.validateStatusTransition(order.estado as OrderStatus, newStatus);
+
+            if(newStatus === 'Enviado'){
+                this.processAndNotifyApprovedOrders()
+                return 1
+            }
+    
     
             // Retorna el número de filas afectadas
             return await this.repositoryOrdenes.updateSingleFieldById('orden_id', orderId, 'estado', newStatus);
@@ -230,30 +251,47 @@ export class PedidosServices{
      * 
      * @param orderId - The ID of the order to finalize.
      */
-    async finalizeOrder(orderId: number): Promise<void> {
+    async finalizeOrder(orderId: number, proveedorId: number): Promise<void> {
         try {
-            const newStatus: OrderStatus = 'Recibido';
-            const affectedRows = await this.changeOrderStatus(orderId, newStatus);
-    
-            if (affectedRows === 0) {
-                throw new Error(`No order was updated for order ID ${orderId}.`);
-            }
-    
             const orderDetails = await this.repositoryDetalleOrden.getAllByField('orden_id', orderId);
     
             for (const detail of orderDetails) {
                 const producto = await this.repositoryProductosBodega.getById(detail.producto_bodega_id);
+                if (!producto) continue;
     
-                if (producto && detail.cantidad_necesaria !== undefined &&  producto.cantidad_actual !== undefined) {
+                // Actualizar los detalles de la orden según el proveedorId
+                if (proveedorId === 0 || producto.proveedor_id === proveedorId) {
                     const newCantidadActual = Number(producto.cantidad_actual) + Number(detail.cantidad_necesaria);
-                    await this.repositoryProductosBodega.updateSingleFieldById('producto_bodega_id', producto.producto_bodega_id, 'cantidad_actual', newCantidadActual);
+                    //await this.repositoryProductosBodega.updateSingleFieldById('producto_bodega_id', producto.producto_bodega_id, 'cantidad_actual', newCantidadActual);
+                    const expiredDate: Date = new Date();
+                    expiredDate.setDate(expiredDate.getDate() + 30);
+                    const newLote:any={
+                        "producto_bodega_id": detail.producto_bodega_id,
+                        "fecha_vencimiento": expiredDate,
+                        "cantidad": newCantidadActual
+                    }
+                    this.ingredietesServices.addLote(newLote)
+    
+                    // Actualizar el estado del detalle de la orden a 'Recibido'
+                    await this.repositoryDetalleOrden.updateSingleFieldById('detalle_orden_id', detail.detalle_orden_id, 'estado', 'Recibido');
                 }
             }
+    
+            // Verificar si todos los detalles de la orden han sido actualizados a 'Recibido'
+            const updatedOrderDetails = await this.repositoryDetalleOrden.getAllByField('orden_id', orderId);
+            const allDetailsReceived = updatedOrderDetails.every(detail => detail.estado === 'Recibido');
+    
+            // Cambiar el estado de la orden a 'Recibido' si todos los detalles han sido recibidos
+            if (allDetailsReceived) {
+                await this.repositoryOrdenes.updateSingleFieldById('orden_id', orderId, 'estado', 'Recibido');
+            }
         } catch (error) {
-            await this.repositoryOrdenes.updateSingleFieldById('orden_id', orderId, 'estado', 'Enviado');
+            console.error('Error finalizing the order:', error);
             throw error;
         }
     }
+    
+    
     
     /**
      * Retrieves complete information about a specific product in the warehouse.
@@ -298,6 +336,166 @@ export class PedidosServices{
             throw error;
         }
     }
+    async processAndNotifyApprovedOrders() {
+        try {
+            // Obtener todas las órdenes con estado 'Aprobado'
+            const approvedOrders = await this.repositoryOrdenes.getAllByField('estado', 'Aprobado');
+    
+            // Crear un objeto para agrupar los detalles de las órdenes por proveedor
+            const ordersBySupplier: Record<number, any[]> = {};
+    
+            // Cambiar el estado y agrupar detalles por proveedor
+            for (const order of approvedOrders) {
+                await this.repositoryOrdenes.updateSingleFieldById('orden_id', order.orden_id, 'estado', 'Enviado');
+                
+                // Obtener los detalles de la orden
+                const orderDetails = await this.repositoryDetalleOrden.getAllByField('orden_id', order.orden_id);
+    
+                for (const detail of orderDetails) {
+                    // Obtener información del producto
+                    const product = await this.repositoryProductosBodega.getById(detail.producto_bodega_id);
+                    if (!product) continue;
+                    const peso = await this.repositoryPeso.getById(product.peso_proveedor_id); // Obtener el peso
+
+    
+                    const supplierId = product.proveedor_id;
+                    if (!ordersBySupplier[supplierId]) {
+                        ordersBySupplier[supplierId] = [];
+                    }
+    
+                    const supplierInfo = await this.repositoryProveedor.getById(supplierId);
+                    ordersBySupplier[supplierId].push({
+                        ...detail,
+                        productInfo: product,
+                        supplierInfo: supplierInfo,
+                         pesoInfo: peso
+                    });
+                }
+            }
+            if(approvedOrders.length !==0) this.notify(ordersBySupplier);
+
+    
+            return `Se han procesado y notificado ${approvedOrders.length} órdenes.`;
+        } catch (error) {
+            console.error('Error al procesar y notificar las órdenes:', error);
+            throw error;
+        }
+    }
+    
+    async searchProveedoresByAttribute(attributeName: keyof proveedor, searchValue: string) {
+        // Obtener todos los proveedores
+        const allProveedores = await this.repositoryProveedor.getAll();
+    
+        // Filtrar proveedores basándose en el atributo y valor de búsqueda
+        const filteredProveedores = allProveedores.filter(proveedor => {
+            const attributeValue = proveedor[attributeName];
+            if (typeof attributeValue === 'string') {
+                return attributeValue.toLowerCase().includes(searchValue.toLowerCase());
+            }
+            return false;
+        });
+    
+        // Construir la información detallada de los proveedores filtrados
+        const detailedProveedores = filteredProveedores.map(proveedor => ({
+            proveedor_id: proveedor.proveedor_id,
+            nombre_proveedor: proveedor.nombre_proveedor,
+            email: proveedor.email,
+            telefono: proveedor.telefono,
+            nivel: proveedor.nivel,
+            estado: proveedor.estado
+        }));
+    
+        return detailedProveedores;
+    }
+
+    async searchOrdenesByAttribute(attributeName: keyof ordenes, searchValue: string) {
+        // Obtener todas las órdenes
+        const allOrdenes = await this.repositoryOrdenes.getAll();
+    
+        // Filtrar órdenes basándose en el atributo y valor de búsqueda
+        const filteredOrdenes = allOrdenes.filter(orden => {
+            const attributeValue = orden[attributeName];
+            if (typeof attributeValue === 'string') {
+                return attributeValue.toLowerCase().includes(searchValue.toLowerCase());
+            } else if (typeof attributeValue === 'number') {
+                return attributeValue === Number(searchValue);
+            } else if (attributeValue instanceof Date) {
+                // Para fechas, puedes comparar como prefieras, por ejemplo:
+                return attributeValue.toISOString().split('T')[0] === searchValue;
+            }
+            return false;
+        });
+    
+        // Construir la información detallada de las órdenes filtradas
+        const detailedOrdenes = filteredOrdenes.map(orden => ({
+            orden_id: orden.orden_id,
+            fecha_orden: orden.fecha_orden,
+            estado: orden.estado,
+            modo_creacion: orden.modo_creacion,
+            total: orden.total
+            // Puedes agregar más campos aquí si es necesario
+        }));
+    
+        return detailedOrdenes;
+    }
+
+    async searchCompleteOrderInfoByAttributeAndId(orderId: number, attributeName: keyof productosbodega | keyof detalleordenes | keyof peso | keyof proveedor, searchValue: string) {
+        // Obtener la orden específica por ID
+        const order = await this.repositoryOrdenes.getById(orderId);
+        if (!order) {
+            throw new Error('Order not found');
+        }
+    
+        // Obtener los detalles de la orden
+        const orderDetails = await this.repositoryDetalleOrden.getAllByField('orden_id', orderId);
+    
+        // Obtener la información completa de cada detalle de la orden
+        const detailedOrderInfo = await Promise.all(orderDetails.map(async (detail) => {
+            const product = await this.repositoryProductosBodega.getById(detail.producto_bodega_id);
+            if(product === null) throw new Error('Detail is null')
+
+            const proveedor = await this.repositoryProveedor.getById(product.proveedor_id);
+            const peso = await this.repositoryPeso.getById(product.peso_proveedor_id);
+    
+            return {
+                ...detail,
+                productInfo: product,
+                proveedorNombre: proveedor ? proveedor.nombre_proveedor : '',
+                pesoInfo: {
+                    unidad: peso ? peso.unidad : '',
+                    simbolo: peso ? peso.simbolo : '',
+                    tipo: peso ? peso.tipo : ''
+                }
+            };
+        }));
+    
+        // Filtrar la información detallada de la orden basándose en el atributo y valor de búsqueda
+        const filteredDetails = detailedOrderInfo.filter((detail:any )=> {
+            switch (attributeName) {
+                case 'nombre_producto':
+                    return detail.productInfo.nombre_producto.toLowerCase().includes(searchValue.toLowerCase());
+                case 'cantidad_necesaria':
+                    return detail.cantidad_necesaria.toString().includes(searchValue);
+                case 'unidad':
+                    return detail.pesoInfo.unidad.toLowerCase().includes(searchValue.toLowerCase());
+                case 'precio_proveedor':
+                    return detail.productInfo.precio_proveedor.toString().includes(searchValue);
+                case 'nombre_proveedor':
+                    return detail.proveedorNombre.toLowerCase().includes(searchValue.toLowerCase());
+                default:
+                    return false;
+            }
+        });
+    
+        return {
+            order: order,
+            orderDetails: filteredDetails
+        };
+    }
+
+
+    
+    
     
     
     

@@ -1,9 +1,10 @@
 import pandas as pd
-from sqlalchemy import text
+from sqlalchemy import text, func
 from sqlalchemy.orm import Session
 
 from app.business.etl.utils.etl_funtions import find_peso_id_by_ingredienteid, find_value_by_two_ids, get_id_by_dates, \
     exists_row_in_df, get_value_in_df_by_list, update_value_by_filters
+from app.data.Models.DataScienceDBModels import Dimfecha
 
 
 def transform_demanda(ses_db_etls: Session):
@@ -20,6 +21,7 @@ def transform_demanda(ses_db_etls: Session):
         # Extraer datos de las tablas Ventas_ETL_TRA y IngredientesPorPlato_ETL_TRA
         df_ventas = pd.read_sql('SELECT * FROM Ventas_ETL_TRA', con=engine_etls)
         df_ingredientes_por_plato = pd.read_sql('SELECT * FROM IngredientesPorPlato_ETL_TRA', con=engine_etls)
+        df_plato = pd.read_sql('SELECT * FROM Platos_ETL_TRA', con=engine_etls)
 
 
         # Crear nuevo DataFrame para almacenar los resultados
@@ -33,12 +35,18 @@ def transform_demanda(ses_db_etls: Session):
 
             # Encontrar ingredientes para el plato actual
             ingredientes = df_ingredientes_por_plato[df_ingredientes_por_plato['plato_id'] == venta['plato_id']]
+            plato=df_plato[df_plato['plato_id']== venta['plato_id']]
 
             # Calcular la cantidad total para cada ingrediente
             for index, ingrediente in ingredientes.iterrows():
                 producto_id = ingrediente['producto_bodega_id']
                 cantidad_usada = ingrediente['cantidad_usada']
-                cantidad_total = cantidad_usada * cantidad
+                #cantidad_total=cantidad_usada * (cantidad/cantidad_platos)
+                if plato['numero_platos'].values[0] == 0:
+                    raise TypeError(
+                        f"An error has occurred since the number of plates is 0, of the plate: {plato['plato_id'].values[0]}")
+
+                cantidad_total = cantidad_usada * (cantidad/plato['numero_platos'].values[0])
 
                 values = [('fecha_id', fecha_id), ('producto_id', producto_id)]
                 if not exists_row_in_df(df_cantidad_total_por_fecha, values):
@@ -53,7 +61,7 @@ def transform_demanda(ses_db_etls: Session):
                 else:
                     exist_cantidad_total= get_value_in_df_by_list(df_cantidad_total_por_fecha, 'cantidad_total', values)
                     cantidad_total = cantidad_total + exist_cantidad_total;
-                    update_value_by_filters(df_cantidad_total_por_fecha,values,'cantidad_total',exist_cantidad_total)
+                    update_value_by_filters(df_cantidad_total_por_fecha,values,'cantidad_total',cantidad_total)
 
 
 
@@ -68,7 +76,7 @@ def transform_demanda(ses_db_etls: Session):
         raise TypeError(f"An error occurred in the transformation of data from the Demanda_ETL_TRA table. Error: {e}")
 
 
-def transform_fechas_ventas(ses_db_etls: Session):
+def transform_fechas_ventas(ses_db_etls: Session,ses_db_data_science:Session):
     """
     Extracts the date and splits each of its components.
 
@@ -78,22 +86,37 @@ def transform_fechas_ventas(ses_db_etls: Session):
     try:
         # Obtener el motor asociado a la sesión
         engine_etls = ses_db_etls.bind
+        engine_data_science = ses_db_data_science.bind
+
 
         # Extraer datos de la tabla Ventas_ETL_EXT y guardar en un DataFrame
         ventas_df = pd.read_sql('SELECT * FROM Ventas_ETL_EXT', con=engine_etls)
         ventas_df['fecha_inicio_semana_date'] = pd.to_datetime(ventas_df['fecha_inicio_semana'])
+        fechas_ds_df = pd.read_sql('SELECT * FROM DimFecha', con=engine_data_science)
+
 
 
         df_fecha_ventas = pd.DataFrame()
         fechas_procesadas = set()
 
+        if (fechas_ds_df.empty):
+            fecha_id = 0
+        else:
+            fecha_id = ses_db_data_science.query(func.max(Dimfecha.fecha_id)).scalar() or 0
+
         for index, row in ventas_df.iterrows():
             fechaInicio = row['fecha_inicio_semana_date']
             fechaInicioStr = row['fecha_inicio_semana']
 
+
+
+
+
             # Verificar si la fecha ya existe en el conjunto
             if fechaInicioStr not in fechas_procesadas:
+                fecha_id+=1
                 df_fecha_ventas = pd.concat([df_fecha_ventas, pd.DataFrame([{
+                    'fecha_ETL_TRA_id':fecha_id,
                     'fecha': fechaInicioStr,
                     'mes': fechaInicio.month,
                     'anio': fechaInicio.year,
@@ -140,6 +163,10 @@ def transform_ingredientes_plato(ses_db_etls: Session):
             peso_proveedor_id = find_peso_id_by_ingredienteid(producto_bodega_id, producto_bodega_df)
 
             factor_conversion = find_value_by_two_ids(peso_id, "peso_id_origen", peso_proveedor_id, "peso_id_destino", "factor_conversion", conversion_peso_df)
+
+            if factor_conversion is None:
+                raise TypeError(f"an error occurred in the transformation of the weight of the ingredient per plate: {row['ingrediente_plato_id']}")
+
             cantidad_usada = cantidad_necesaria_preparacion * factor_conversion
 
             df_ingrediente_plato = pd.concat([df_ingrediente_plato, pd.DataFrame([{
@@ -217,6 +244,7 @@ def transform_platos(ses_db_etls: Session):
                 'plato_id': row["plato_id"],
                 'nombre_plato': row["nombre_plato"],
                 'descripcion': row["descripcion"],
+                'numero_platos': row["numero_platos"],
                 'precio': row["precio"],
                 'imagen': row["imagen"],
                 'estado': row["estado"]
@@ -270,7 +298,7 @@ def transform_producto_bodega(ses_db_etls: Session):
         raise TypeError(f"An error occurred in the transformation of data from the Producto Bodega table. Error: {e}")
 
 
-def transform_ventas(ses_db_etls: Session):
+def transform_ventas(ses_db_etls: Session,ses_db_data_science):
     """
     Consolidates all factura and detalle factura information.
 
@@ -280,16 +308,23 @@ def transform_ventas(ses_db_etls: Session):
     try:
         # Obtener el motor asociado a la sesión
         engine_etls = ses_db_etls.bind
+        engine_data_science = ses_db_data_science.bind
+
 
         # Extraer datos de las tablas Ventas_ETL_EXT y Fecha_ETL_TRA y guardar en DataFrames
         ventas_df = pd.read_sql('SELECT * FROM Ventas_ETL_EXT', con=engine_etls)
         fechas_df = pd.read_sql('SELECT * FROM Fecha_ETL_TRA', con=engine_etls)
+        fechas_ds_df = pd.read_sql('SELECT * FROM DimFecha', con=engine_data_science)
+
 
         # Crear nuevo DataFrame para almacenar los resultados
         df_facturas_complete = pd.DataFrame()
 
         for index, row in ventas_df.iterrows():
-            fecha_id = get_id_by_dates(row['fecha_inicio_semana'], fechas_df)
+            if(fechas_ds_df.empty):
+                fecha_id = get_id_by_dates(row['fecha_inicio_semana'], fechas_df,'fecha_ETL_TRA_id')
+            else:
+                fecha_id = get_id_by_dates(row['fecha_inicio_semana'], fechas_ds_df,'fecha_id')
 
             df_facturas_complete = pd.concat([df_facturas_complete, pd.DataFrame([{
                 'venta_id': row["venta_id"],

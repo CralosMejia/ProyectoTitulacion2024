@@ -5,6 +5,8 @@ import { detalleordenes as _detalleordenes } from "./detalleordenes";
 import type { detalleordenesAttributes, detalleordenesCreationAttributes } from "./detalleordenes";
 import { ingredientesporplato as _ingredientesporplato } from "./ingredientesporplato";
 import type { ingredientesporplatoAttributes, ingredientesporplatoCreationAttributes } from "./ingredientesporplato";
+import { logsapp as _logsapp } from "./logsapp";
+import type { logsappAttributes, logsappCreationAttributes } from "./logsapp";
 import { lotes as _lotes } from "./lotes";
 import type { lotesAttributes, lotesCreationAttributes } from "./lotes";
 import { ordenes as _ordenes } from "./ordenes";
@@ -24,6 +26,7 @@ export {
   _conversionpeso as conversionpeso,
   _detalleordenes as detalleordenes,
   _ingredientesporplato as ingredientesporplato,
+  _logsapp as logsapp,
   _lotes as lotes,
   _ordenes as ordenes,
   _peso as peso,
@@ -40,6 +43,8 @@ export type {
   detalleordenesCreationAttributes,
   ingredientesporplatoAttributes,
   ingredientesporplatoCreationAttributes,
+  logsappAttributes,
+  logsappCreationAttributes,
   lotesAttributes,
   lotesCreationAttributes,
   ordenesAttributes,
@@ -60,6 +65,7 @@ export function initModels(sequelize: Sequelize) {
   const conversionpeso = _conversionpeso.initModel(sequelize);
   const detalleordenes = _detalleordenes.initModel(sequelize);
   const ingredientesporplato = _ingredientesporplato.initModel(sequelize);
+  const logsapp = _logsapp.initModel(sequelize);
   const lotes = _lotes.initModel(sequelize);
   const ordenes = _ordenes.initModel(sequelize);
   const peso = _peso.initModel(sequelize);
@@ -95,6 +101,7 @@ export function initModels(sequelize: Sequelize) {
     conversionpeso: conversionpeso,
     detalleordenes: detalleordenes,
     ingredientesporplato: ingredientesporplato,
+    logsapp: logsapp,
     lotes: lotes,
     ordenes: ordenes,
     peso: peso,

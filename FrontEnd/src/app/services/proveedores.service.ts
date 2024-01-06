@@ -29,4 +29,9 @@ export class ProveedoresService {
     return this.http.put(url,data)
 
   }
+
+  searchProve(data:any){
+    const url= `${base_url}/map/searchProveedor`
+    return this.http.put(url,data)
+  }
 }

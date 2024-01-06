@@ -6,20 +6,20 @@ import { Observable, Subject } from 'rxjs';
 })
 export class MenuService {
 
-  private urlNavigationParameter:string | undefined;
-  private urlNavigationParameter$: Subject<string>;
+  private urlNavigationParameter:object | undefined;
+  private urlNavigationParameter$: Subject<object>;
 
   constructor() { 
     this.urlNavigationParameter$= new Subject();
   }
 
   changeurlNavigationParameter(url:string,name:string){
-    this.urlNavigationParameter = url;
-    this.urlNavigationParameter = name;
+    // this.urlNavigationParameter = url;
+    this.urlNavigationParameter = {name,url};
     this.urlNavigationParameter$.next(this.urlNavigationParameter);
   }
 
-  geturlNavigationParameter$():Observable<string>{
+  geturlNavigationParameter$():Observable<object>{
     return this.urlNavigationParameter$.asObservable();
   }
 }

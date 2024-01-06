@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.business.etl.utils.etl_funtions import exists_row_in_df, get_value_in_df_by_list, exists_date_in_df, \
     exists_value_in_df_by_column
-from app.data.Models.DataScienceDBModels import Dimfecha, Hechosdemandaproducto
+from app.data.Models.DataScienceDBModels import Hechosdemandaproducto, Dimfecha
 
 
 def load_demanda_producto_facts(ses_db_etls: Session, ses_db_data_science: Session, table_name_extraction: str, table_name_load: str):
@@ -72,7 +72,7 @@ def load_fecha_dim(ses_db_etls: Session, ses_db_data_science: Session, table_nam
         fecha_df = pd.DataFrame()
 
         # Obtener el ID máximo actual
-        max_fecha_id = ses_db_data_science.query(func.max(Dimfecha.fecha_id)).scalar() or 0
+        #max_fecha_id = ses_db_data_science.query(func.max(Dimfecha.fecha_id)).scalar() or 0
 
         for index, row in fecha_etl_df.iterrows():
             fecha_id = row["fecha_ETL_TRA_id"]
@@ -83,9 +83,10 @@ def load_fecha_dim(ses_db_etls: Session, ses_db_data_science: Session, table_nam
 
             if not exists_date_in_df(fecha, fecha_dim_df):
                 if not exists_date_in_df(fecha, fecha_df):
-                    max_fecha_id += 1  # Incrementar el ID
+
+                    #max_fecha_id += 1  # Incrementar el ID
                     fecha_df = pd.concat([fecha_df, pd.DataFrame([{
-                        'fecha_id': max_fecha_id,
+                        'fecha_id': fecha_id,
                         'fecha': datetime.strptime(fecha, "%Y-%m-%d").date(),
                         'semana': semana,
                         'mes': mes,

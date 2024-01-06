@@ -1,7 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { SearchIngredienteService } from 'src/app/services/communication/searchs/search-ingrediente.service';
 import { PlatosService } from 'src/app/services/platos.service';
+import Swal from 'sweetalert2';
 
 
 
@@ -27,6 +29,8 @@ export class PlatoComponent implements OnInit{
   public nombrePlato!: string;
   public descripcionPlato!: string;
   public precioPlato!: number;
+  public cantidadPlato!: number;
+
   imgPlato= null
   isIngredienteUpdate=false
   indexIngredienteUpdate=0;
@@ -40,12 +44,26 @@ export class PlatoComponent implements OnInit{
     private route:ActivatedRoute,
     private platoServices:PlatosService,
     private router:Router,
+    private ingredienteSearch:SearchIngredienteService,
   ){}
 
   ngOnInit(): void {
     this.loaddata()
     this.getPlatoID();
     this.getLoadInfoPlato();
+
+    this.ingredienteSearch.getSearchParameter$().subscribe((param:any)=>{
+      console.log(param)
+      this.platoServices.searchIngredient(Number(this.idPlato),param).subscribe((resp:any)=>{
+        if(param.paramSeacrh !==''){
+          this.ingredients= resp;
+        }else{
+           this.getLoadInfoPlato()   
+        }
+      })
+    })
+
+
 
 
   }
@@ -55,7 +73,7 @@ export class PlatoComponent implements OnInit{
       this.listProductosBodega= resp.entriesList;
     })
     this.platoServices.getAllPeso().subscribe((resp:any)=>{
-      this.listpeso= resp.entriesList;
+      this.listpeso= resp.entriesList.filter((objeto:any) => objeto.tipo_uso === 'uso' || objeto.tipo_uso === 'ambos');
     })
   }
 
@@ -82,6 +100,14 @@ export class PlatoComponent implements OnInit{
   }
 
   addIngredient() {
+    if(!this.validateIngredient()){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Todos los campos deben estar llenos y la cantidad debe ser mayor a cero!"
+      });
+      return
+    }
     if(this.idPlato !== "0"){
       //llama al servicio
       this.platoServices.addIngredient({
@@ -137,6 +163,14 @@ export class PlatoComponent implements OnInit{
   }
 
   editIngredient(){
+    if(!this.validateIngredient()){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Todos los campos deben estar llenos y la cantidad debe ser mayor a cero!"
+      });
+      return
+    }
     if(this.idPlato !== "0"){
       this.platoServices.editIngredient(this.idIngredienteUpdate,{
         "producto_bodega_id": this.selectedProductoId ,
@@ -157,10 +191,19 @@ export class PlatoComponent implements OnInit{
   }
   
   editPlato(){
+    if(!this.validatePlato()){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Todos los campos deben estar llenos y los valores numericos deben ser mayor a cero!"
+      });
+      return
+    }
     const plato={
       "nombre_plato": this.nombrePlato,
       "descripcion": this.descripcionPlato,
       "precio": this.precioPlato,
+      "numero_platos": this.cantidadPlato,
       "imagen": this.imgPlato
     }
     this.platoServices.editPlato(Number(this.idPlato),plato).subscribe(()=>{
@@ -169,6 +212,14 @@ export class PlatoComponent implements OnInit{
   }
 
   createPlatoComplete(){
+    if(!this.validatePlato()){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Todos los campos deben estar llenos y los valores numericos deben ser mayor a cero!"
+      });
+      return
+    }
 
     const newListaIngredientes = this.ingredients.map(objeto => ({
       producto_bodega_id: objeto.producto_bodega_id,
@@ -212,5 +263,16 @@ export class PlatoComponent implements OnInit{
   }
 
   ///PRIVATE METhODS
+  private validateIngredient(){
+    let resp=false;
+    (this.selectedCantidad<=0 || this.selectedProductoId <=0 || this.selectedPesoId<=0)?resp=false:resp=true;
+    return resp
+  }
+
+  private validatePlato(){
+    let resp= false;
+    (this.nombrePlato === '' || this.descripcionPlato===''||this.precioPlato <=0 || this.cantidadPlato<=0)?resp=false:resp=true;
+    return resp;
+  }
   
 }

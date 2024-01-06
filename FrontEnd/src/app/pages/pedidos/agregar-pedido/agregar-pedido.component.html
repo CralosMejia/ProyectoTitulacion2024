@@ -14,6 +14,7 @@
               <th>Peso</th>
               <th>Precio provedor</th>
               <th>Proveedor</th>
+              <th *ngIf="orden!==undefined &&(orden.estado==='Enviado' )">Estado</th>
               <th>Valor</th>
               <th></th>
             </tr>
@@ -25,6 +26,7 @@
                 <td>{{prod.pesoInfo.unidad}}</td>
                 <td>{{prod.productInfo.precio_proveedor}}</td>
                 <td>{{prod.proveedorNombre}}</td>
+                <td *ngIf="orden!==undefined &&(orden.estado==='Enviado' )">{{prod.estado}}</td>
                 <td>{{toNumber(prod.cantidad_necesaria)*toNumber(prod.productInfo.precio_proveedor)}}</td>
                 <td *ngIf="!isSeen">
                     <button class="btn-icon" (click)="prod.detalle_orden_id===undefined?
@@ -43,6 +45,7 @@
                 <td></td>
                 <td></td>
                 <td></td>
+                <td *ngIf="orden!==undefined &&(orden.estado==='Enviado' )"></td>
                 <td>total:</td>
                 <td>{{orden!==undefined?orden.total:valorTotal}}</td>
             </tr>
@@ -55,11 +58,11 @@
         <h2>Productos del pedido</h2>
         <div class="ingredient-inputs">
     
-            <select name="producto" [(ngModel)]="prodSelect" [disabled]="isEdit">
+            <select name="producto" [(ngModel)]="prodSelect" [disabled]="isEdit" (change)="changeProv()">
                 <option *ngFor="let prod of listProd" value="{{prod.producto_bodega_id}}" >{{prod.nombre_producto}}</option>
             </select>
             <input type="number" placeholder="Cantidad" [(ngModel)]="cantidad">
-            <select name="proveedor" [(ngModel)]="provSelect" [disabled]="isEdit">
+            <select name="proveedor" [(ngModel)]="provSelect" disabled>
               <option *ngFor="let prov of listProv" value="{{prov.proveedor_id}}" >{{prov.nombre_proveedor}}</option>
           </select>
             
@@ -71,19 +74,28 @@
 
     </div>
     
-    <div [ngClass]="{'button-container-seen':isSeen,               'button-container':!isSeen}" *ngIf="!(orden.estado==='Recibido' || orden.estado==='Cancelado')">
+    <div [ngClass]="{'button-container-seen':isSeen,               'button-container':!isSeen}" *ngIf="orden===undefined||!(orden.estado==='Recibido' || orden.estado==='Cancelado')">
         <h3>Acciones </h3>
         <div class="buttons">
             <button *ngIf="orden===undefined" class="approve-btn" (click)="createPedidoCompleto()">CREAR PEDIDO</button>
             <button *ngIf="orden!==undefined &&(orden.estado==='Aprobado' ) " class="approve-btn" (click)="changeStatuS('Enviado')">ENVIAR EL PEDIDO</button>
             <button *ngIf="orden!==undefined &&(orden.estado==='En espera')" class="approve-btn" (click)="changeStatuS('Aprobado')">APROBAR PEDIDO</button>
-            <button *ngIf="orden!==undefined &&(orden.estado==='Enviado' )" class="approve-btn" (click)="changeStatuS('Recibido')">RECIBIR PEDIDO</button>
+
+            <select *ngIf="orden!==undefined &&(orden.estado==='Enviado' )"  name="proveedorRecib" [(ngModel)]="provToReci" [disabled]="isEdit">
+              <option  value="{{0}}">Todos</option>
+              <option *ngFor="let prov of listProv" value="{{prov.proveedor_id}}" >{{prov.nombre_proveedor}}</option>
+           </select>
+            <button *ngIf="orden!==undefined &&(orden.estado==='Enviado' )" class="approve-btn" (click)="reciveOrder()">RECIBIR TODO EL PEDIDO</button>
+
+
+
             <button *ngIf="orden!==undefined &&(orden.estado==='Aprobado')" class="reject-btn" (click)="changeStatuS('En espera')">PONER EN ESPERA PEDIDO</button>
             <button *ngIf="orden!==undefined &&(orden.estado==='En espera' || orden.estado==='Aprobado' )" class="reject-btn" (click)="changeStatuS('Cancelado')">CANCELAR PEDIDO</button>
 
 
         </div>
     </div>
+    
     
 
 </div>

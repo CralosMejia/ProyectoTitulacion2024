@@ -13,13 +13,15 @@ import { EmailService } from '../app/business/services/common/EmailServices';
 
 const container = new Container();
 
-container.bind<PedidoAutomaticoService>(PedidoAutomaticoService).toSelf().inSingletonScope();
 container.bind<IngredientesServices>(IngredientesServices).toSelf().inSingletonScope();
-container.bind<PedidosServices>(PedidosServices).toSelf().inSingletonScope();
 container.bind<PlatosServices>(PlatosServices).toSelf().inSingletonScope();
 container.bind<VisualizationManagerServices>(VisualizationManagerServices).toSelf().inSingletonScope();
 container.bind<VentasServices>(VentasServices).toSelf().inSingletonScope();
 container.bind<EmailService>(EmailService).toSelf().inSingletonScope();
 container.bind<EmailNotificationObserver>(EmailNotificationObserver).toSelf();
+container.bind<PedidosServices>(PedidosServices).toSelf().inSingletonScope();
+container.bind<PedidoAutomaticoService>(PedidoAutomaticoService).toSelf().inSingletonScope();
+
+
 
 export { container };

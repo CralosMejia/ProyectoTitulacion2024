@@ -10,11 +10,12 @@ export interface platosAttributes {
   precio?: number;
   imagen?: string;
   estado?: 'Disponible' | 'No disponible';
+  numero_platos?: number;
 }
 
 export type platosPk = "plato_id";
 export type platosId = platos[platosPk];
-export type platosOptionalAttributes = "plato_id" | "descripcion" | "precio" | "imagen" | "estado";
+export type platosOptionalAttributes = "plato_id" | "descripcion" | "precio" | "imagen" | "estado" | "numero_platos";
 export type platosCreationAttributes = Optional<platosAttributes, platosOptionalAttributes>;
 
 export class platos extends Model<platosAttributes, platosCreationAttributes> implements platosAttributes {
@@ -24,6 +25,7 @@ export class platos extends Model<platosAttributes, platosCreationAttributes> im
   precio?: number;
   imagen?: string;
   estado?: 'Disponible' | 'No disponible';
+  numero_platos?: number;
 
   // platos hasMany ingredientesporplato via plato_id
   ingredientesporplatos!: ingredientesporplato[];
@@ -80,6 +82,11 @@ export class platos extends Model<platosAttributes, platosCreationAttributes> im
       type: DataTypes.ENUM('Disponible','No disponible'),
       allowNull: true,
       defaultValue: "Disponible"
+    },
+    numero_platos: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 1
     }
   }, {
     sequelize,

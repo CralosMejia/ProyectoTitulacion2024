@@ -51,7 +51,6 @@ export class AlmacenamientoComponent  implements OnInit{
     datasets: [
       { data: [65], label: 'Catidad Maxima' },
       { data: [28], label: 'Catidad Actual' },
-      { data: [18], label: 'Catidad Minima' },
       
     ],
   };

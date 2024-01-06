@@ -21,7 +21,8 @@ export const create = async (req: Request, res: Response): Promise<Response> => 
         return res.status(200).json(resp);
     } catch (error) {
         console.error('Error when creating the dish and its ingredients:', error);
-        return res.status(400).send(error);
+        const message = 'Error when creating the dish and its ingredients: '+ error
+        return res.status(400).json(message);
     }
 };
 
@@ -76,8 +77,9 @@ export const chageStatus = async (req: Request, res: Response): Promise<Response
         console.log(`Status chaged correctly: ${JSON.stringify(resp)}`);
         return res.status(200).json(resp);
     } catch (error) {
-        console.error('Error when eliminating the dish and its ingredients:', error);
-        return res.status(400).send(error);
+        console.error('Error when change status of dish:', error);
+        const message = 'Error when change status of dish: '+ error
+        return res.status(400).send(message);
     }
 };
 
@@ -150,6 +152,33 @@ export const updateIngredienteToPlate = async (req: Request, res: Response): Pro
         return res.status(200).json(resp);
     } catch (error) {
         console.error('Error while updated an ingredient:', error);
+        return res.status(400).send(error);
+    }
+};
+
+
+export const searchPlate = async (req: Request, res: Response): Promise<Response> => {
+    const{paramSeacrh,atributeSearch} = req.body
+    try {
+        
+        const resp = await platosServ.searchPlatosWithFullInfo(atributeSearch,paramSeacrh);
+        return res.status(200).json(resp);
+    } catch (error) {
+        console.error('Not found', error);
+        return res.status(400).send(error);
+    }
+};
+
+export const searchIngredientes = async (req: Request, res: Response): Promise<Response> => {
+    const{paramSeacrh} = req.body
+    const {id} = req.params;
+
+    try {
+        
+        const resp = await platosServ.searchIngredientsByProductName(Number(id),paramSeacrh);
+        return res.status(200).json(resp);
+    } catch (error) {
+        console.error('Not found', error);
         return res.status(400).send(error);
     }
 };

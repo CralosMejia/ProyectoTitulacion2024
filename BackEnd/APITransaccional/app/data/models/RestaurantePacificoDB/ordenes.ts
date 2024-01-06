@@ -60,9 +60,9 @@ export class ordenes extends Model<ordenesAttributes, ordenesCreationAttributes>
       defaultValue: 0
     },
     total: {
-      type: DataTypes.DECIMAL(6,2),
+      type: DataTypes.DECIMAL(10,6),
       allowNull: true,
-      defaultValue: 0.00
+      defaultValue: 0.000000
     },
     modo_creacion: {
       type: DataTypes.ENUM('Manual','Automatico'),

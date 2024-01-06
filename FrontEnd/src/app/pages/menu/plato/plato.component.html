@@ -15,10 +15,14 @@
                 <label for="precioPlato">Precio</label>
                 <input type="number" id="precioPlato" name="nombrePlato"  [value]="plato?.plato.precio"  [(ngModel)]="precioPlato" placeholder="0">
             </div>
+            <div class="input-group">
+                <label for="CantidadPlato">Cantidad de platos</label>
+                <input type="number" id="CantidadPlato" name="cantidadPlato"  [value]="plato?.plato.numero_platos"  [(ngModel)]="cantidadPlato" placeholder="0">
+            </div>
         </form>
     </section>
     
-    <section class="plato-img-form" >
+    <!-- <section class="plato-img-form" >
         <div class="img-upload" >
             <img [src]="imagenVistaPrevia" *ngIf="imagenVistaPrevia" class="image-previsualizer"
             (click)="fileInput.click()" 
@@ -26,7 +30,7 @@
             <label for="fotoPlato">Agregar foto del plato</label>
             <input type="file" #fileInput id="fotoPlato" name="fotoPlato" (change)="showPreview($event)">
         </div>
-    </section>
+    </section> -->
     
     <div class="ingredients-section">
         <!-- ingredients.component.html -->

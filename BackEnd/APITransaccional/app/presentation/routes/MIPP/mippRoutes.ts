@@ -1,6 +1,6 @@
 
 import { Router } from 'express';
-import { create, createMultiple, chageStatus, getInfoPlatos, getInfoPlato, addIngredienteToPlate, deleteIngredienteToPlate, updateIngredienteToPlate } from '../../controller/MIPP/mippController';
+import { create, createMultiple, chageStatus, getInfoPlatos, getInfoPlato, addIngredienteToPlate, deleteIngredienteToPlate, updateIngredienteToPlate, searchPlate, searchIngredientes } from '../../controller/MIPP/mippController';
 
 
 
@@ -14,6 +14,10 @@ routerMIPP.get('/infoPlato/:id',getInfoPlato);
 routerMIPP.post('/addingrediente',addIngredienteToPlate);
 routerMIPP.delete('/deleteingrediente/:id',deleteIngredienteToPlate);
 routerMIPP.put('/updatedingrediente/:id',updateIngredienteToPlate);
+routerMIPP.put('/search',searchPlate);
+routerMIPP.put('/searchIngredientes/:id',searchIngredientes);
+
+
 
 
 

@@ -8,16 +8,17 @@
   <table class="platos-table">
     <tbody>
       <tr *ngFor="let plato of platos">
-        <td class="td_img">
+        <!-- <td class="td_img">
           <img
             src="https://i.ibb.co/2vPrtTn/image-3.jpg"
             alt={{plato.descripcion}}
           />
-        </td>
+        </td> -->
         <td>
           <h3>{{plato.nombre_plato}}</h3>
-          <h4>{{plato.precio}}$</h4>
-          <h4>{{plato.ingredientes}}</h4>
+          <h4>Precio: {{plato.precio}}$</h4>
+          <h4>Cantidad de platos: {{plato.numero_platos}}</h4>
+          <h4>Ingredientes: {{plato.ingredientes}}</h4>
         </td>
         <td class="td_btn">
             <span

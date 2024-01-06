@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { SearchPlatoService } from 'src/app/services/communication/searchs/search-plato.service';
 import { PlatosService } from 'src/app/services/platos.service';
 
 @Component({
@@ -13,11 +14,22 @@ export class MenuComponent implements OnInit{
 
   constructor(
     private router:Router,
-    private platoServices:PlatosService
+    private platoServices:PlatosService,
+    private platoSearch:SearchPlatoService,
   ){}
 
   ngOnInit(): void {
     this.loadInfoPlatos()
+    this.platoSearch.getSearchParameter$().subscribe((param:any)=>{
+      this.platoServices.search(param).subscribe((resp:any)=>{
+        if(param.paramSeacrh !==''){
+          this.platos= resp;
+        }else{
+           this.loadInfoPlatos()   
+        }
+      })
+
+    })
   }
 
   loadInfoPlatos(){

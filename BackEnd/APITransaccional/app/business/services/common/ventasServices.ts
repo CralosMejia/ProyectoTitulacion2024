@@ -2,6 +2,8 @@ import { ventas } from "../../../data/models/RestaurantePacificoDB/ventas";
 import { platos } from "../../../data/models/RestaurantePacificoDB/platos"; // Import the Platos model
 import { EntrieRepository } from "../../../data/repository/entrieRepository";
 import { injectable } from "inversify";
+import { ingredientesporplato } from "../../../data/models/RestaurantePacificoDB/ingredientesporplato";
+import { lotes } from "../../../data/models/RestaurantePacificoDB/lotes";
 
 /**
  * Service class for managing 'ventas' (sales) and related entities.
@@ -10,10 +12,17 @@ import { injectable } from "inversify";
 export class VentasServices {
     private readonly repositoryVentas: EntrieRepository<ventas>;
     private readonly repositoryPlatos: EntrieRepository<platos>; // Repository for Platos
+    private readonly repositoryIPP: EntrieRepository<ingredientesporplato>;
+    private readonly repositoryLotes: EntrieRepository<lotes>;
+
 
     constructor(){
         this.repositoryVentas = new EntrieRepository(ventas);
-        this.repositoryPlatos = new EntrieRepository(platos); // Initialize Platos repository
+        this.repositoryPlatos = new EntrieRepository(platos);
+        this.repositoryIPP = new EntrieRepository(ingredientesporplato);
+        this.repositoryLotes = new EntrieRepository(lotes);
+
+
     }
 
      /**
@@ -38,6 +47,9 @@ export class VentasServices {
                 const platoId = await this.getPlatoIdByNombre(sale.nombre_plato);
 
                 if (platoId !== null && !(await this.checkExistingSale(platoId, sale.fecha_inicio_semana))) {
+                    const plato =await this.repositoryPlatos.getById(platoId)
+                    if(plato === null || plato.numero_platos === undefined) throw new Error (`dish not found for ${platoId}`)
+
                     const ventaToAdd = {
                         plato_id: platoId,
                         cantidad: sale.cantidad,
@@ -48,8 +60,9 @@ export class VentasServices {
                     };
 
                     ventasToInsert.push(ventaToAdd);
+                    await this.updateInventoryBySales(platoId, plato.numero_platos, sale.cantidad);
                 } else {
-                    console.error(`Existing sale or dish not found for ${sale.nombre_plato}`);
+                    console.error(`Existing sale  ${sale.nombre_plato}`);
                 }
             }
 
@@ -65,6 +78,54 @@ export class VentasServices {
             throw error;
         }
     }
+
+    // Método para actualizar el inventario en función de las ventas
+    // ...otros miembros de la clase...
+
+// Método para actualizar el inventario por cada venta
+private async updateInventoryBySales(platoId: number,numeroPlato:number, cantidadVendida: number) {
+    const ingredientes = await this.getDishIngredients(platoId);
+
+    for (const ingrediente of ingredientes) {
+        const cantidadNecesariaTotal = (ingrediente.cantidad_necesaria / numeroPlato) * cantidadVendida;
+        await this.discountFromLots(ingrediente.producto_bodega_id, cantidadNecesariaTotal);
+    }
+}
+
+// Método para obtener los ingredientes de un plato
+private async getDishIngredients(platoId: number): Promise<any[]> {
+    // Reemplaza esto con la lógica real para obtener los ingredientes de un plato
+    // Aquí es solo un esquema
+    const ingredientes = await this.repositoryIPP.getAllByField('plato_id', platoId);
+    return ingredientes;
+}
+
+// Método para descontar de los lotes, empezando por el más cercano a vencer
+private async discountFromLots(productoId: number, cantidad: number) {
+    // Obtener todos los lotes del producto ordenados por fecha de vencimiento
+
+    const lotes = await this.repositoryLotes.getAllByField('producto_bodega_id', productoId);
+    lotes.sort((a, b) => new Date(a.fecha_vencimiento).getTime() - new Date(b.fecha_vencimiento).getTime());
+
+    for (const lote of lotes) {
+        if (cantidad <= 0 ) break; // Si ya se descontó la cantidad necesaria, terminar
+
+        if(lote.cantidad ===undefined) throw new Error('The amount does not exist')
+        const cantidadADescontar = Math.min(lote.cantidad, cantidad);
+        lote.cantidad -= cantidadADescontar;
+        cantidad -= cantidadADescontar;
+
+        // Actualizar el lote en la base de datos
+        if (lote.cantidad === 0) {
+            // Eliminar el lote si la cantidad es 0
+            await this.repositoryLotes.delete(lote.lote_id);
+        } else {
+            // Actualizar la cantidad restante en el lote
+            await this.repositoryLotes.updateSingleFieldById('lote_id', lote.lote_id, 'cantidad', lote.cantidad);
+        }
+    }
+}
+
 
 
     /**

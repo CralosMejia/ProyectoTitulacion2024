@@ -1,8 +1,11 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { isFormControl } from '@angular/forms';
+import { NavigationEnd, Router } from '@angular/router';
 import { BodegaService } from 'src/app/services/bodega.service';
+import { SearchProductService } from 'src/app/services/communication/searchs/search-product.service';
 import { PlatosService } from 'src/app/services/platos.service';
 import { ProveedoresService } from 'src/app/services/proveedores.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-bodega',
@@ -52,16 +55,30 @@ export class BodegaComponent implements OnInit {
 
 
 
-  options =['Seleccionar','Producto','lote' ]
+  options =['Producto','lote' ]
 
   constructor(
     private platoServices:PlatosService,
     private bodegaServices:BodegaService,
-    private proveedorServices:ProveedoresService
+    private proveedorServices:ProveedoresService,
+    private router:Router,
+    private productSearch:SearchProductService
+
+
   ){}
 
   ngOnInit(): void {
     this.loaddata()
+    this.productSearch.getSearchParameter$().subscribe((param:any)=>{
+      this.bodegaServices.search(param).subscribe((resp:any)=>{
+        if(param.paramSeacrh !==''){
+          this.listProductsWithAllInfo= resp;
+        }else{
+          this.loaddata()
+        }
+
+      })
+    })
   }
 
   loaddata(){
@@ -72,7 +89,7 @@ export class BodegaComponent implements OnInit {
       this.listProductsWithAllInfo= resp;
     })
     this.platoServices.getAllPeso().subscribe((resp:any)=>{
-      this.pesoList=resp.entriesList
+      this.pesoList=resp.entriesList.filter((objeto:any) => objeto.tipo_uso === 'proveedor' || objeto.tipo_uso === 'ambos');
     })
     this.proveedorServices.getProv().subscribe((resp:any)=>{
       this.proveedoresList=resp.entriesList
@@ -93,6 +110,14 @@ export class BodegaComponent implements OnInit {
   }
 
   addnewLote(){
+    if(!this.validateLoteForm()){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Todos los campos deben ser rellenados, los campos numericos deben ser mayor a cero y la fecha debe ser mayor a la actual!"
+      });
+      return
+    }
     const data = {
       "producto_bodega_id": this.productoSeleccionado,
       "fecha_vencimiento": this.dateNewLote,
@@ -100,9 +125,19 @@ export class BodegaComponent implements OnInit {
     }
 
     this.bodegaServices.addNewLote(data).subscribe(()=>this.loaddata())
+    this.cancel()
+
   }
 
   updatelote(){
+    if(!this.validateLoteForm()){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Todos los campos deben ser rellenados, los campos numericos deben ser mayor a cero y la fecha debe ser mayor a la actual!"
+      });
+      return
+    }
     const data={
       "producto_bodega_id": this.productoSeleccionado,
       "cantidad": this.quantityNewLot,
@@ -110,7 +145,7 @@ export class BodegaComponent implements OnInit {
     }
     this.bodegaServices.updateLote(this.idLoteSelected,data).subscribe(()=>{
       this.loaddata()
-      this.chageFilterLoteproducto()
+      this.cancel()
     })
   }
 
@@ -120,19 +155,30 @@ export class BodegaComponent implements OnInit {
   }
 
   createProd(){
+    if(!this.validateProdForm()){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Todos los campos deben ser rellenados y los campos numericos deben ser mayor a cero!"
+      });
+      return
+    }
     const data:any={
       "proveedor_id": this.provSeleccionado,
       "peso_proveedor_id": this.pesoSeleccionado,
       "nombre_producto": this.nameProd,
-      "cantidad_minima": this.minQuantityProd,
+      // "cantidad_minima": this.minQuantityProd,
       "cantidad_maxima": this.maxQuantityProd,
       "precio_proveedor": this.priceProv
     }
 
     this.bodegaServices.createProd(data).subscribe(()=>this.loaddata())
+    this.cancel()
+
   }
 
   peparateToEditLote(idLote:number,amount:number,date:string,prodBodSelect:number){
+    this.cancel()
     this.valueFiltro=='Nuevo Producto'
     this.chageFilterLoteproducto()
     this.valueFiltro=='Seleccionar'
@@ -145,8 +191,8 @@ export class BodegaComponent implements OnInit {
     this.chageNameButton()
   }
 
-  preparateToEditProd(idProd:number,cantMin:number,cantMax:number,price:number,wigth:number){
-    this.valueFiltro='Seleccionar'
+  preparateToEditProd(idProd:number,cantMin:number,cantMax:number,price:number,wigth:number,name:string,proveedor_id:string){
+    this.cancel()
     this.minQuantityProd=cantMin
     this.maxQuantityProd=cantMax
     this.priceProv=price
@@ -154,20 +200,33 @@ export class BodegaComponent implements OnInit {
     this.isProdUpdate=true
     this.buttonState='updateProd'
     this.productoSeleccionado=idProd
+    this.nameProd=name
+    this.provSeleccionado=Number(proveedor_id)
     //agregar el prov
     this.chageNameButton()
   }
 
   updateProd(){
+    if(!this.validateProdForm()){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Todos los campos deben ser rellenados y los campos numericos deben ser mayor a cero!"
+      });
+      return
+    }
     const data:any={
       "peso_id": this.pesoSeleccionado,
-      "cantidad_minima":this.minQuantityProd,
+      // "cantidad_minima":this.minQuantityProd,
       "cantidad_maxima": this.maxQuantityProd,
-      "precio_proveedor": this.priceProv
+      "precio_proveedor": this.priceProv,
+      "nombre_producto":this.nameProd
+
+      ,"peso_proveedor_id":this.pesoSeleccionado
     }
     this.bodegaServices.upodateProd(this.productoSeleccionado,data).subscribe(()=>{
       this.loaddata()
-      this.chageFilterLoteproducto()
+      this.cancel()
     })
   }
 
@@ -207,7 +266,7 @@ export class BodegaComponent implements OnInit {
     }
   }
 
-  private cleanForm(){
+  public cleanForm(){
     this.productoSeleccionado=1;
     this.dateNewLote=''
     this.quantityNewLot=0
@@ -219,11 +278,38 @@ export class BodegaComponent implements OnInit {
     this.maxQuantityProd=0
     this.priceProv=0
     this.isProdUpdate=false
-
-
-
   }
 
+  public cancel(){
+    this.productoSeleccionado=1;
+    this.dateNewLote=''
+    this.quantityNewLot=0
+    this.isLoteUpdate=false
+    this.provSeleccionado=1
+    this.pesoSeleccionado=1
+    this.nameProd=''
+    this.minQuantityProd=0
+    this.maxQuantityProd=0
+    this.priceProv=0
+    this.isProdUpdate=false
+    this.valueFiltro='lote'
+    this.chageFilterLoteproducto()
+  }
+
+  public validateProdForm(){
+    let resp = false;
+    (this.nameProd === '' ||this.maxQuantityProd<=0||this.priceProv<=0)?resp=false:resp=true;
+    return resp
+  }
+
+  public validateLoteForm(){
+    let resp = false;
+    let currentDate= new Date();
+    const newDate = new Date(this.dateNewLote);
+
+    (this.quantityNewLot<=0 ||this.dateNewLote ===''|| newDate < currentDate)?resp=false:resp=true;
+    return resp
+  }
 
 
 }

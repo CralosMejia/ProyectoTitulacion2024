@@ -1,17 +1,11 @@
 # coding: utf-8
-from sqlalchemy import Column, DECIMAL, Date, DateTime, ForeignKey, Integer, String, Text, text
+
+from sqlalchemy import Column, DECIMAL, Date, ForeignKey, Integer, String, Text, text
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 metadata = Base.metadata
-
-
-class Dimestado(Base):
-    __tablename__ = 'dimestado'
-
-    estado_id = Column(Integer, primary_key=True)
-    descripcion_estado = Column(String(255))
 
 
 class Dimfecha(Base):
@@ -22,15 +16,6 @@ class Dimfecha(Base):
     semana = Column(Integer)
     mes = Column(Integer)
     anio = Column(Integer)
-
-
-class Dimpedido(Base):
-    __tablename__ = 'dimpedido'
-
-    pedido_id = Column(Integer, primary_key=True)
-    cliente_id = Column(Integer)
-    monto_total = Column(DECIMAL(10, 2))
-    fecha_creacion = Column(DateTime)
 
 
 class Dimplato(Base):
@@ -61,19 +46,6 @@ class Dimproducto(Base):
     unidad_medida_id = Column(ForeignKey('dimunidadmedida.unidad_medida_id'), index=True)
 
     unidad_medida = relationship('Dimunidadmedida')
-
-
-class Hechosestadopedido(Base):
-    __tablename__ = 'hechosestadopedido'
-
-    estado_pedido_id = Column(Integer, primary_key=True)
-    fecha_id = Column(ForeignKey('dimfecha.fecha_id'), index=True)
-    pedido_id = Column(ForeignKey('dimpedido.pedido_id'), index=True)
-    estado_id = Column(ForeignKey('dimestado.estado_id'), index=True)
-
-    estado = relationship('Dimestado')
-    fecha = relationship('Dimfecha')
-    pedido = relationship('Dimpedido')
 
 
 class Hechosventaplato(Base):

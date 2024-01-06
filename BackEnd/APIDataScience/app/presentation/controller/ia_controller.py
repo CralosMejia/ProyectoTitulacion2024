@@ -1,10 +1,14 @@
-from ia.jobs.ia_jobs import train_model, validate_model
+from dependency_injector.wiring import inject, Provide
+from fastapi import Depends
 
-def train_model_api_linear_regresion():
-    train_model('linear_regresion')
+from app.business.MPD.mpd_Manager import MPD_Manager
+from config.Containers.containers import Container
 
-def validate_model_api_linear_regresion():
-    return validate_model('linear_regresion')
 
-def train_model_api_random_forest():
-    pass
+@inject
+def training_model(mpd: MPD_Manager = Depends(Provide[Container.mpd_manager])):
+    mpd.train()
+
+@inject
+def forcasting_demand(mpd: MPD_Manager = Depends(Provide[Container.mpd_manager])):
+    mpd.predict_demand()

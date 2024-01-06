@@ -3,6 +3,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 
+
 def extract_load_function(ses_db_pacifico: Session, ses_db_etls: Session, table_name_extraction: str,
                           table_name_load: str):
     """
@@ -173,7 +174,7 @@ def find_value_by_two_ids(id1, columna_id1, id2, columna_id2, columna_objetivo, 
         return None
 
 
-def get_id_by_dates(date1, fecha_df):
+def get_id_by_dates(date, fecha_df,name_id):
     """
         Gets the ID corresponding to a combined date range in a DataFrame.
 
@@ -186,14 +187,20 @@ def get_id_by_dates(date1, fecha_df):
         int: The ID corresponding to the date range or None if not found.
         """
     # Converts the date to Timestamp type if it is a string
-    date = f"{str(date1)}"
+    # Converts the date to Timestamp type if it is a string
+    if isinstance(date, str):
+        date = pd.Timestamp(date)
 
-    # Finds the row that matches the date in the DataFrame
-    fila = fecha_df[fecha_df['fecha'] == date]
+    # Calculate the week number and year from the date
+    semana = date.isocalendar()[1]
+    anio = date.year
+
+    # Finds the row that matches the week and year in the DataFrame
+    fila = fecha_df[(fecha_df['semana'] == semana) & (fecha_df['anio'] == anio)]
 
     # If a row was found, returns the corresponding ID
     if not fila.empty:
-        return fila.iloc[0]['fecha_ETL_TRA_id']
+        return fila.iloc[0][name_id]
 
     # If no row was found, returns None
     return None
