@@ -1,5 +1,9 @@
 import time
 
+from dependency_injector.wiring import inject
+from sqlalchemy import delete
+
+from app.business.common.logServices import LoggerServices
 from app.business.etl.load.loads import load_fecha_dim, load_plato_dim, load_unidad_medida_dim, load_producto_dim, \
     load_venta_platos_facts, load_demanda_producto_facts
 from app.business.etl.transform.transformations import *
@@ -9,16 +13,21 @@ from app.data.Models.DataScienceDBModels import Dimfecha, Hechosdemandaproducto,
 
 
 class ETL:
-    def __init__(self, con_db_etls, con_db_pacifico, con_db_data_science):
+    @inject
+    def __init__(self,logger:LoggerServices, con_db_etls, con_db_pacifico, con_db_data_science):
         self.con_db_etls = con_db_etls
         self.con_db_pacifico = con_db_pacifico
         self.con_db_data_science = con_db_data_science
+        self.log=logger
 
 
     def run(self):
         """
         Consolidates each of the activities of the ETL.
         """
+        t0 = time.perf_counter()
+        print('etl process started')
+        self.log.addLog('etl process started','ApiDatasicence','Módulo prediccion de demanda')
         ses_db_etls = self.con_db_etls.get_session()
         ses_db_pacifico = self.con_db_pacifico.get_session()
         ses_db_data_science = self.con_db_data_science.get_session()
@@ -27,8 +36,14 @@ class ETL:
             self._run_transformations(ses_db_etls,ses_db_data_science)
             self._run_loads(ses_db_etls, ses_db_data_science)
             self._clean_data_science_db()
+            t1 = time.perf_counter()
+            print(f'etl process finished in {t1 - t0} sec')
+            self.log.addLog(f'etl process finished in {t1 - t0} sec','ApiDatasicence','Módulo prediccion de demanda')
+
         except ValueError as e:
             print(f"An error occurred while trying to run ETL of Demand prediction module. ERROR: {e}")
+            self.log.addLog('An error occurred while trying to run ETL of Demand prediction module. ERROR: {e}','ApiDatasicence','Módulo prediccion de demanda')
+
         finally:
             self.con_db_etls.close_session(ses_db_etls)
             self.con_db_pacifico.close_session(ses_db_pacifico)
@@ -44,7 +59,8 @@ class ETL:
             """
         try:
             t0 = time.perf_counter()
-            print("Start load")
+            print("loading process has started")
+            self.log.addLog('loading process has started', 'ApiDatasicence', 'Módulo prediccion de demanda')
 
             load_fecha_dim(ses_db_etls, ses_db_data_science, 'fecha_etl_tra', 'dimfecha')
             load_plato_dim(ses_db_etls, ses_db_data_science, 'platos_etl_tra', 'dimplato')
@@ -54,10 +70,14 @@ class ETL:
             load_demanda_producto_facts(ses_db_etls, ses_db_data_science, 'demanda_etl_tra', 'hechosdemandaproducto')
 
             t1 = time.perf_counter()
-            print(f"End load in {t1 - t0} sec")
+            print(f"loading process has finished in: {t1 - t0} sec")
+            self.log.addLog(f'loading process has finished in: {t1 - t0} sec', 'ApiDatasicence', 'Módulo prediccion de demanda')
+
 
         except ValueError as e:
             print(f"{e}")
+            self.log.addLog(f'an error occurred in the loading process ', 'ApiDatasicence', 'Módulo prediccion de demanda')
+
 
     def _run_transformations(self, ses_db_etls,ses_db_data_science):
         """
@@ -70,7 +90,9 @@ class ETL:
 
         try:
             t0 = time.perf_counter()
-            print("Start transformations")
+            print("transformations process has started")
+            self.log.addLog('transformations process has started', 'ApiDatasicence', 'Módulo prediccion de demanda')
+
 
             transform_fechas_ventas(ses_db_etls,ses_db_data_science)
             transform_ventas(ses_db_etls,ses_db_data_science)
@@ -81,8 +103,11 @@ class ETL:
             transform_demanda(ses_db_etls)
 
             t1 = time.perf_counter()
-            print(f"End transformations in {t1 - t0} sec")
+            print(f"transformations process has finished in: {t1 - t0} sec")
+            self.log.addLog(f'transformations process has finished in: {t1 - t0} sec', 'ApiDatasicence', 'Módulo prediccion de demanda')
+
         except ValueError as e:
+            self.log.addLog(f'an error occurred in the transformations process ', 'ApiDatasicence', 'Módulo prediccion de demanda')
             raise TypeError(f"{e}")
 
 
@@ -96,7 +121,9 @@ class ETL:
         """
         try:
             t0 = time.perf_counter()
-            print("Start extractions")
+            print("extractions process has started")
+            self.log.addLog('extractions process has started', 'ApiDatasicence', 'Módulo prediccion de demanda')
+
             extract_load_function(ses_db_pacifico, ses_db_etls, "Platos", "platos_etl_ext")
             extract_load_function(ses_db_pacifico, ses_db_etls, "Ventas", "ventas_etl_ext")
             extract_load_function(ses_db_pacifico, ses_db_etls, "ConversionPeso", "conversionpeso_etl_ext")
@@ -104,55 +131,51 @@ class ETL:
             extract_load_function(ses_db_pacifico, ses_db_etls, "Peso", "peso_etl_ext")
             extract_load_function(ses_db_pacifico, ses_db_etls, "ProductosBodega", "productosbodega_etl_ext")
             t1 = time.perf_counter()
-            print(f"End extractions in {t1 - t0} sec")
+            print(f"extractions process has finished in: {t1 - t0} sec")
+            self.log.addLog(f'extractions process has finished in: {t1 - t0} sec', 'ApiDatasicence', 'Módulo prediccion de demanda')
+
         except ValueError as e:
-            raise TypeError(f"An error occurred in the ETL process: {e}")
+            self.log.addLog(f'an error occurred in the extractions process ', 'ApiDatasicence', 'Módulo prediccion de demanda')
+            raise TypeError(f"an error occurred in the extractions process: {e}")
 
     def _clean_data_science_db(self):
-
+        t0 = time.perf_counter()
+        print("cleaning process has started")
         ses_db_data_science = self.con_db_data_science.get_session()
         try:
-            repo_fecha = GenericRepository(ses_db_data_science, Dimfecha)
-            repo_demanda = GenericRepository(ses_db_data_science, Hechosdemandaproducto)
-            repo_venta_platos = GenericRepository(ses_db_data_science, Hechosventaplato)
+            self.log.addLog('cleaning process has started', 'ApiDatasicence', 'Módulo prediccion de demanda')
 
-            # Eliminar fechas no usadas
-            self._remove_unused_dates(repo_fecha, repo_demanda, repo_venta_platos)
+            # Paso 1: Obtener la última fecha con datos relevantes
+            subquery = ses_db_data_science.query(func.max(Dimfecha.fecha_id)).join(Hechosdemandaproducto,
+                                                                       Dimfecha.fecha_id == Hechosdemandaproducto.fecha_id).filter(
+                Hechosdemandaproducto.cantidad_predicha_modelo_1 != 0,
+                Hechosdemandaproducto.cantidad_predicha_modelo_2 != 0,
+                Hechosdemandaproducto.cantidad_real != 0).scalar()
 
-            # Eliminar registros en HechosDemandaProducto con cantidad_predicha pero sin cantidad_real
-            self._remove_unreal_claim(repo_demanda)
+            # Paso 2: Eliminar registros a partir de esa fecha en HechosDemandaProducto y HechosVentaPlatos
+            delete_demanda = delete(Hechosdemandaproducto).where(Hechosdemandaproducto.fecha_id >= subquery)
+            delete_ventas = delete(Hechosventaplato).where(Hechosventaplato.fecha_id >= subquery)
+
+            # Paso 3: Eliminar las fechas en DimFecha
+            delete_fechas = delete(Dimfecha).where(Dimfecha.fecha_id >= subquery)
+
+            ses_db_data_science.execute(delete_demanda)
+            ses_db_data_science.execute(delete_ventas)
+            ses_db_data_science.execute(delete_fechas)
+            ses_db_data_science.commit()
+
+
+            t1 = time.perf_counter()
+            print(f"cleaning process has finished in: {t1 - t0} sec")
+            self.log.addLog(f'cleaning process has finished in: {t1 - t0} sec', 'ApiDatasicence','Módulo prediccion de demanda')
 
         except ValueError as e:
+            self.log.addLog(f'An error occurred while cleaning the DataSciene Db.', 'ApiDatasicence','Módulo prediccion de demanda')
             raise TypeError(f"An error occurred while cleaning the DataSciene Db.: {e}")
         finally:
             self.con_db_data_science.close_session(ses_db_data_science)
 
-    def _remove_unused_dates(self, repo_fecha, repo_demanda, repo_venta_platos):
-        try:
-            # Obtener todos los fecha_id
-            fechas = repo_fecha.get_all()
-            fecha_ids = [fecha.fecha_id for fecha in fechas]
-
-            # Verificar cada fecha_id en las otras tablas
-            for fecha_id in fecha_ids:
-                if not repo_demanda.get_all_by_field('fecha_id', fecha_id) and \
-                        not repo_venta_platos.get_all_by_field('fecha_id', fecha_id):
-                    repo_fecha.delete(fecha_id)
-
-        except ValueError as e:
-            raise TypeError(f"An error occurred when deleting unused dates. ERROR: {e}")
 
 
-    def _remove_unreal_claim(self, repo_demanda):
-        try:
-            # Obtener todas las demandas
-            demandas = repo_demanda.get_all()
 
-            for demanda in demandas:
-                # Verificar si hay valores en cantidad_predicha_modelo_1 o cantidad_predicha_modelo_2 pero no en cantidad_real
-                if (demanda.cantidad_predicha_modelo_1 != 0 and demanda.cantidad_predicha_modelo_2 != 0) and (
-                        demanda.cantidad_real == 0 or demanda.cantidad_real is None):
-                    repo_demanda.delete(demanda.demanda_id)
-        except ValueError as e:
-            raise TypeError(f"An error occurred while eliminating the demand without a real value. ERROR: {e}")
 

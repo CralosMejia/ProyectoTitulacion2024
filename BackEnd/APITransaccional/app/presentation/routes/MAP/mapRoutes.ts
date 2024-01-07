@@ -1,6 +1,6 @@
 
 import { Router } from 'express';
-import { approveOrder, create, createdetalleOrden, deletedetalleOrden, finalizeOrder, generateAutomaticOrder, getDetalleInfo, getOrdenComplete, searchOrden, searchOrdenes, searchProve, sendAllOrder, updateOrdenState, updatedetalleOrden } from '../../controller/MAP/mapController';
+import { approveOrder, create, createdetalleOrden, deletedetalleOrden, finalizeOrder, generateAutomaticOrder, getAllPendigOrderDatils, getDetalleInfo, getOrdenComplete, searchOrden, searchOrdenes, searchProve, sendAllOrder, updateOrdenState, updatedetalleOrden } from '../../controller/MAP/mapController';
 
 
 
@@ -17,6 +17,7 @@ routerMAP.get('/getInfoDetalleOrder/:id',getDetalleInfo);
 routerMAP.post('/generateOrder',generateAutomaticOrder);
 routerMAP.get('/approveOrder/:id',approveOrder);
 routerMAP.get('/sendAllOrders',sendAllOrder);
+routerMAP.get('/getPendigOrderdetails',getAllPendigOrderDatils);
 routerMAP.put('/searchProveedor',searchProve);
 routerMAP.put('/searchOrdenes',searchOrdenes);
 routerMAP.put('/searchOrden/:id',searchOrden);

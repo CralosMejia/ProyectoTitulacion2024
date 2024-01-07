@@ -69,8 +69,9 @@ export class hechosventaplatos extends Model<hechosventaplatosAttributes, hechos
       allowNull: true
     },
     precio_total: {
-      type: DataTypes.DECIMAL(10,2),
-      allowNull: true
+      type: DataTypes.DECIMAL(14,3),
+      allowNull: true,
+      defaultValue: 0.000
     }
   }, {
     sequelize,

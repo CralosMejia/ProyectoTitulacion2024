@@ -73,9 +73,9 @@ export class ingredientesporplato extends Model<ingredientesporplatoAttributes, 
       }
     },
     cantidad_necesaria: {
-      type: DataTypes.DECIMAL(10,2),
+      type: DataTypes.DECIMAL(14,3),
       allowNull: true,
-      defaultValue: 0.00
+      defaultValue: 0.000
     }
   }, {
     sequelize,

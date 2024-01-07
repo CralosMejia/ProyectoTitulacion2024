@@ -9,6 +9,8 @@ import { proveedor } from "../../../data/models/RestaurantePacificoDB/proveedor"
 import { peso } from "../../../data/models/RestaurantePacificoDB/peso";
 import { Observable } from "../common/Observable";
 import { IngredientesServices } from "../MGPAAB/IngredientesServices";
+import { LoggerService } from "../common/logs/LogsAPP";
+import { addDays } from "date-fns";
 
 /**
  * Service class for managing orders and order details in a restaurant.
@@ -25,7 +27,11 @@ export class PedidosServices extends Observable{
 
 
 
-    constructor(@inject(IngredientesServices) private ingredietesServices: IngredientesServices,){
+    constructor(
+        @inject(IngredientesServices) private ingredietesServices: IngredientesServices,
+        @inject(LoggerService) private log: LoggerService,
+
+        ){
         super()
         this.repositoryOrdenes =  new EntrieRepository(ordenes);
         this.repositoryDetalleOrden =  new EntrieRepository(detalleordenes);
@@ -46,8 +52,12 @@ export class PedidosServices extends Observable{
     async createOrdenComplete(orden: ordenes, listDetalleOrdenes: detalleordenes[] | null) {
         try {
             let subtotalOrden = 0;
+
+            if(listDetalleOrdenes=== null || listDetalleOrdenes === undefined){
+                throw new Error('Order details are null orn undefined')
+            }
     
-            if (listDetalleOrdenes && listDetalleOrdenes.length > 0) {
+            if ( listDetalleOrdenes.length > 0) {
                 // Calculate the subtotal based on order details
                 for (const detalle of listDetalleOrdenes) {
                     const prodBode = await this.repositoryProductosBodega.getById(detalle.producto_bodega_id);
@@ -66,7 +76,7 @@ export class PedidosServices extends Observable{
     
             // Create order details
             let detallesResult = null;
-            if (listDetalleOrdenes && listDetalleOrdenes.length > 0) {
+            if ( listDetalleOrdenes.length > 0) {
                 const updatedDetalleOrdenes = listDetalleOrdenes.map(detalle => {
                     return { ...detalle, orden_id: createdOrden.orden_id };
                 });
@@ -78,7 +88,8 @@ export class PedidosServices extends Observable{
                 "order details": detallesResult
             };
         } catch (error) {
-            console.error('Error while creating the order and its details:', error);
+            const errorMessage=`Error while creating the order and its details: ${error}` 
+            this.log.addLog(errorMessage,'Apitransaccional','Módulo pedidos automaticos')
             throw error;
         }
     }
@@ -104,7 +115,7 @@ export class PedidosServices extends Observable{
             const productsInfo = await Promise.all(
                 orderDetails.map(async (detail) => {
                     const product = await this.repositoryProductosBodega.getById(detail.producto_bodega_id);
-                    if (product === null){
+                    if (product === null || product ===undefined){
                         throw new Error('Product not found');
                     }
                     const proveedor = await this.repositoryProveedor.getById(product.proveedor_id);
@@ -128,7 +139,8 @@ export class PedidosServices extends Observable{
                 orderDetails: productsInfo
             };
         } catch (error) {
-            console.error('Error retrieving complete order info:', error);
+            const errorMessage=`Error retrieving complete order info: ${error}`
+            this.log.addLog(errorMessage,'Apitransaccional','Módulo pedidos automaticos')
             throw error;
         }
     }
@@ -154,6 +166,8 @@ export class PedidosServices extends Observable{
     
             return await this.repositoryDetalleOrden.update(detalleOrdenId, updatedData);
         } catch (error) {
+            const errorMessage=`Error while updating order detail: ${error}`
+            this.log.addLog(errorMessage,'Apitransaccional','Módulo pedidos automaticos')
             throw error;
         }
     }
@@ -187,6 +201,8 @@ export class PedidosServices extends Observable{
                 return await this.repositoryDetalleOrden.create(detalleOrden);
             }
         } catch (error) {
+            const errorMessage=`Error while creating order detail: ${error}`
+            this.log.addLog(errorMessage,'Apitransaccional','Módulo pedidos automaticos')
             throw error;
         }
     }
@@ -210,6 +226,8 @@ export class PedidosServices extends Observable{
     
             return await this.repositoryDetalleOrden.delete(detalleOrdenId);
         } catch (error) {
+            const errorMessage=`Error while deleting order detail: ${error}`
+            this.log.addLog(errorMessage,'Apitransaccional','Módulo pedidos automaticos')
             throw error;
         }
     }
@@ -240,6 +258,8 @@ export class PedidosServices extends Observable{
             // Retorna el número de filas afectadas
             return await this.repositoryOrdenes.updateSingleFieldById('orden_id', orderId, 'estado', newStatus);
         } catch (error) {
+            const errorMessage=`Error while changing order status: ${error}`
+            this.log.addLog(errorMessage,'Apitransaccional','Módulo pedidos automaticos')
             throw error;
         }
     }
@@ -251,42 +271,66 @@ export class PedidosServices extends Observable{
      * 
      * @param orderId - The ID of the order to finalize.
      */
-    async finalizeOrder(orderId: number, proveedorId: number): Promise<void> {
+    async finalizeOrder(orderId: number, proveedorId: number=0,detalleOrdenId: number = 0): Promise<void> {
         try {
-            const orderDetails = await this.repositoryDetalleOrden.getAllByField('orden_id', orderId);
-    
+            let orderDetails = [];
+            const order= await this.repositoryOrdenes.getById(orderId)
+            if(order===null){
+                const errorMessage=`Error finalizing the order, order: ${orderId} does not exist.`
+                this.log.addLog(errorMessage,'Apitransaccional','Módulo pedidos automaticos')
+                throw new Error(errorMessage)
+            }
+            if(order.estado === 'En espera' || order.estado === 'Cancelado' || order.estado === 'Aprobado' || order.estado === 'Recibido'){
+                const errorMessage=`Error finalizing the order, you cannot change the status of the order directly .`
+                this.log.addLog(errorMessage,'Apitransaccional','Módulo pedidos automaticos')
+                throw new Error(errorMessage)
+            }
+            if (detalleOrdenId !== 0) {
+                const detail = await this.repositoryDetalleOrden.getById(detalleOrdenId);
+                if (detail && detail.orden_id === orderId) {
+                    orderDetails.push(detail);
+                }
+            } else if (proveedorId !== 0) {
+                const orderDetailsComplete = await this.repositoryDetalleOrden.getAllByField('orden_id', orderId);
+                for (const detail of orderDetailsComplete) {
+                    const producto = await this.repositoryProductosBodega.getById(detail.producto_bodega_id);
+                    if (!producto) continue;
+        
+                    // Actualizar los detalles de la orden según el proveedorId
+                    if (proveedorId === 0 || producto.proveedor_id === proveedorId) {
+                        orderDetails.push(detail)
+                    }
+                }
+            } else {
+                orderDetails = await this.repositoryDetalleOrden.getAllByField('orden_id', orderId);
+            }
+
             for (const detail of orderDetails) {
                 const producto = await this.repositoryProductosBodega.getById(detail.producto_bodega_id);
                 if (!producto) continue;
-    
-                // Actualizar los detalles de la orden según el proveedorId
-                if (proveedorId === 0 || producto.proveedor_id === proveedorId) {
-                    const newCantidadActual = Number(producto.cantidad_actual) + Number(detail.cantidad_necesaria);
-                    //await this.repositoryProductosBodega.updateSingleFieldById('producto_bodega_id', producto.producto_bodega_id, 'cantidad_actual', newCantidadActual);
-                    const expiredDate: Date = new Date();
-                    expiredDate.setDate(expiredDate.getDate() + 30);
-                    const newLote:any={
-                        "producto_bodega_id": detail.producto_bodega_id,
-                        "fecha_vencimiento": expiredDate,
-                        "cantidad": newCantidadActual
-                    }
-                    this.ingredietesServices.addLote(newLote)
-    
-                    // Actualizar el estado del detalle de la orden a 'Recibido'
-                    await this.repositoryDetalleOrden.updateSingleFieldById('detalle_orden_id', detail.detalle_orden_id, 'estado', 'Recibido');
-                }
+
+                const newCantidadActual = Number(producto.cantidad_actual) + Number(detail.cantidad_necesaria);
+                const expiredDate: Date = new Date();
+                expiredDate.setDate(expiredDate.getDate() + 30);
+                const newLote: any = {
+                    "producto_bodega_id": detail.producto_bodega_id,
+                    "fecha_vencimiento": expiredDate,
+                    "cantidad": newCantidadActual
+                };
+                this.ingredietesServices.addLote(newLote);
+
+                await this.repositoryDetalleOrden.updateSingleFieldById('detalle_orden_id', detail.detalle_orden_id, 'estado', 'Recibido');
             }
-    
-            // Verificar si todos los detalles de la orden han sido actualizados a 'Recibido'
+
             const updatedOrderDetails = await this.repositoryDetalleOrden.getAllByField('orden_id', orderId);
             const allDetailsReceived = updatedOrderDetails.every(detail => detail.estado === 'Recibido');
-    
-            // Cambiar el estado de la orden a 'Recibido' si todos los detalles han sido recibidos
+
             if (allDetailsReceived) {
                 await this.repositoryOrdenes.updateSingleFieldById('orden_id', orderId, 'estado', 'Recibido');
             }
         } catch (error) {
-            console.error('Error finalizing the order:', error);
+            const errorMessage=`Error finalizing the order: ${error}`
+            this.log.addLog(errorMessage,'Apitransaccional','Módulo pedidos automaticos')
             throw error;
         }
     }
@@ -332,7 +376,8 @@ export class PedidosServices extends Observable{
                 }
             };
         } catch (error) {
-            console.error('Error retrieving complete product info:', error);
+            const errorMessage=`Error retrieving complete product info: ${error}`
+            this.log.addLog(errorMessage,'Apitransaccional','Módulo pedidos automaticos')
             throw error;
         }
     }
@@ -368,16 +413,77 @@ export class PedidosServices extends Observable{
                         ...detail,
                         productInfo: product,
                         supplierInfo: supplierInfo,
-                         pesoInfo: peso
+                         pesoInfo: peso,
+                         date:order.fecha_estimada_recepcion
                     });
                 }
             }
-            if(approvedOrders.length !==0) this.notify(ordersBySupplier);
+            if(approvedOrders.length !==0) this.notify({
+                type:'notify',
+                ordersBySupplier
+            });
 
     
-            return `Se han procesado y notificado ${approvedOrders.length} órdenes.`;
+            return `${approvedOrders.length} orders have been processed and reported.`;
         } catch (error) {
-            console.error('Error al procesar y notificar las órdenes:', error);
+            const errorMessage=`Error when processing and notifying orders: ${error}`
+            this.log.addLog(errorMessage,'Apitransaccional','Módulo pedidos automaticos')
+            throw error;
+        }
+    }
+
+
+     /**
+     * Retorna los detalles de las órdenes que no han sido recibidos y están a 4 días o menos
+     * de su fecha estimada de recepción.
+     */
+     async getPendingOrderDetailsNearReception() {
+        try {
+            const days =Number(process.env.NOTIFYDAYSMAXTORECIVEORDER) || 0
+            const currentDate = new Date();
+            const thresholdDate = addDays(currentDate, days).toISOString().split('T')[0];
+
+            // Obtener todas las órdenes con fecha_estimada_recepcion dentro del rango y estado 'Por recibir'
+            const orders = await this.repositoryOrdenes.getAll();
+            const filteredOrders = orders.filter(order => 
+                order.fecha_estimada_recepcion <= thresholdDate && order.estado === 'Enviado'
+            );
+
+            // Obtener los detalles de las órdenes filtradas
+            const detailedOrders = await Promise.all(filteredOrders.map(async (order) => {
+                const orderDetails = await this.repositoryDetalleOrden.getAllByField('orden_id', order.orden_id);
+                const pendingDetails = orderDetails.filter(detail => detail.estado === 'Por recibir');
+
+                const detailedProducts = await Promise.all(pendingDetails.map(async (detail) => {
+                    const product = await this.repositoryProductosBodega.getById(detail.producto_bodega_id);
+                    const proveedor = product ? await this.repositoryProveedor.getById(product.proveedor_id) : null;
+                    const peso = product ? await this.repositoryPeso.getById(product.peso_proveedor_id) : null;
+                    return {
+                        ...detail,
+                        nombreProducto: product ? product.nombre_producto : 'Producto desconocido',
+                        nombreProveedor: proveedor ? proveedor.nombre_proveedor : 'Proveedor desconocido',
+                        unidadPeso: peso ? peso.unidad : ''
+
+                    };
+                }));
+
+                return {
+                    orden_id: order.orden_id,
+                    fecha_orden:order.fecha_orden,
+                    fecha_estimada:order.fecha_estimada_recepcion,
+                    total:order.total,
+                    detallesPendientes: detailedProducts
+                };
+            }));
+
+
+            if(detailedOrders.length !==0) this.notify({
+                type:'NotRecived',
+                detailedOrders
+            });
+            return detailedOrders;
+        } catch (error) {
+            console.error('Error al obtener detalles de órdenes pendientes:', error);
             throw error;
         }
     }

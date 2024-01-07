@@ -27,11 +27,23 @@ export class AgregarPedidoComponent implements OnInit{
   public prodSelect=1
   public cantidad:number=0
   public detalleSelected=1
+  public estimeteDate=''
 
   public isEdit=false;
   public valorTotal:number=0
 
-  public provToReci=0
+  public provToReci=1
+  public detailToReci=1
+
+  public selectedFilter='Todo'
+
+  listFilterRecive=[
+    'Todo',
+    'Proveedores',
+    'Porducto'
+
+  ]
+
 
 
 
@@ -171,22 +183,22 @@ export class AgregarPedidoComponent implements OnInit{
   }
 
   createPedidoCompleto(){
-    console.log('creando prod')
     const listaTransformada = this.listdetalles.map(objeto => ({
       "producto_bodega_id": objeto.producto_bodega_id,
       "cantidad_necesaria": this.cantidad
     }));
-    if(listaTransformada.length <=0){
+    if(listaTransformada.length <=0 || this.estimeteDate === ''){
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: "No se puede crear una orden vacia!"
+        text: "No se puede crear una orden vacia o sin fecha estimada de entrega!"
       });
       return
     }
     const data:any={
       "orden":{
-        estado:'Aprobado'
+        estado:'Aprobado',
+        fecha_estimada_recepcion:this.estimeteDate
       },
       "detallesOrden":listaTransformada
     }
@@ -220,7 +232,28 @@ export class AgregarPedidoComponent implements OnInit{
   }
 
   reciveOrder(){
-    this.orderServices.reciveOrder(Number(this.idPedido),this.provToReci).subscribe(()=>this.router.navigate([`pedidos/listar`]))
+    let data
+    if(this.selectedFilter==='Todo'){
+      data={}
+    }else if(this.selectedFilter==='Proveedores'){
+      console.log(this.listProv)
+      console.log(this.provToReci)
+      data={
+        idProv:this.provToReci
+      }
+    }else if(this.selectedFilter==='Porducto'){
+      data={
+        idDetail:this.detailToReci
+      }
+    }
+    this.orderServices.reciveOrder(Number(this.idPedido),data).subscribe(()=>this.router.navigate([`pedidos/listar`]))
+    data={}
+  }
+
+  chageFilterRecive(){
+    if(this.selectedFilter==='Porducto'){
+      this.detailToReci=this.listdetalles[0].detalle_orden_id
+    }
   }
 
   validateProd(){
@@ -239,6 +272,7 @@ export class AgregarPedidoComponent implements OnInit{
     this.prodSelect=1;
     this.provSelect=1;
     this.cantidad=0
+    this.estimeteDate=''
     this.isEdit=false
   }
 

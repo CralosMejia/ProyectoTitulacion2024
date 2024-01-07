@@ -1,7 +1,6 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
 import type { hechosdemandaproducto, hechosdemandaproductoId } from './hechosdemandaproducto';
-import type { hechosestadopedido, hechosestadopedidoId } from './hechosestadopedido';
 import type { hechosventaplatos, hechosventaplatosId } from './hechosventaplatos';
 
 export interface dimfechaAttributes {
@@ -36,18 +35,6 @@ export class dimfecha extends Model<dimfechaAttributes, dimfechaCreationAttribut
   hasHechosdemandaproducto!: Sequelize.HasManyHasAssociationMixin<hechosdemandaproducto, hechosdemandaproductoId>;
   hasHechosdemandaproductos!: Sequelize.HasManyHasAssociationsMixin<hechosdemandaproducto, hechosdemandaproductoId>;
   countHechosdemandaproductos!: Sequelize.HasManyCountAssociationsMixin;
-  // dimfecha hasMany hechosestadopedido via fecha_id
-  hechosestadopedidos!: hechosestadopedido[];
-  getHechosestadopedidos!: Sequelize.HasManyGetAssociationsMixin<hechosestadopedido>;
-  setHechosestadopedidos!: Sequelize.HasManySetAssociationsMixin<hechosestadopedido, hechosestadopedidoId>;
-  addHechosestadopedido!: Sequelize.HasManyAddAssociationMixin<hechosestadopedido, hechosestadopedidoId>;
-  addHechosestadopedidos!: Sequelize.HasManyAddAssociationsMixin<hechosestadopedido, hechosestadopedidoId>;
-  createHechosestadopedido!: Sequelize.HasManyCreateAssociationMixin<hechosestadopedido>;
-  removeHechosestadopedido!: Sequelize.HasManyRemoveAssociationMixin<hechosestadopedido, hechosestadopedidoId>;
-  removeHechosestadopedidos!: Sequelize.HasManyRemoveAssociationsMixin<hechosestadopedido, hechosestadopedidoId>;
-  hasHechosestadopedido!: Sequelize.HasManyHasAssociationMixin<hechosestadopedido, hechosestadopedidoId>;
-  hasHechosestadopedidos!: Sequelize.HasManyHasAssociationsMixin<hechosestadopedido, hechosestadopedidoId>;
-  countHechosestadopedidos!: Sequelize.HasManyCountAssociationsMixin;
   // dimfecha hasMany hechosventaplatos via fecha_id
   hechosventaplatos!: hechosventaplatos[];
   getHechosventaplatos!: Sequelize.HasManyGetAssociationsMixin<hechosventaplatos>;

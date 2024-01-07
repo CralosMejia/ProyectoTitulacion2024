@@ -1,5 +1,4 @@
 # coding: utf-8
-
 from sqlalchemy import Column, DECIMAL, Date, ForeignKey, Integer, String, Text, text
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
@@ -24,7 +23,7 @@ class Dimplato(Base):
     plato_id = Column(Integer, primary_key=True)
     nombre_plato = Column(String(255))
     descripcion = Column(Text)
-    precio = Column(DECIMAL(10, 2))
+    precio = Column(DECIMAL(14, 3), server_default=text("'0.000'"))
 
 
 class Dimunidadmedida(Base):
@@ -42,7 +41,7 @@ class Dimproducto(Base):
     producto_id = Column(Integer, primary_key=True)
     nombre_producto = Column(String(255))
     tipo_producto = Column(String(255))
-    precio_proveedor = Column(DECIMAL(10, 2))
+    precio_proveedor = Column(DECIMAL(14, 3), server_default=text("'0.000'"))
     unidad_medida_id = Column(ForeignKey('dimunidadmedida.unidad_medida_id'), index=True)
 
     unidad_medida = relationship('Dimunidadmedida')
@@ -52,11 +51,10 @@ class Hechosventaplato(Base):
     __tablename__ = 'hechosventaplatos'
 
     venta_plato_id = Column(Integer, primary_key=True)
-    venta_id = Column(Integer, nullable=False)
     fecha_id = Column(ForeignKey('dimfecha.fecha_id'), index=True)
     plato_id = Column(ForeignKey('dimplato.plato_id'), index=True)
     unidades_vendidas = Column(Integer)
-    precio_total = Column(DECIMAL(10, 2))
+    precio_total = Column(DECIMAL(14, 3), server_default=text("'0.000'"))
 
     fecha = relationship('Dimfecha')
     plato = relationship('Dimplato')
@@ -68,9 +66,9 @@ class Hechosdemandaproducto(Base):
     demanda_id = Column(Integer, primary_key=True)
     fecha_id = Column(ForeignKey('dimfecha.fecha_id'), index=True)
     producto_id = Column(ForeignKey('dimproducto.producto_id'), index=True)
-    cantidad_predicha_modelo_1 = Column(DECIMAL(10, 2), server_default=text("'0.00'"))
-    cantidad_predicha_modelo_2 = Column(DECIMAL(10, 2), server_default=text("'0.00'"))
-    cantidad_real = Column(DECIMAL(10, 2), server_default=text("'0.00'"))
+    cantidad_predicha_modelo_1 = Column(DECIMAL(14, 3), server_default=text("'0.000'"))
+    cantidad_predicha_modelo_2 = Column(DECIMAL(14, 3), server_default=text("'0.000'"))
+    cantidad_real = Column(DECIMAL(14, 3), server_default=text("'0.000'"))
 
     fecha = relationship('Dimfecha')
     producto = relationship('Dimproducto')

@@ -1,9 +1,10 @@
 import { ventas } from "../../../data/models/RestaurantePacificoDB/ventas";
 import { platos } from "../../../data/models/RestaurantePacificoDB/platos"; // Import the Platos model
 import { EntrieRepository } from "../../../data/repository/entrieRepository";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { ingredientesporplato } from "../../../data/models/RestaurantePacificoDB/ingredientesporplato";
 import { lotes } from "../../../data/models/RestaurantePacificoDB/lotes";
+import { LoggerService } from "./logs/LogsAPP";
 
 /**
  * Service class for managing 'ventas' (sales) and related entities.
@@ -16,7 +17,9 @@ export class VentasServices {
     private readonly repositoryLotes: EntrieRepository<lotes>;
 
 
-    constructor(){
+    constructor(
+        @inject(LoggerService) private log: LoggerService,
+    ){
         this.repositoryVentas = new EntrieRepository(ventas);
         this.repositoryPlatos = new EntrieRepository(platos);
         this.repositoryIPP = new EntrieRepository(ingredientesporplato);
@@ -41,6 +44,8 @@ export class VentasServices {
         fecha_fin_semana: string
     }>) {
         try {
+            let message=`Sales loading process has started` 
+            this.log.addLog(message,'Apitransaccional','N/a')
             const ventasToInsert = [];
 
             for (const sale of salesList) {
@@ -68,13 +73,19 @@ export class VentasServices {
 
             if (ventasToInsert.length > 0) {
                 const results = await this.repositoryVentas.bulkCreate(ventasToInsert);
+                let message=`Sales upload process has been completed, ${ventasToInsert.length} sales have been uploaded.` 
+                this.log.addLog(message,'Apitransaccional','N/a')
                 return results;
             } else {
-                console.log("Sales could not be processed due to lack of matching plates or existing sales.");
+                let message=`Sales could not be processed due to lack of matching plates or existing sales.` 
+                console.log(message);
+                this.log.addLog(message,'Apitransaccional','N/a')
                 return {}
             }
         } catch (error) {
             console.error('Error when adding sales:', error);
+            let message=`Error when adding sales:${error} ` 
+            this.log.addLog(message,'Apitransaccional','N/a')
             throw error;
         }
     }

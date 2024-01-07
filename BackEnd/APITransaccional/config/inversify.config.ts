@@ -9,10 +9,12 @@ import { PlatosServices } from '../app/business/services/MIPP/platoServices';
 import { VisualizationManagerServices } from '../app/business/services/MVD/VisualizationManagerServices';
 import { VentasServices } from '../app/business/services/common/ventasServices';
 import { EmailService } from '../app/business/services/common/EmailServices';
+import { LoggerService } from '../app/business/services/common/logs/LogsAPP';
 
 
 const container = new Container();
 
+container.bind<LoggerService>(LoggerService).toSelf().inSingletonScope();
 container.bind<IngredientesServices>(IngredientesServices).toSelf().inSingletonScope();
 container.bind<PlatosServices>(PlatosServices).toSelf().inSingletonScope();
 container.bind<VisualizationManagerServices>(VisualizationManagerServices).toSelf().inSingletonScope();

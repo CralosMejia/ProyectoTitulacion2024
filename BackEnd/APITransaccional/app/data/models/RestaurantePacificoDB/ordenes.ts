@@ -9,6 +9,7 @@ export interface ordenesAttributes {
   estado_edicion?: number;
   total?: number;
   modo_creacion?: 'Manual' | 'Automatico';
+  fecha_estimada_recepcion: string;
 }
 
 export type ordenesPk = "orden_id";
@@ -23,6 +24,7 @@ export class ordenes extends Model<ordenesAttributes, ordenesCreationAttributes>
   estado_edicion?: number;
   total?: number;
   modo_creacion?: 'Manual' | 'Automatico';
+  fecha_estimada_recepcion!: string;
 
   // ordenes hasMany detalleordenes via orden_id
   detalleordenes!: detalleordenes[];
@@ -60,19 +62,22 @@ export class ordenes extends Model<ordenesAttributes, ordenesCreationAttributes>
       defaultValue: 0
     },
     total: {
-      type: DataTypes.DECIMAL(10,6),
+      type: DataTypes.DECIMAL(14,3),
       allowNull: true,
-      defaultValue: 0.000000
+      defaultValue: 0.000
     },
     modo_creacion: {
       type: DataTypes.ENUM('Manual','Automatico'),
       allowNull: true,
       defaultValue: "Manual"
+    },
+    fecha_estimada_recepcion: {
+      type: DataTypes.DATEONLY,
+      allowNull: false
     }
   }, {
     sequelize,
     tableName: 'ordenes',
-    hasTrigger: true,
     timestamps: false,
     indexes: [
       {

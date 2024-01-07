@@ -35,7 +35,7 @@ def test_train_model(app_with_client, mpd_manager_mock):
     response = client.get("/mpd/trainModel")
     assert response.status_code == 200
     assert response.text == 'OK'
-    mpd_manager_mock.train.assert_called_once()
+    mpd_manager_mock.train_model_to_predict_demand.assert_called_once()
 
 def test_forecast_demand(app_with_client, mpd_manager_mock):
     app, client = app_with_client

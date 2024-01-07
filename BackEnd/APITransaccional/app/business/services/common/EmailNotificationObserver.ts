@@ -48,6 +48,7 @@ export class EmailNotificationObserver implements Observer {
                     <h3>Numero de orden: ${data.order.orden_id}</h3>
                     <h3>Estado de la orden: ${data.order.estado}</h3>
                     <h3>Fecha de creacion: ${data.order.fecha_orden}</h3>
+                    <h3>Fecha estimada de recepción: ${data.order.fecha_estimada_recepcion}</h3>
                     <h3>Valor total de la orden: ${data.order.total}$</h3>
                     <h3>Detalles del pedido</h3>
                     ${detallesPedidoHTML}
@@ -115,37 +116,77 @@ export class EmailNotificationObserver implements Observer {
             }
             
         }else if(observable instanceof PedidosServices){
+            if(data.type==='notify'){
+                // Manejar notificación a proveedores
+                for (const [supplierId, details] of Object.entries(data.ordersBySupplier)) {
+                    const detallesDelProveedor: any[] = details as any[];
+                    // Supongamos que cada detalle contiene información del producto y del proveedor
+                    let detallesProveedorHTML = '<ul style="list-style-type:none;">';
+                    detallesDelProveedor.forEach((detail: any) => {
+                        detallesProveedorHTML += `
+                            <li>
+                                <strong>${detail.productInfo.nombre_producto}</strong> - 
+                                Cantidad: ${detail.cantidad_necesaria} ${detail.pesoInfo.simbolo}, 
+                                Precio: ${detail.productInfo.precio_proveedor}$, 
+                                Valor: ${(detail.cantidad_necesaria * detail.productInfo.precio_proveedor).toFixed(2)}$
+                            </li>
+                        `;
+                    });
+                    detallesProveedorHTML += '</ul>';
 
-           // Manejar notificación a proveedores
-           for (const [supplierId, details] of Object.entries(data)) {
-            const detallesDelProveedor: any[] = details as any[];
-            // Supongamos que cada detalle contiene información del producto y del proveedor
-            let detallesProveedorHTML = '<ul style="list-style-type:none;">';
-            detallesDelProveedor.forEach((detail: any) => {
-                detallesProveedorHTML += `
-                    <li>
-                        <strong>${detail.productInfo.nombre_producto}</strong> - 
-                        Cantidad: ${detail.cantidad_necesaria} ${detail.pesoInfo.simbolo}, 
-                        Precio: ${detail.productInfo.precio_proveedor}$, 
-                        Valor: ${(detail.cantidad_necesaria * detail.productInfo.precio_proveedor).toFixed(2)}$
-                    </li>
-                `;
-            });
-            detallesProveedorHTML += '</ul>';
+                    const supplierEmail = detallesDelProveedor.length > 0 ? detallesDelProveedor[0].supplierInfo.email : 'defaultemail@example.com';
+                    const mail = await this.emailServ.sendEmail(
+                        supplierEmail,
+                        'Pedido Enviado',
+                        'Se ha enviado un pedido',
+                        `
+                            <h1>Pedido Enviado</h1>
+                            <h3>De acuerdo a lo estipulado en el contrato, el restaurante Pacifico receptara el pedido a mas tardar en la fecha: ${detallesDelProveedor[0].date}</h3>
+                            <h3>Detalles del pedido para el proveedor ${detallesDelProveedor[0].supplierInfo.nombre_proveedor}</h3>
+                            ${detallesProveedorHTML}
+                        `
+                    );
+                    if (mail !== null) console.log("Mail sent successfully to supplier", supplierId);
+                }
+ 
+            }else if(data.type==='NotRecived'){
+                const detailsnotRecived: any[] = data.detailedOrders as any[];
+                let lotesExpiredHTML = '<ul style="list-style-type:none;">';
+                detailsnotRecived.forEach((detail:any)=>{
+                    lotesExpiredHTML+=`
+                        <li>
+                            <h4>Orden #${detail.orden_id}  Total de la orden:${detail.total}</h4>
+                            <h5>Fecha de creación de la orden: ${detail.fecha_orden}</h5>
+                            <h5>Fecha estimada de llegada: ${detail.fecha_estimada}</h5>
+                            <h5>Productos que aun no han llegado:</h5>
+                            <ol>
+                        `
+                        detail.detallesPendientes.forEach((prod:any) => {
+                            lotesExpiredHTML+=`
+                            <li>
+                                <strong>${prod.nombreProducto}</strong> - 
+                                Cantidad: ${prod.cantidad_necesaria} ${prod.unidadPeso}, 
+                                Proveedor: ${prod.nombreProveedor}$, 
+                            </li>`
+                        });
+                        lotesExpiredHTML+=`</ol></li>`
 
-            const supplierEmail = detallesDelProveedor.length > 0 ? detallesDelProveedor[0].supplierInfo.email : 'defaultemail@example.com';
-            const mail = await this.emailServ.sendEmail(
-                supplierEmail,
-                'Pedido Enviado',
-                'Se ha enviado un pedido',
-                `
-                    <h1>Pedido Enviado</h1>
-                    <h3>Detalles del pedido para el proveedor ${detallesDelProveedor[0].supplierInfo.nombre_proveedor}</h3>
-                    ${detallesProveedorHTML}
-                `
-            );
-            if (mail !== null) console.log("Mail sent successfully to supplier", supplierId);
-        }
+                })
+                lotesExpiredHTML+=`</ul>`
+
+
+                    const mail = await this.emailServ.sendEmail(
+                        process.env.ADMIN_MAIL || '',
+                        'Pedidos que no han llegado',
+                        'Estos Pedidos aun no han llegado',
+                        `
+                            <h1>Pedidos que no han llegado:</h1>
+                            ${lotesExpiredHTML}
+                            
+                        `
+                    );
+                    if (mail !== null) console.log("Mail successfully sent to admin about the orders that have not arrived.");
+            }
         }
         
     }

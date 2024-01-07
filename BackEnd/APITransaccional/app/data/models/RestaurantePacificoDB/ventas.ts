@@ -49,19 +49,19 @@ export class ventas extends Model<ventasAttributes, ventasCreationAttributes> im
       }
     },
     cantidad: {
-      type: DataTypes.DECIMAL(6,2),
+      type: DataTypes.DECIMAL(14,3),
       allowNull: true,
-      defaultValue: 0.00
+      defaultValue: 0.000
     },
     precio_unitario: {
-      type: DataTypes.DECIMAL(6,2),
+      type: DataTypes.DECIMAL(14,3),
       allowNull: true,
-      defaultValue: 0.00
+      defaultValue: 0.000
     },
     precio_total: {
-      type: DataTypes.DECIMAL(6,2),
+      type: DataTypes.DECIMAL(14,3),
       allowNull: true,
-      defaultValue: 0.00
+      defaultValue: 0.000
     },
     fecha_inicio_semana: {
       type: DataTypes.DATEONLY,

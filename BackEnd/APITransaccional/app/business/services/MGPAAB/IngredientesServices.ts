@@ -1,4 +1,4 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { lotes } from "../../../data/models/RestaurantePacificoDB/lotes";
 import { productosbodega } from "../../../data/models/RestaurantePacificoDB/productosbodega";
 import { EntrieRepository } from "../../../data/repository/entrieRepository";
@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import { Observable } from "../common/Observable";
 import { peso } from "../../../data/models/RestaurantePacificoDB/peso";
 import { proveedor } from "../../../data/models/RestaurantePacificoDB/proveedor";
+import { LoggerService } from "../common/logs/LogsAPP";
 
 dotenv.config();
   
@@ -25,7 +26,9 @@ export class IngredientesServices extends Observable{
     private DIFDAYSTOEXPIRED:number = Number(process.env.DIFDAYSTOEXPIRED) || 2;
 
 
-    constructor(){
+    constructor(
+        @inject(LoggerService) private log: LoggerService,
+    ){
         super()
         this.repositoryProductoBodega =  new EntrieRepository(productosbodega);
         this.repositoryLotes =  new EntrieRepository(lotes);
@@ -50,11 +53,20 @@ export class IngredientesServices extends Observable{
         let loteExpirationDate = new Date(lote.fecha_vencimiento);
     
         if (loteExpirationDate.getTime() <= currentDate.getTime()) {
-            throw new Error('The expiration date is less than or equal to the current date');
+
+            let ErroMessage=`The expiration date is less than or equal to the current date` 
+            this.log.addLog(ErroMessage,'Apitransaccional','Módulo gestion de productos alimenticios almacenados en bodega')
+
+            throw new Error(ErroMessage);
         }
 
         lote.fecha_ingreso = currentDateISO;
-        return await this.repositoryLotes.create(lote);
+        const resp=await this.repositoryLotes.create(lote);
+
+        let message=`A batch has been successfully added` 
+        this.log.addLog(message,'Apitransaccional','Módulo gestion de productos alimenticios almacenados en bodega')
+
+        return resp
     }
 
     /**
@@ -101,6 +113,9 @@ export class IngredientesServices extends Observable{
                 detailedExpiredLotes
             });
         }
+
+        let message=`Expired batches correctly obtained: ${detailedExpiredLotes}` 
+        this.log.addLog(message,'Apitransaccional','Módulo gestion de productos alimenticios almacenados en bodega')
     
         return detailedExpiredLotes;
     }
@@ -149,33 +164,12 @@ export class IngredientesServices extends Observable{
             detailedExpiredLotes
         })
 
+        let message=`Batches were correctly obtained due to expiration date: ${lotesToExpire}` 
+        this.log.addLog(message,'Apitransaccional','Módulo gestion de productos alimenticios almacenados en bodega')
     
         return lotesToExpire;
     }
     
-    /**
-     * Retrieves all products that are near or below their minimum stock level.
-     * 
-     * @param difference - The quantity difference from the minimum stock level to consider.
-     * @returns An array of products near or below their minimum stock level.
-     */
-    // async getProductsNearOrBelowMinimum() {
-    //     const difference = this.DIFMINORMAX;
-    //     // Get all products from the repository
-    //     const allProducts = await this.repositoryProductoBodega.getAll();
-    
-    //     // Filter products that are near or below their minimum quantity
-    //     const productsNearOrBelowMinimum = allProducts.filter(product => {
-    //         const currentAmount = Number(product.cantidad_actual);
-    //         const minimumAmount = Number(product.cantidad_minima);
-    
-    //         // Check if the current amount is within the specified difference of the minimum amount
-    //         return currentAmount <= (minimumAmount + difference);
-    //     });
-    
-    //     return productsNearOrBelowMinimum;
-    // }
-
     /**
      * Retrieves all products that are near or above their maximum stock level.
      * 
@@ -195,6 +189,9 @@ export class IngredientesServices extends Observable{
             // Check if the current amount is within the specified difference of the maximum amount
             return currentAmount >= (maximumAmount - difference);
         });
+
+        let message=`The products that are about to reach their maximum were correctly obtained.: ${productsNearOrAboveMaximum}` 
+        this.log.addLog(message,'Apitransaccional','Módulo gestion de productos alimenticios almacenados en bodega')
     
         return productsNearOrAboveMaximum;
     }
@@ -248,6 +245,9 @@ export class IngredientesServices extends Observable{
                 }
             };
         }));
+
+        let message=`The search was successful: ${productosConLotes}` 
+        this.log.addLog(message,'Apitransaccional','Módulo gestion de productos alimenticios almacenados en bodega')
     
         return productosConLotes;
     }
@@ -288,10 +288,15 @@ export class IngredientesServices extends Observable{
                     }
                 };
             }));
+
+            let message=`The products with their batches were correctly obtained: ${productosConLotes}` 
+            this.log.addLog(message,'Apitransaccional','Módulo gestion de productos alimenticios almacenados en bodega')
     
             return productosConLotes;
         } catch (error) {
-            throw new Error(`Error al obtener productos con lotes y peso: ${error}`);
+            let errorMessage=`Error al obtener productos con lotes y peso: ${error}` 
+            this.log.addLog(errorMessage,'Apitransaccional','Módulo gestion de productos alimenticios almacenados en bodega')
+            throw new Error(errorMessage);
         }
     }
     

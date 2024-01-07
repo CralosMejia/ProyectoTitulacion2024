@@ -49,8 +49,9 @@ export class dimplato extends Model<dimplatoAttributes, dimplatoCreationAttribut
       allowNull: true
     },
     precio: {
-      type: DataTypes.DECIMAL(10,2),
-      allowNull: true
+      type: DataTypes.DECIMAL(14,3),
+      allowNull: true,
+      defaultValue: 0.000
     }
   }, {
     sequelize,

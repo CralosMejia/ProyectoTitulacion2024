@@ -108,14 +108,14 @@ export class productosbodega extends Model<productosbodegaAttributes, productosb
       allowNull: false
     },
     cantidad_actual: {
-      type: DataTypes.DECIMAL(10,2),
+      type: DataTypes.DECIMAL(14,3),
       allowNull: true,
-      defaultValue: 0.00
+      defaultValue: 0.000
     },
     cantidad_maxima: {
-      type: DataTypes.DECIMAL(10,2),
+      type: DataTypes.DECIMAL(14,3),
       allowNull: true,
-      defaultValue: 0.00
+      defaultValue: 0.000
     },
     tipo: {
       type: DataTypes.ENUM('liquidos','solidos'),
@@ -123,9 +123,9 @@ export class productosbodega extends Model<productosbodegaAttributes, productosb
       defaultValue: "solidos"
     },
     precio_proveedor: {
-      type: DataTypes.DECIMAL(8,6),
+      type: DataTypes.DECIMAL(14,3),
       allowNull: true,
-      defaultValue: 0.000000
+      defaultValue: 0.000
     }
   }, {
     sequelize,

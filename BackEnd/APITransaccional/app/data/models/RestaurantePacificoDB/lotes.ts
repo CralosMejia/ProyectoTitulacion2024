@@ -53,14 +53,13 @@ export class lotes extends Model<lotesAttributes, lotesCreationAttributes> imple
       allowNull: false
     },
     cantidad: {
-      type: DataTypes.DECIMAL(10,2),
+      type: DataTypes.DECIMAL(14,3),
       allowNull: true,
-      defaultValue: 0.00
+      defaultValue: 0.000
     }
   }, {
     sequelize,
     tableName: 'lotes',
-    hasTrigger: true,
     timestamps: false,
     indexes: [
       {

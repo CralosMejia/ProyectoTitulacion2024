@@ -59,9 +59,9 @@ export class detalleordenes extends Model<detalleordenesAttributes, detalleorden
       }
     },
     cantidad_necesaria: {
-      type: DataTypes.DECIMAL(10,2),
+      type: DataTypes.DECIMAL(14,3),
       allowNull: true,
-      defaultValue: 0.00
+      defaultValue: 0.000
     },
     estado: {
       type: DataTypes.ENUM('Por recibir','Recibido'),
@@ -71,7 +71,6 @@ export class detalleordenes extends Model<detalleordenesAttributes, detalleorden
   }, {
     sequelize,
     tableName: 'detalleordenes',
-    hasTrigger: true,
     timestamps: false,
     indexes: [
       {

@@ -4,7 +4,7 @@ import { DataTypes, Model, Optional } from 'sequelize';
 export interface logsappAttributes {
   logs_app_id: number;
   log_description: string;
-  fecha_log: string;
+  fecha_log: Date;
   sistema: string;
   modulo: string;
 }
@@ -17,7 +17,7 @@ export type logsappCreationAttributes = Optional<logsappAttributes, logsappOptio
 export class logsapp extends Model<logsappAttributes, logsappCreationAttributes> implements logsappAttributes {
   logs_app_id!: number;
   log_description!: string;
-  fecha_log!: string;
+  fecha_log!: Date;
   sistema!: string;
   modulo!: string;
 
@@ -35,7 +35,7 @@ export class logsapp extends Model<logsappAttributes, logsappCreationAttributes>
       allowNull: false
     },
     fecha_log: {
-      type: DataTypes.DATEONLY,
+      type: DataTypes.DATE,
       allowNull: false
     },
     sistema: {

@@ -57,8 +57,9 @@ export class dimproducto extends Model<dimproductoAttributes, dimproductoCreatio
       allowNull: true
     },
     precio_proveedor: {
-      type: DataTypes.DECIMAL(10,2),
-      allowNull: true
+      type: DataTypes.DECIMAL(14,3),
+      allowNull: true,
+      defaultValue: 0.000
     },
     unidad_medida_id: {
       type: DataTypes.INTEGER,

@@ -1,4 +1,4 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { dimfecha } from "../../../data/models/DataScienceDB/dimfecha";
 import { dimplato } from "../../../data/models/DataScienceDB/dimplato";
 import { hechosdemandaproducto } from "../../../data/models/DataScienceDB/hechosdemandaproducto";
@@ -7,6 +7,7 @@ import { ordenes } from "../../../data/models/RestaurantePacificoDB/ordenes";
 import { productosbodega } from "../../../data/models/RestaurantePacificoDB/productosbodega";
 import { EntrieRepository } from "../../../data/repository/entrieRepository";
 import { ValidatorVisualizationManagerServices } from "../../validators/MVD/ValidatorVisualizationManagerServices";
+import { LoggerService } from "../common/logs/LogsAPP";
 
 /**
  * Service class for managing and retrieving various data visualizations.
@@ -22,7 +23,9 @@ export class VisualizationManagerServices{
     private repositoryProductosBodega: EntrieRepository<productosbodega>;
     private repositoryOrdenes: EntrieRepository<ordenes>;
 
-    constructor() {
+    constructor(
+        @inject(LoggerService) private log: LoggerService,
+    ) {
         this.repositoryFecha = new EntrieRepository(dimfecha);
         this.repositoryDemanda = new EntrieRepository(hechosdemandaproducto);
         this.validator= new ValidatorVisualizationManagerServices()
@@ -47,7 +50,9 @@ export class VisualizationManagerServices{
 
             const esRangoValido = await this.validator.validateRangeDates(fechaDesde, fechaHasta);
             if (!esRangoValido) {
-                throw new Error('The specified date range is invalid or has no data.');
+                let errorMessage=`The specified date range is invalid or has no data.` 
+                this.log.addLog(errorMessage,'Apitransaccional','Módulo visualizacion de datos')
+                throw new Error(errorMessage);
             }
             // Obtener todas las fechas
             const todasFechas = await this.repositoryFecha.getAll();
@@ -79,9 +84,16 @@ export class VisualizationManagerServices{
                 datosRealidad.push(sumaRealidad);
             }
 
-            if( datosPrediccion.length === 0 || labels.length === 0 || datosRealidad.length === 0) throw new Error(`No data found`);
+            if( datosPrediccion.length === 0 || labels.length === 0 || datosRealidad.length === 0){
 
+                let errorMessage=`No data found` 
+                this.log.addLog(errorMessage,'Apitransaccional','Módulo visualizacion de datos')
+                throw new Error(errorMessage);
+            } 
+                
 
+            let errorMessage=`information has been returned correctly for plotting the demand forecast` 
+            this.log.addLog(errorMessage,'Apitransaccional','Módulo visualizacion de datos')
             return {
                 datasets: [
                     {
@@ -127,13 +139,17 @@ export class VisualizationManagerServices{
             // Validar el rango de fechas
             const esRangoValido = await this.validator.validateRangeDates(fechaDesde, fechaHasta);
             if (!esRangoValido) {
-                throw new Error('The specified date range is invalid or has no data.');
+                let errorMessage=`The specified date range is invalid or has no data.` 
+                this.log.addLog(errorMessage,'Apitransaccional','Módulo visualizacion de datos')
+                throw new Error(errorMessage);
             }
 
             // Obtener nombre del plato
             const plato = await this.repositoryPlato.getById(platoId);
             if (!plato) {
-                throw new Error(`Plate with ID ${platoId} not found.`);
+                let errorMessage=`Plate with ID ${platoId} not found.` 
+                this.log.addLog(errorMessage,'Apitransaccional','Módulo visualizacion de datos')
+                throw new Error(errorMessage);
             }
 
             // Obtener todas las fechas en el rango
@@ -155,8 +171,14 @@ export class VisualizationManagerServices{
                 }
             }
 
-            if( datosVentas.length === 0 || labels.length === 0) throw new Error(`No data found`);
+            if( datosVentas.length === 0 || labels.length === 0){
+                let errorMessage=`No data found` 
+                this.log.addLog(errorMessage,'Apitransaccional','Módulo visualizacion de datos')
+                throw new Error(errorMessage);
+            }
 
+            let message=`information has been returned correctly to graph the sales trend` 
+            this.log.addLog(message,'Apitransaccional','Módulo visualizacion de datos')
             return {
                 datasets: [
                     {
@@ -190,8 +212,13 @@ export class VisualizationManagerServices{
             // Obtener la información del producto de la bodega
             const producto = await this.repositoryProductosBodega.getById(productoBodegaId);
             if (!producto) {
-                throw new Error(`Product with ID ${productoBodegaId} not found.`);
+                let errorMessage=`Product with ID ${productoBodegaId} not found.` 
+                this.log.addLog(errorMessage,'Apitransaccional','Módulo visualizacion de datos')
+                throw new Error(errorMessage);
             }
+
+            let message=`information has been returned correctly to plot inventory status` 
+            this.log.addLog(message,'Apitransaccional','Módulo visualizacion de datos')
 
             return {
                 labels: [producto.nombre_producto],
@@ -202,6 +229,8 @@ export class VisualizationManagerServices{
             };
         } catch (error) {
             console.error('Error obtaining product inventory data:', error);
+            let errorMessage=`Error obtaining product inventory data: ${error}` 
+            this.log.addLog(errorMessage,'Apitransaccional','Módulo visualizacion de datos')
             throw error;
         }
     }
@@ -224,12 +253,19 @@ export class VisualizationManagerServices{
                 new Date(orden.fecha_orden) <= new Date(fechaHasta)
             );
 
-            if(ordenesEnRango.length === 0) throw new Error(`No data found`);
+            if(ordenesEnRango.length === 0) {
+                let errorMessage=`No data found` 
+                this.log.addLog(errorMessage,'Apitransaccional','Módulo visualizacion de datos')
+                throw new Error(errorMessage);
+            }
             // Contar órdenes según criterios
             const creadosManualmente = ordenesEnRango.filter(orden => orden.modo_creacion === 'Manual').length;
             const aprobadosSinModificaciones = ordenesEnRango.filter(orden => orden.modo_creacion === 'Automatico' && !orden.estado_edicion && orden.estado === 'Aprobado').length;
             const editadosYAprobados = ordenesEnRango.filter(orden => orden.modo_creacion === 'Automatico' && orden.estado_edicion && orden.estado === 'Aprobado').length;
             const cancelados = ordenesEnRango.filter(orden => orden.estado === 'Cancelado').length;
+
+            let errorMessage=`information has been returned correctly for plotting the order summary` 
+            this.log.addLog(errorMessage,'Apitransaccional','Módulo visualizacion de datos')
 
             return {
                 labels: [['Creados', 'Manualmente'], ['Aprobados sin', 'modificaciones'], ['Editados y', 'aprobados'], 'Cancelados'],
@@ -275,7 +311,7 @@ export class VisualizationManagerServices{
                 mostRecentDate: mostRecentDate.toISOString().split('T')[0] // Formatear como 'YYYY-MM-DD'
             };
         } catch (error) {
-            throw new Error(`Error al obtener las fechas más antiguas y recientes: ${error}`);
+            throw new Error(`Error in obtaining the oldest and most recent dates: ${error}`);
         }
     }
 }

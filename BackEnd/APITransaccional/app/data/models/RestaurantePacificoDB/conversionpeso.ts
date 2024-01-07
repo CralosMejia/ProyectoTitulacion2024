@@ -56,9 +56,9 @@ export class conversionpeso extends Model<conversionpesoAttributes, conversionpe
       }
     },
     factor_conversion: {
-      type: DataTypes.DECIMAL(10,4),
+      type: DataTypes.DECIMAL(14,3),
       allowNull: true,
-      defaultValue: 0.0000
+      defaultValue: 0.000
     }
   }, {
     sequelize,

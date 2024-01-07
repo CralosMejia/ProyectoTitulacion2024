@@ -70,9 +70,9 @@ export class platos extends Model<platosAttributes, platosCreationAttributes> im
       defaultValue: ""
     },
     precio: {
-      type: DataTypes.DECIMAL(6,2),
+      type: DataTypes.DECIMAL(14,3),
       allowNull: true,
-      defaultValue: 0.00
+      defaultValue: 0.000
     },
     imagen: {
       type: DataTypes.STRING(255),
