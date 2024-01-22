@@ -52,6 +52,8 @@ export class PedidosServices extends Observable{
     async createOrdenComplete(orden: ordenes, listDetalleOrdenes: detalleordenes[] | null) {
         try {
             let subtotalOrden = 0;
+            const diasASumar =Number(process.env.DAYSMAXTORECIVEORDER) || 0
+
 
             if(listDetalleOrdenes=== null || listDetalleOrdenes === undefined){
                 throw new Error('Order details are null orn undefined')
@@ -70,6 +72,9 @@ export class PedidosServices extends Observable{
     
             // Set the order date to the current date
             orden.fecha_orden = new Date().toISOString().split('T')[0];
+            const dateMaxToRecive=new Date(new Date(orden.fecha_orden ).setDate(new Date(orden.fecha_orden ).getDate() + diasASumar)).toISOString().split('T')[0];
+
+            orden.fecha_estimada_recepcion=dateMaxToRecive
     
             // Create the order
             const createdOrden = await this.repositoryOrdenes.create(orden);
@@ -250,7 +255,7 @@ export class PedidosServices extends Observable{
             this.validator.validateStatusTransition(order.estado as OrderStatus, newStatus);
 
             if(newStatus === 'Enviado'){
-                this.processAndNotifyApprovedOrders()
+                this.processAndNotifyApprovedOrders(orderId)
                 return 1
             }
     
@@ -271,7 +276,7 @@ export class PedidosServices extends Observable{
      * 
      * @param orderId - The ID of the order to finalize.
      */
-    async finalizeOrder(orderId: number, proveedorId: number=0,detalleOrdenId: number = 0): Promise<void> {
+    async finalizeOrder(orderId: number,expiredDate:Date, proveedorId: number=0,detalleOrdenId: number = 0): Promise<void> {
         try {
             let orderDetails = [];
             const order= await this.repositoryOrdenes.getById(orderId)
@@ -309,17 +314,17 @@ export class PedidosServices extends Observable{
                 const producto = await this.repositoryProductosBodega.getById(detail.producto_bodega_id);
                 if (!producto) continue;
 
-                const newCantidadActual = Number(producto.cantidad_actual) + Number(detail.cantidad_necesaria);
-                const expiredDate: Date = new Date();
-                expiredDate.setDate(expiredDate.getDate() + 30);
+                // const newCantidadActual = Number(producto.cantidad_actual) + Number(detail.cantidad_necesaria);
                 const newLote: any = {
                     "producto_bodega_id": detail.producto_bodega_id,
                     "fecha_vencimiento": expiredDate,
-                    "cantidad": newCantidadActual
+                    "cantidad": detail.cantidad_necesaria
                 };
                 this.ingredietesServices.addLote(newLote);
+                const dateSpecific = new Date()
 
                 await this.repositoryDetalleOrden.updateSingleFieldById('detalle_orden_id', detail.detalle_orden_id, 'estado', 'Recibido');
+                await this.repositoryDetalleOrden.updateSingleFieldById('detalle_orden_id', detail.detalle_orden_id, 'fecha_recepcion', dateSpecific);
             }
 
             const updatedOrderDetails = await this.repositoryDetalleOrden.getAllByField('orden_id', orderId);
@@ -381,10 +386,14 @@ export class PedidosServices extends Observable{
             throw error;
         }
     }
-    async processAndNotifyApprovedOrders() {
+    async processAndNotifyApprovedOrders(id:number=0) {
         try {
             // Obtener todas las órdenes con estado 'Aprobado'
-            const approvedOrders = await this.repositoryOrdenes.getAllByField('estado', 'Aprobado');
+            let approvedOrders = await this.repositoryOrdenes.getAllByField('estado', 'Aprobado');
+
+            if(id!=0){
+                approvedOrders=approvedOrders.filter((order:any)=>order.orden_id === id)
+            }
     
             // Crear un objeto para agrupar los detalles de las órdenes por proveedor
             const ordersBySupplier: Record<number, any[]> = {};

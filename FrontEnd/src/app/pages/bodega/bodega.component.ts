@@ -220,8 +220,8 @@ export class BodegaComponent implements OnInit {
       // "cantidad_minima":this.minQuantityProd,
       "cantidad_maxima": this.maxQuantityProd,
       "precio_proveedor": this.priceProv,
-      "nombre_producto":this.nameProd
-
+      "nombre_producto":this.nameProd,
+      "proveedor_id":this.provSeleccionado
       ,"peso_proveedor_id":this.pesoSeleccionado
     }
     this.bodegaServices.upodateProd(this.productoSeleccionado,data).subscribe(()=>{

@@ -1,4 +1,6 @@
 import type { Sequelize } from "sequelize";
+import { analisispredicciondemanda as _analisispredicciondemanda } from "./analisispredicciondemanda";
+import type { analisispredicciondemandaAttributes, analisispredicciondemandaCreationAttributes } from "./analisispredicciondemanda";
 import { conversionpeso as _conversionpeso } from "./conversionpeso";
 import type { conversionpesoAttributes, conversionpesoCreationAttributes } from "./conversionpeso";
 import { detalleordenes as _detalleordenes } from "./detalleordenes";
@@ -9,6 +11,8 @@ import { logsapp as _logsapp } from "./logsapp";
 import type { logsappAttributes, logsappCreationAttributes } from "./logsapp";
 import { lotes as _lotes } from "./lotes";
 import type { lotesAttributes, lotesCreationAttributes } from "./lotes";
+import { lotes_desperdiciados as _lotes_desperdiciados } from "./lotes_desperdiciados";
+import type { lotes_desperdiciadosAttributes, lotes_desperdiciadosCreationAttributes } from "./lotes_desperdiciados";
 import { ordenes as _ordenes } from "./ordenes";
 import type { ordenesAttributes, ordenesCreationAttributes } from "./ordenes";
 import { peso as _peso } from "./peso";
@@ -23,11 +27,13 @@ import { ventas as _ventas } from "./ventas";
 import type { ventasAttributes, ventasCreationAttributes } from "./ventas";
 
 export {
+  _analisispredicciondemanda as analisispredicciondemanda,
   _conversionpeso as conversionpeso,
   _detalleordenes as detalleordenes,
   _ingredientesporplato as ingredientesporplato,
   _logsapp as logsapp,
   _lotes as lotes,
+  _lotes_desperdiciados as lotes_desperdiciados,
   _ordenes as ordenes,
   _peso as peso,
   _platos as platos,
@@ -37,6 +43,8 @@ export {
 };
 
 export type {
+  analisispredicciondemandaAttributes,
+  analisispredicciondemandaCreationAttributes,
   conversionpesoAttributes,
   conversionpesoCreationAttributes,
   detalleordenesAttributes,
@@ -47,6 +55,8 @@ export type {
   logsappCreationAttributes,
   lotesAttributes,
   lotesCreationAttributes,
+  lotes_desperdiciadosAttributes,
+  lotes_desperdiciadosCreationAttributes,
   ordenesAttributes,
   ordenesCreationAttributes,
   pesoAttributes,
@@ -62,11 +72,13 @@ export type {
 };
 
 export function initModels(sequelize: Sequelize) {
+  const analisispredicciondemanda = _analisispredicciondemanda.initModel(sequelize);
   const conversionpeso = _conversionpeso.initModel(sequelize);
   const detalleordenes = _detalleordenes.initModel(sequelize);
   const ingredientesporplato = _ingredientesporplato.initModel(sequelize);
   const logsapp = _logsapp.initModel(sequelize);
   const lotes = _lotes.initModel(sequelize);
+  const lotes_desperdiciados = _lotes_desperdiciados.initModel(sequelize);
   const ordenes = _ordenes.initModel(sequelize);
   const peso = _peso.initModel(sequelize);
   const platos = _platos.initModel(sequelize);
@@ -94,15 +106,19 @@ export function initModels(sequelize: Sequelize) {
   productosbodega.hasMany(ingredientesporplato, { as: "ingredientesporplatos", foreignKey: "producto_bodega_id"});
   lotes.belongsTo(productosbodega, { as: "producto_bodega", foreignKey: "producto_bodega_id"});
   productosbodega.hasMany(lotes, { as: "lotes", foreignKey: "producto_bodega_id"});
+  lotes_desperdiciados.belongsTo(productosbodega, { as: "producto_bodega", foreignKey: "producto_bodega_id"});
+  productosbodega.hasMany(lotes_desperdiciados, { as: "lotes_desperdiciados", foreignKey: "producto_bodega_id"});
   productosbodega.belongsTo(proveedor, { as: "proveedor", foreignKey: "proveedor_id"});
   proveedor.hasMany(productosbodega, { as: "productosbodegas", foreignKey: "proveedor_id"});
 
   return {
+    analisispredicciondemanda: analisispredicciondemanda,
     conversionpeso: conversionpeso,
     detalleordenes: detalleordenes,
     ingredientesporplato: ingredientesporplato,
     logsapp: logsapp,
     lotes: lotes,
+    lotes_desperdiciados: lotes_desperdiciados,
     ordenes: ordenes,
     peso: peso,
     platos: platos,

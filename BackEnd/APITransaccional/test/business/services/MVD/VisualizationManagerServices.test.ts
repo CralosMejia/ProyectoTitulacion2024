@@ -25,16 +25,17 @@ describe('VisualizationManagerServices', () => {
             const fechaHasta = '2023-01-31';
             const productoId = 1; // Asegúrate de que este ID exista en tu base de datos de prueba
 
+
             const result = await visualizationManager.getDataPredictionDemandGraphic(fechaDesde, fechaHasta, productoId);
 
             expect(result).toHaveProperty('datasets');
             expect(result).toHaveProperty('labels');
-            expect(result.datasets.length).toBeGreaterThan(0);
+            expect(result.datos.datasets.length).toBeGreaterThan(0);
         });
 
         it('should throw an error due to invalid date range', async () => {
-            const fechaDesde = '2020-01-01';
-            const fechaHasta = '2021-01-31';
+            const fechaDesde = '2002-01-01';
+            const fechaHasta = '2001-01-31';
             const productoId = 123; // Asegúrate de que este ID exista en tu base de datos de prueba
 
 
@@ -71,7 +72,7 @@ describe('VisualizationManagerServices', () => {
     
             expect(result).toHaveProperty('datasets');
             expect(result).toHaveProperty('labels');
-            expect(result.datasets.length).toBeGreaterThan(0);
+            expect(result.datos.datasets.length).toBeGreaterThan(0);
         });
 
         it('should throw an error due to invalid date range', async () => {
@@ -140,7 +141,7 @@ describe('VisualizationManagerServices', () => {
     
             expect(result).toHaveProperty('labels');
             expect(result).toHaveProperty('datasets');
-            expect(result.datasets.length).toBeGreaterThan(0);
+            expect(result.datos.datasets.length).toBeGreaterThan(0);
         });
 
 

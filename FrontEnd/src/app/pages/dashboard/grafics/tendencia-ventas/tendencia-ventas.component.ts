@@ -3,6 +3,8 @@ import { ChartConfiguration, ChartEvent, ChartType } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { GraficsService } from 'src/app/services/grafics.service';
 import { PlatosService } from 'src/app/services/platos.service';
+import * as XLSX from 'xlsx';
+
 
 @Component({
   selector: 'app-tendencia-ventas',
@@ -13,7 +15,12 @@ export class TendenciaVentasComponent  implements OnInit{
   public listPlatos:any[]=[]
   public fechaDesde!: string;
   public fechaHasta!: string;
-  public platoSeleccionado: number=1;
+  public platoSeleccionado: number=-1;
+  public agrpacionPor='w'
+  public nombreAgrpacionPor='Semanas'
+  public datosTabla:any=[]
+  public valorTotal=0
+
 
 
   @Input() isFilter: boolean = true;
@@ -25,21 +32,7 @@ export class TendenciaVentasComponent  implements OnInit{
 
 
   public lineChartData: ChartConfiguration['data'] = {
-    datasets: [
-      {
-        data: [180, 480, 770, 90, 1000, 270, 400],
-        label: 'Papas con Cuero',
-        yAxisID: 'y1',
-        backgroundColor: 'rgba(255,0,0,0.3)',
-        borderColor: 'red',
-        pointBackgroundColor: 'rgba(148,159,177,1)',
-        pointBorderColor: '#fff',
-        pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgba(148,159,177,0.8)',
-        fill: 'origin',
-      },
-    ],
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+    datasets: []
   };
 
   public lineChartOptions: ChartConfiguration['options'] = {
@@ -51,21 +44,13 @@ export class TendenciaVentasComponent  implements OnInit{
     },
     scales: {
       // We use this empty structure as a placeholder for dynamic theming.
-      y: {
-        position: 'left',
-      },
       y1: {
-        position: 'right',
+        position: 'left',
         grid: {
           color: 'rgba(255,0,0,0.3)',
         },
-        ticks: {
-          color: 'red',
-        },
       },
     },
-
-    
   };
 
 
@@ -85,13 +70,20 @@ export class TendenciaVentasComponent  implements OnInit{
   
   loaddata(){
     this.platoServices.getAllPlatos().subscribe((resp:any)=>{
-      this.listPlatos= resp.entriesList
+      this.listPlatos.push({
+        nombre_plato:'GENERAL',
+        plato_id:-1
+      })
+      resp.entriesList.forEach((element:any) => {
+        this.listPlatos.push(element)
+      });
       console.log(resp)
+
     })
-    this.graficsServices.getDates().subscribe((resp:any)=>{
-      this.fechaDesde = resp.oldestDate
-      this.fechaHasta = resp.mostRecentDate
-    })
+    // this.graficsServices.getDates().subscribe((resp:any)=>{
+    //   this.fechaDesde = resp.oldestDate
+    //   this.fechaHasta = resp.mostRecentDate
+    // })
   }
 
   
@@ -99,15 +91,35 @@ export class TendenciaVentasComponent  implements OnInit{
     const data ={
       "id":this.platoSeleccionado,
       "fechaDesde":this.fechaDesde,
-      "fechaHasta":this.fechaHasta
+      "fechaHasta":this.fechaHasta,
+      "frecuencia":this.agrpacionPor
     
     }
     this.graficsServices.getTrendSales(data).subscribe((resp:any)=>{
-      this.lineChartData= resp;
+      console.log(resp)
+      this.valorTotal=0
+      this.lineChartData= resp.datos;
+      this.datosTabla=resp.resumenDatos
+      this.datosTabla.forEach((dato:any)=>{
+        this.valorTotal+=dato.valor_Real
+      })
+
     })
   }
 
+  changeNameTable(){
+    if(this.agrpacionPor === 'w'){
+      this.nombreAgrpacionPor='Semanas'
+    }else if(this.agrpacionPor === 'm'){
+      this.nombreAgrpacionPor='Meses'
+    }else{
+      this.nombreAgrpacionPor='Años'
+    }
+
+  }
+
   changeFilter(){
+    this.changeNameTable()
     this.updatedata()
   }
 
@@ -148,5 +160,20 @@ export class TendenciaVentasComponent  implements OnInit{
     return this.platos
       .filter(plato => plato.checked)
       .map(plato => plato.name);
+  }
+
+  exportToExcel(){
+    const name=this.listPlatos.find((prod:any)=>prod.plato_id ==this.platoSeleccionado)
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.datosTabla);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Hoja1');
+
+    // Guarda el archivo
+    XLSX.writeFile(wb, `datos_tendencia_ventas_${name.nombre_plato}.xlsx`);
+  }
+
+  printComponent() {
+    window.print();
+
   }
 }

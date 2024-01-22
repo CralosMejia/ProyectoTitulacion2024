@@ -10,12 +10,29 @@ import { MenuService } from 'src/app/services/communication/menu.service';
 })
 export class SidebarComponent implements OnInit {
 
-  public listMenu =[
+  public subMenuOpen:any = null;
+  public listMenu:any =[
+    
+
     {
       id:0,
-      name:'Dashboard',
+      name:'Predicciones',
       icon:'fa-tachometer-alt',
-      url:'dashboard'
+      url:'dashboard',
+      subMenu: [
+        { name: 'Predicción de demanda de productos', url: 'dashboard/demanda',icon: 'fa-solid fa-chart-pie'},
+        { name: 'Tendencia de ventas de platos', url: 'dashboard/tendenciaVentas',icon: 'fa-solid fa-money-bill' },
+        { name: 'Estado de la bodega', url: 'dashboard/estadoBodega',icon: 'fa-solid fa-shop'},
+        // { name: 'Información de los pedidos', url: 'dashboard/infoPedidos',icon: 'fa-solid fa-truck'},
+
+        // ... más submenús si son necesarios
+      ],
+    },
+    {
+      id:5,
+      name:'Comparación de predicciones',
+      icon:' fa-magnifying-glass-chart',
+      url:'dashboard/analisis'
     },
     {
       id:1,
@@ -40,7 +57,7 @@ export class SidebarComponent implements OnInit {
       name:'Pedidos',
       icon:'fa-shopping-cart',
       url:'pedidos/listar'
-    },
+    }
   ]
 
   // Esta variable almacena el ítem activo
@@ -107,5 +124,14 @@ export class SidebarComponent implements OnInit {
 
   getValueFromLocalStorage(clave: string): string | null {
     return localStorage.getItem(clave);
+  }
+
+  toggleSubMenu(index: number) {
+    this.activeItem = index;
+    if (this.subMenuOpen === index) {
+      this.subMenuOpen = null; // Si ya está abierto, ciérralo
+    } else {
+      this.subMenuOpen = index; // Si no, ábrelo
+    }
   }
 }

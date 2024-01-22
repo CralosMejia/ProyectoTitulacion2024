@@ -22,6 +22,10 @@ export class AgregarPedidoComponent implements OnInit{
   public listProv:any[]=[]
   public listProd:any[]=[]
   public listdetalles:any[]=[]
+  public listdetallesProdRecep:any[]=[]
+  public listProvRecep:any[]=[]
+
+
 
   public provSelect=1
   public prodSelect=1
@@ -33,13 +37,12 @@ export class AgregarPedidoComponent implements OnInit{
   public valorTotal:number=0
 
   public provToReci=1
-  public detailToReci=1
+  public detailToReci=0
 
-  public selectedFilter='Todo'
+  public selectedFilter='Porducto'
 
   listFilterRecive=[
-    'Todo',
-    'Proveedores',
+ 
     'Porducto'
 
   ]
@@ -89,6 +92,9 @@ export class AgregarPedidoComponent implements OnInit{
     })
     this.provServices.getProv().subscribe((resp:any)=>{
       this.listProv= resp.entriesList
+      console.log(resp)
+
+
 
     })
     
@@ -99,8 +105,21 @@ export class AgregarPedidoComponent implements OnInit{
   loadOrdenDetalle(){
     if (this.idPedido!=='0'){
         this.orderServices.getOrderComplete(this.idPedido).subscribe((resp:any)=>{
-        this.orden=resp.order
-        this.listdetalles=resp.orderDetails
+          this.orden=resp.order
+          this.listdetalles=resp.orderDetails
+          this.listdetalles.forEach((detail:any)=>{
+              if(detail.estado==='Por recibir'){
+                this.listdetallesProdRecep.push(detail)
+              }
+          })
+          this.chageFilterRecive()
+          this.listProv.forEach((prov:any)=>{
+            const val = this.listdetallesProdRecep.some((detail:any)=>detail.proveedorNombre === prov.nombre_proveedor )
+            if(val){
+              this.listProvRecep.push(prov)
+            }
+          })
+
       })
     }
   }
@@ -187,7 +206,7 @@ export class AgregarPedidoComponent implements OnInit{
       "producto_bodega_id": objeto.producto_bodega_id,
       "cantidad_necesaria": this.cantidad
     }));
-    if(listaTransformada.length <=0 || this.estimeteDate === ''){
+    if(listaTransformada.length <=0){
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -198,7 +217,7 @@ export class AgregarPedidoComponent implements OnInit{
     const data:any={
       "orden":{
         estado:'Aprobado',
-        fecha_estimada_recepcion:this.estimeteDate
+        // fecha_estimada_recepcion:this.estimeteDate
       },
       "detallesOrden":listaTransformada
     }
@@ -242,17 +261,46 @@ export class AgregarPedidoComponent implements OnInit{
         idProv:this.provToReci
       }
     }else if(this.selectedFilter==='Porducto'){
-      data={
-        idDetail:this.detailToReci
-      }
+      Swal.fire({
+        title: 'Ingrese la fecha de vencimiento',
+        html: `
+          <input type="date" id="swal-input1" class="swal2-input" placeholder="Ingrese la fecha de vencimiento" >
+        `,
+        focusConfirm: false,
+        preConfirm: () => {
+          const inputAnio = (document.getElementById('swal-input1') as HTMLSelectElement).value;
+          if (!inputAnio) {
+            Swal.showValidationMessage('El campo debe estar lleno');
+            return false;
+          }
+          return { anio: inputAnio};
+        }
+      }).then((result) => {
+        if (result.value) {
+          console.log('Año:', result.value.anio);
+          const data ={
+            idDetail:this.detailToReci,
+            date:result.value.anio
+          }
+          // Aquí puedes hacer lo que sea necesario con los valores de los inputs
+          this.orderServices.reciveOrder(Number(this.idPedido),data).subscribe(()=>{
+            this.listdetallesProdRecep=[]
+            this.loadData()
+            this.getOrderId()
+            this.loadOrdenDetalle()
+
+          })
+        }
+      });
     }
-    this.orderServices.reciveOrder(Number(this.idPedido),data).subscribe(()=>this.router.navigate([`pedidos/listar`]))
-    data={}
+
   }
 
   chageFilterRecive(){
     if(this.selectedFilter==='Porducto'){
-      this.detailToReci=this.listdetalles[0].detalle_orden_id
+      this.detailToReci=this.listdetallesProdRecep[0].detalle_orden_id
+    }else{
+      this.provToReci = this.listProvRecep[0].proveedor_id
     }
   }
 

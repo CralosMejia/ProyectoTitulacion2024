@@ -12,10 +12,16 @@ const gmServices = container.get<VisualizationManagerServices>(VisualizationMana
  * @param res - The response object used to send back the data for plotting or an error message.
  */
 export const getGraficPredictionDemand = async (req: Request, res: Response): Promise<Response> => {
-    const {id,fechaDesde,fechaHasta} = req.body;
+    const {id,fechaDesde,fechaHasta,frecuencia} = req.body;
+    let resp;
 
     try {
-        const resp = await gmServices.getDataPredictionDemandGraphic(fechaDesde,fechaHasta,Number(id));
+        if(Number(id)!== -1){
+            resp = await gmServices.getDataPredictionDemandGraphic(fechaDesde,fechaHasta,Number(id),frecuencia);
+
+        }else{
+            resp = await gmServices.getDataPredictedGeneralDemand(fechaDesde,fechaHasta,frecuencia);
+        }
         console.log(`Data: ${JSON.stringify(resp)}`);
         return res.status(200).json(resp);
     } catch (error) {
@@ -31,10 +37,18 @@ export const getGraficPredictionDemand = async (req: Request, res: Response): Pr
  * @param res - The response object used to send back the sales trend data or an error message.
  */
 export const getGraficTrendSales = async (req: Request, res: Response): Promise<Response> => {
-    const {id,fechaDesde,fechaHasta} = req.body;
+    const {id,fechaDesde,fechaHasta,frecuencia} = req.body;
+    let resp;
 
     try {
-        const resp = await gmServices.getDataTrendSalesPlate(fechaDesde,fechaHasta,Number(id));
+        if(Number(id)!== -1){
+         resp = await gmServices.getDataTrendSalesPlate(fechaDesde,fechaHasta,Number(id),frecuencia);
+
+
+        }else{
+         resp = await gmServices.getDataTrendSalesPlategeneral(fechaDesde,fechaHasta,frecuencia);
+
+        }
         console.log(`Data: ${JSON.stringify(resp)}`);
         return res.status(200).json(resp);
     } catch (error) {
@@ -86,6 +100,42 @@ export const getDates = async (_req: Request, res: Response): Promise<Response> 
     try {
         const resp = await gmServices.getOldestAndMostRecentDates();
         console.log(`Data: ${JSON.stringify(resp)}`);
+        return res.status(200).json(resp);
+    } catch (error) {
+        console.error('Error getting dates:', error);
+        return res.status(400).send(error);
+    }
+};
+
+
+export const savePredictDemandAnalisis = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const {date,name,data}=req.body
+
+
+        const resp = await gmServices.saveDatapredictDemand({name:name,create_date:date,info:JSON.stringify(data)});
+        return res.status(200).json(resp);
+    } catch (error) {
+        console.error('Error getting dates:', error);
+        return res.status(400).send(error);
+    }
+};
+
+
+export const getAllAnalisis = async (_req: Request, res: Response): Promise<Response> => {
+    try {
+        const resp = await gmServices.getAllAnalisis();
+        return res.status(200).json(resp);
+    } catch (error) {
+        console.error('Error getting dates:', error);
+        return res.status(400).send(error);
+    }
+};
+
+export const doAnalisis = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const {data}= req.body
+        const resp = await gmServices.doAnalisis(data);
         return res.status(200).json(resp);
     } catch (error) {
         console.error('Error getting dates:', error);

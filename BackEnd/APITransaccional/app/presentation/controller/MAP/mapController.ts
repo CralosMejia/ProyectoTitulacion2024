@@ -142,11 +142,11 @@ export const updateOrdenState = async (req: Request, res: Response): Promise<Res
  */
 export const finalizeOrder = async (req: Request, res: Response): Promise<Response> => {
     const {id} = req.params
-    const {idProv,idDetail} = req.body
+    const {idProv,idDetail,date} = req.body
 
 
     try {
-        const resp = await pedidosServ.finalizeOrder(Number(id),Number(idProv)|| 0,Number(idDetail)||0);
+        const resp = await pedidosServ.finalizeOrder(Number(id),date,Number(idProv)|| 0,Number(idDetail)||0);
         const message=`order completed correctly: ${JSON.stringify(resp)}`
         logs.addLog(message,'Apitransaccional','Módulo pedidos automaticos')
         return res.status(200).json(resp);

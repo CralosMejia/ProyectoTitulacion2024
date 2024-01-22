@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import pandas as pd
 import locale
 from datetime import datetime, timedelta
@@ -18,7 +19,13 @@ sent_directory = 'C:/Users/Carlos Mejia/Desktop/UDLA/ProyectoTita/datos/datosXls
 # Lista de nombres para excluir
 excluded_names = ['DOMICILIO.', 'DOMICILIO...', 'DOMICILIO....', 'DOMICILIO.....', 'DOMICILIO.......', 'DOMICILIO', 
                   'CONSUMO DE ALIMENTOS', 'SERVICIOS PRESTADOS USFQ', 'TRANSPORTE', 'PERSONAL DE SERVICIO', 
-                  'DESCORCHE', 'DIEFERENCIA BEBIDA', 'DESAYUNO 4', 'DESAYUNO 5', 'DESAYUNO 6', 'DESAYUNO 7','MEDIA JARRA JUGO','JUGO PEQUENO','JARRA DE JUGO','JARRA DE IMPERIAL','CONTENEDOR','SOPA','SEGUNDO','MERIENDA']
+                  'DESCORCHE', 'DIEFERENCIA BEBIDA', 'DESAYUNO 4', 'DESAYUNO 5', 'DESAYUNO 6', 'DESAYUNO 7','MEDIA JARRA JUGO','JUGO PEQUENO','JARRA DE JUGO','JARRA DE IMPERIAL','CONTENEDOR','SOPA','SEGUNDO','MERIENDA','ALMUERZO','MENU EJECUTIVO','DESAYUNO']
+
+# Patrón para el formato Enero-XXXX.xls
+patron_formato1 = re.compile(r'^([a-zA-Z]+)-(\d{4})\.xls$')
+
+# Patrón para el formato XXXX-XX-XX_XXXX-XX-XX_Mes-XXXX.xlsx
+patron_formato2 = re.compile(r'^(\d{4}-\d{2}-\d{2})_(\d{4}-\d{2}-\d{2})_([a-zA-Z]+)-(\d{4})\.xlsx$')
 
 # Función para dividir una cantidad total de forma aleatoria entre un número de partes
 def split_randomly(total, parts):
@@ -69,29 +76,56 @@ for filename in os.listdir(directory):
 
         # Leer el archivo Excel
         df = pd.read_excel(file_path, usecols=['nomart', 'cantid', 'preuni', 'totren'])
+        coincidencia_formato1 = patron_formato1.match(filename)
+        if coincidencia_formato1:
+            print(f'solo mes y anio : {filename}')
+            #Extraer el mes y el año del nombre del archivo
+            month_year = filename.split('.')[0]
+            month, year = month_year.split('-')
+            month_number = datetime.strptime(month, '%B').month
+            year_number = int(year)
+
+            # Obtener las fechas de inicio y fin para cada semana del mes
+            week_dates = get_week_start_end_dates(year_number, month_number)
+
+            # Dividir la cantidad y asignar fechas de inicio y fin de la semana
+            for _, row in df.iterrows():
+                cantid = row['cantid']
+                split_cantidades = split_randomly(cantid, len(week_dates))
+                for i, cantidad in enumerate(split_cantidades):
+                    if cantidad > 0:
+                        new_row = row.copy()
+                        new_row['cantid'] = cantidad
+                        new_row['totren'] = cantidad * row['preuni']
+                        new_row['fecha_inicio_semana'] = week_dates[i][0]
+                        new_row['fecha_fin_semana'] = week_dates[i][1]
+                        all_data.append(new_row)
+        else:
+            # Intentar hacer coincidir con el segundo formato
+            coincidencia_formato2 = patron_formato2.match(filename)
+            if coincidencia_formato2:
+                fecha_inicio, fecha_fin, mes, año = coincidencia_formato2.groups()
+                # Acciones para el segundo formato
+                print(f"Formato 2 detectado: Fecha de inicio={fecha_inicio}, Fecha de fin={fecha_fin}, Mes={mes}, Año={año}")
+                # Realizar acciones correspondientes al formato 2
+                for _, row in df.iterrows():
+                    cantid = row['cantid']
+                    if cantid > 0:
+                        new_row = row.copy()
+                        new_row['cantid'] = cantid
+                        new_row['totren'] = cantid * row['preuni']
+                        new_row['fecha_inicio_semana'] = fecha_inicio
+                        new_row['fecha_fin_semana'] = fecha_fin
+                        all_data.append(new_row)
+
+            else:
+                # Si no coincide con ninguno de los formatos
+                print("Formato no reconocido")
 
 
-        # Extraer el mes y el año del nombre del archivo
-        month_year = filename.split('.')[0]
-        month, year = month_year.split('-')
-        month_number = datetime.strptime(month, '%B').month
-        year_number = int(year)
 
-        # Obtener las fechas de inicio y fin para cada semana del mes
-        week_dates = get_week_start_end_dates(year_number, month_number)
 
-        # Dividir la cantidad y asignar fechas de inicio y fin de la semana
-        for _, row in df.iterrows():
-            cantid = row['cantid']
-            split_cantidades = split_randomly(cantid, len(week_dates))
-            for i, cantidad in enumerate(split_cantidades):
-                if cantidad > 0:
-                    new_row = row.copy()
-                    new_row['cantid'] = cantidad
-                    new_row['totren'] = cantidad * row['preuni']
-                    new_row['fecha_inicio_semana'] = week_dates[i][0]
-                    new_row['fecha_fin_semana'] = week_dates[i][1]
-                    all_data.append(new_row)
+
 
 
 # Crear DataFrame final con los datos divididos
@@ -118,9 +152,12 @@ if not final_df.empty:
     response = requests.post(api_url, json=data_json)
     if response.status_code == 200:
         print("Datos enviados con éxito.")
-        for filename in os.listdir(directory):
-            if filename.endswith(".xls") or filename.endswith(".xlsx"):
-                os.rename(file_path, os.path.join(sent_directory, filename))
+        try:
+            for filename in os.listdir(directory):
+                if filename.endswith(".xls") or filename.endswith(".xlsx"):
+                    os.rename(file_path, os.path.join(sent_directory, filename))
+        except:
+            print("")
 
 
     else:

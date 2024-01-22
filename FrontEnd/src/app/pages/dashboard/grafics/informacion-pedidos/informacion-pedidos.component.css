@@ -93,3 +93,53 @@ input[type="date"] {
     transform: rotate(45deg);
   }
   
+
+  @media print {
+    body * {
+      visibility: hidden; /* Oculta todo el contenido del body al imprimir */
+    }
+    .header_container_principal {
+      visibility: hidden; /* Esto ocultará header, footer y aside durante la impresión */
+    }
+    .filter-container{
+      visibility: hidden;
+    }
+    .print-container, .print-container * {
+      visibility: visible; /* Solo el contenido dentro de .print-container se mostrará */
+    }
+    .print-container {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+  
+    .table-container{
+      height: auto; 
+      width: auto;
+    }
+    button{
+      visibility: hidden;
+    }
+  }
+
+
+  .print-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 1em;
+    transition: background-color 0.3s;
+    margin-right: 1.2rem;
+  }
+  
+  .print-btn:hover {
+    background-color: #45a049;
+  }
+  
+  .print-btn i {
+    margin-right: 5px;
+  }
+  

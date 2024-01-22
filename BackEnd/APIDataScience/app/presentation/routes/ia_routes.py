@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from app.presentation.controller.ia_controller import training_model_demand, forcasting_demand, \
-    training_model_sales_trend, forcasting_sales_trend
+    training_model_sales_trend, forcasting_sales_trend, process_complete
 
 ia_router = APIRouter()
 
@@ -25,4 +25,10 @@ async def forecast_demand():
 @ia_router.get("/mpd/forcastTrendSales")
 async def forecast_trend_sales():
     forcasting_sales_trend()
+    return 'OK'
+
+
+@ia_router.get("/mpd/processComplete")
+async def forecast_trend_sales():
+    process_complete()
     return 'OK'

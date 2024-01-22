@@ -152,6 +152,12 @@ class ETL:
                 Hechosdemandaproducto.cantidad_predicha_modelo_2 != 0,
                 Hechosdemandaproducto.cantidad_real != 0).scalar()
 
+            if subquery is None:
+                self.log.addLog(f'There are no records to clean.', 'ApiDatasicence','Módulo prediccion de demanda')
+                print(f"There are no records to clean.")
+                return
+
+
             # Paso 2: Eliminar registros a partir de esa fecha en HechosDemandaProducto y HechosVentaPlatos
             delete_demanda = delete(Hechosdemandaproducto).where(Hechosdemandaproducto.fecha_id >= subquery)
             delete_ventas = delete(Hechosventaplato).where(Hechosventaplato.fecha_id >= subquery)

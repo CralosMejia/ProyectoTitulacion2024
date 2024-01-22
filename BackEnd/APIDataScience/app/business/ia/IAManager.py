@@ -13,8 +13,12 @@ from sklearn.pipeline import make_pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.ensemble import RandomForestRegressor
 from window_ops.ewm import ewm_mean
-from window_ops.rolling import rolling_min, rolling_max
+from window_ops.rolling import rolling_min, rolling_max, rolling_mean, rolling_std
 from xgboost import XGBRegressor
+from sklearn.pipeline import make_pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.model_selection import RandomizedSearchCV, TimeSeriesSplit
+from scipy.stats import randint as sp_randint, uniform
 
 from app.business.common.logServices import LoggerServices
 from app.data.GenericRepository import GenericRepository
@@ -60,6 +64,7 @@ class IAManager:
             df_merged = df_merged.drop(columnas_a_eliminar, axis=1)
             df_merged['fecha'] = pd.to_datetime(df_merged['fecha'])
             df_agrupado = df_merged.groupby(['producto_id', 'fecha']).mean()
+            df_agrupado = df_agrupado[df_agrupado['cantidad_real'] != 0]
             df_agrupado = df_agrupado.reset_index()
             df_agrupado['fecha'] = pd.to_datetime(df_agrupado['fecha'])
 
@@ -71,7 +76,7 @@ class IAManager:
             self.log.addLog(f'An error occurred when preparing the data for training.. ERROR', 'ApiDatasicence','Módulo prediccion de demanda')
             raise TypeError(f"An error occurred when preparing the data for training.. ERROR: {e}")
 
-    def preparate_train_data_sales_trend(self, df_fecha, df_plato, df_ventas):
+    def preparate_train_data_sales_trend(self, df_fecha, df_plato, df_ventas,last_valid_fecha_id):
         """
         Prepares data to be sent to the AI model for analyzing sales trend.
 
@@ -89,9 +94,13 @@ class IAManager:
                         'Módulo prediccion de demanda ')
 
         try:
+            # Filtrar df_fecha para excluir fechas posteriores a last_valid_fecha_id
+            df_fecha_filtered = df_fecha[df_fecha['fecha_id'] <= last_valid_fecha_id]
+
+
             # Unir los dataframes
             df_merged = pd.merge(df_ventas[['fecha_id', 'plato_id', 'unidades_vendidas']],
-                                 df_fecha[['fecha_id', 'fecha']], on='fecha_id')
+                                 df_fecha_filtered[['fecha_id', 'fecha']], on='fecha_id')
             df_merged = pd.merge(df_merged, df_plato[['plato_id']], on='plato_id')
             columnas_a_eliminar = ['fecha_id']
             df_merged = df_merged.drop(columnas_a_eliminar, axis=1)
@@ -130,28 +139,41 @@ class IAManager:
             if os.path.exists(model_route):
                 os.remove(model_route)
 
-            models = [make_pipeline(SimpleImputer(),
-                                    RandomForestRegressor(n_estimators=100)),
-                      XGBRegressor(n_estimators=100)]
+                # Definición de rango de parámetros para RandomForest
+            param_dist_rf = {
+                    'n_estimators': sp_randint(100, 500),
+                    'max_depth': [3, None],
+                    'max_features': sp_randint(1, 11),
+                    'min_samples_split': sp_randint(2, 11),
+                    'bootstrap': [True, False]
+            }
 
-            # model = MLForecast(models=models,
-            #                    freq='W',
-            #                    lags=[2, 4],
-            #                    lag_transforms={
-            #                        2: [(rolling_min, 2), (rolling_max, 4)],
-            #                        # aplicado a uma janela W a partir do registro Lag
-            #                        4: [(rolling_min, 2), (rolling_max, 4)],
-            #                        # aplicado a uma janela W a partir do registro Lag
-            #                        2: [(ewm_mean, 0.5)],
-            #                    },
-            #                    # date_features=['week', 'month'],
-            #                    num_threads=6)
+            # Definición de rango de parámetros para XGBRegressor
+            param_dist_xgb = {
+                'n_estimators': sp_randint(100, 300),
+                'learning_rate': uniform(0.01, 0.1),
+                'subsample': uniform(0.6, 0.4),
+                'max_depth': sp_randint(3, 9),
+                'colsample_bytree': uniform(0.5, 0.5),
+                'min_child_weight': sp_randint(1, 5)
+            }
+
+            random_search_rf = RandomizedSearchCV(RandomForestRegressor(), param_distributions=param_dist_rf,
+                                                  n_iter=10, cv=5, random_state=42)
+            random_search_xgb = RandomizedSearchCV(XGBRegressor(), param_distributions=param_dist_xgb,
+                                                   n_iter=10, cv=5, random_state=50)
+
+            # Configuración de modelos con búsqueda aleatoria
+            models = [make_pipeline(SimpleImputer(), random_search_rf),
+                      make_pipeline(SimpleImputer(), random_search_xgb)]
+
             model = MLForecast(models=models,
                                freq='W',
-                               lags=[1, 2],  # Cambiado a lags más cortos
+                               lags=[1, 2, 3, 4, 5, 6, 12],  # Cambiado a lags más cortos
                                lag_transforms={
-                                   1: [(rolling_min, 2), (rolling_max, 2)],
-                                   2: [(ewm_mean, 0.5)],
+                                   3: [(rolling_mean, 3), (rolling_std, 3)],
+                                   6: [(rolling_mean, 6)],
+                                   12: [(ewm_mean, 0.5)]
                                },
                                num_threads=6)
 
@@ -190,16 +212,40 @@ class IAManager:
             if os.path.exists(model_route):
                 os.remove(model_route)
 
-            models = [make_pipeline(SimpleImputer(),
-                                    RandomForestRegressor(n_estimators=100)),
-                      XGBRegressor(n_estimators=100)]
+            param_dist_rf = {
+                'n_estimators': sp_randint(100, 500),
+                'max_depth': [3, None],
+                'max_features': sp_randint(1, 11),
+                'min_samples_split': sp_randint(2, 11),
+                'bootstrap': [True, False]
+            }
+
+            # Definición de rango de parámetros para XGBRegressor
+            param_dist_xgb = {
+                'n_estimators': sp_randint(100, 300),
+                'learning_rate': uniform(0.01, 0.1),
+                'subsample': uniform(0.6, 0.4),
+                'max_depth': sp_randint(3, 9),
+                'colsample_bytree': uniform(0.5, 0.5),
+                'min_child_weight': sp_randint(1, 5)
+            }
+
+            random_search_rf = RandomizedSearchCV(RandomForestRegressor(), param_distributions=param_dist_rf,
+                                                  n_iter=10, cv=5, random_state=42)
+            random_search_xgb = RandomizedSearchCV(XGBRegressor(), param_distributions=param_dist_xgb,
+                                                   n_iter=10, cv=5, random_state=50)
+
+            # Configuración de modelos con búsqueda aleatoria
+            models = [make_pipeline(SimpleImputer(), random_search_rf),
+                      make_pipeline(SimpleImputer(), random_search_xgb)]
 
             model = MLForecast(models=models,
-                               freq='W',  # Frecuencia semanal
-                               lags=[1, 2, 3, 4],  # Lags de varias semanas para capturar tendencias
+                               freq='W',
+                               lags=[1, 2, 3, 4, 5, 6, 12],  # Cambiado a lags más cortos
                                lag_transforms={
-                                   1: [(rolling_min, 2), (rolling_max, 2)],
-                                   2: [(ewm_mean, 0.5)],
+                                   3: [(rolling_mean, 3), (rolling_std, 3)],
+                                   6: [(rolling_mean, 6)],
+                                   12: [(ewm_mean, 0.5)]
                                },
                                num_threads=6)
 
@@ -291,7 +337,6 @@ class IAManager:
             # Make predictions.
             df_prediccion = model.predict(h=num_periods)
             self._save_data_predicted_trend_sales(df_prediccion)
-            print(df_prediccion)
             t1 = time.perf_counter()
             print(f"The sales trend forecasting process has been completed in {t1 - t0} sec")
             self.log.addLog(f'The sales trend forecasting process has been completed in {t1 - t0} sec', 'ApiDatasicence',
@@ -305,11 +350,12 @@ class IAManager:
 
     def _save_data_predicted_demand(self, df_predicted):
         try:
+            #print(df_predicted.tail(10))
             for index, row in df_predicted.iterrows():
                 producto_id = row['producto_id']
                 fecha = row['fecha']
                 cantidad_predicha_modelo_1 = row[
-                    'XGBRegressor']  # Asumiendo que quieres usar las predicciones de XGBRegressor
+                    'Pipeline2']  # Asumiendo que quieres usar las predicciones de XGBRegressor
                 cantidad_predicha_modelo_2 = row['Pipeline']
 
                 # Verificar si la fecha existe en DimFecha
@@ -342,7 +388,7 @@ class IAManager:
                 plato_id = row['plato_id']
                 fecha = row['fecha']
                 cantidad_predicha_modelo_1 = row[
-                    'XGBRegressor']
+                    'Pipeline2']
 
                 # Verificar si la fecha existe en DimFecha
                 fecha_id = self._get_or_create_fecha(fecha)

@@ -7,6 +7,7 @@ import { Observable } from "../common/Observable";
 import { peso } from "../../../data/models/RestaurantePacificoDB/peso";
 import { proveedor } from "../../../data/models/RestaurantePacificoDB/proveedor";
 import { LoggerService } from "../common/logs/LogsAPP";
+import { lotes_desperdiciados } from "../../../data/models/RestaurantePacificoDB/lotes_desperdiciados";
 
 dotenv.config();
   
@@ -20,6 +21,8 @@ export class IngredientesServices extends Observable{
     private readonly repositoryLotes: EntrieRepository<lotes>;
     private readonly repositoryPeso: EntrieRepository<peso>;
     private readonly repositoryProveedor: EntrieRepository<proveedor>;
+    private readonly repositoryLotesDesperdiciados: EntrieRepository<lotes_desperdiciados>;
+
 
 
     private DIFMINORMAX:number = Number(process.env.DIFMINORMAX) || 5;
@@ -34,6 +37,8 @@ export class IngredientesServices extends Observable{
         this.repositoryLotes =  new EntrieRepository(lotes);
         this.repositoryPeso =  new EntrieRepository(peso);
         this.repositoryProveedor =  new EntrieRepository(proveedor);
+        this.repositoryLotesDesperdiciados=  new EntrieRepository(lotes_desperdiciados);
+
 
 
 
@@ -47,26 +52,33 @@ export class IngredientesServices extends Observable{
      * @returns The created lote entity.
      */
     async addLote(lote: lotes) {
-        let currentDate = new Date();
-        let currentDateISO = currentDate.toISOString();
         
-        let loteExpirationDate = new Date(lote.fecha_vencimiento);
-    
-        if (loteExpirationDate.getTime() <= currentDate.getTime()) {
+        try {
+            let currentDate = new Date();
+            let currentDateISO = currentDate.toISOString();
+            
+            // let loteExpirationDate = new Date(lote.fecha_vencimiento);
+        
+            // if (loteExpirationDate.getTime() <= currentDate.getTime()) {
 
-            let ErroMessage=`The expiration date is less than or equal to the current date` 
-            this.log.addLog(ErroMessage,'Apitransaccional','Módulo gestion de productos alimenticios almacenados en bodega')
+            //     let ErroMessage=`The expiration date is less than or equal to the current date` 
+            //     this.log.addLog(ErroMessage,'Apitransaccional','Módulo gestion de productos alimenticios almacenados en bodega')
 
-            throw new Error(ErroMessage);
+            //     throw new Error(ErroMessage);
+            // }
+
+            lote.fecha_ingreso = currentDateISO;
+            const resp=await this.repositoryLotes.create(lote);
+
+            let message=`A batch has been successfully added` 
+            this.log.addLog(message,'Apitransaccional','Módulo gestion de productos alimenticios almacenados en bodega')
+
+            return resp
+        } catch (error) {
+            const errorMessage=`Error when  try create lote: ${error}`
+            this.log.addLog(errorMessage,'Apitransaccional','Módulo pedidos automaticos')
+            throw error;
         }
-
-        lote.fecha_ingreso = currentDateISO;
-        const resp=await this.repositoryLotes.create(lote);
-
-        let message=`A batch has been successfully added` 
-        this.log.addLog(message,'Apitransaccional','Módulo gestion de productos alimenticios almacenados en bodega')
-
-        return resp
     }
 
     /**
@@ -104,6 +116,7 @@ export class IngredientesServices extends Observable{
             });
     
             // Eliminar el lote
+            await this.repositoryLotesDesperdiciados.create(lote);
             await this.repositoryLotes.delete(lote.lote_id);
         }
     

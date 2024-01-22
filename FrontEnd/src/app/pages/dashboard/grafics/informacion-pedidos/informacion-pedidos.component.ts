@@ -80,4 +80,9 @@ export class InformacionPedidosComponent implements OnInit {
     active: object[];
   }): void {
   }
+
+  printComponent() {
+    window.print();
+
+  }
 }

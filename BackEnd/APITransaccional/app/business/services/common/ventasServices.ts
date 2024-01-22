@@ -51,7 +51,7 @@ export class VentasServices {
             for (const sale of salesList) {
                 const platoId = await this.getPlatoIdByNombre(sale.nombre_plato);
 
-                if (platoId !== null && !(await this.checkExistingSale(platoId, sale.fecha_inicio_semana))) {
+                if (platoId !== null && !(await this.checkExistingSale(platoId, sale.fecha_inicio_semana)) && !(await this.checkExistingSale(platoId, sale.fecha_fin_semana))) {
                     const plato =await this.repositoryPlatos.getById(platoId)
                     if(plato === null || plato.numero_platos === undefined) throw new Error (`dish not found for ${platoId}`)
 
@@ -67,7 +67,7 @@ export class VentasServices {
                     ventasToInsert.push(ventaToAdd);
                     await this.updateInventoryBySales(platoId, plato.numero_platos, sale.cantidad);
                 } else {
-                    console.error(`Existing sale  ${sale.nombre_plato}`);
+                    // console.error(`Existing sale  ${sale.nombre_plato}`);
                 }
             }
 

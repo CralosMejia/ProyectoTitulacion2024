@@ -1,0 +1,52 @@
+<div class="filter-container">
+  <div class="dropdown">
+    <button class="dropbtn">Seleccionar 2 modelos:</button>
+    <div class="dropdown-content">
+      <label *ngFor="let opcion of opciones; let i = index">
+        <input
+          type="checkbox"
+          [(ngModel)]="opcion.selected"
+          (change)="updateSelection(opcion)"
+          [disabled]="opcion.disabled"
+        />
+        {{ opcion.name }}-{{ opcion.create_date }}
+      </label>
+    </div>
+  </div>
+</div>
+
+<div class="canvas_container print-container">
+  <canvas
+    class="chart"
+    baseChart
+    [data]="barChartData"
+    [options]="barChartOptions"
+    [type]="barChartType"
+    (chartHover)="chartHovered($event)"
+    (chartClick)="chartClicked($event)"
+  >
+  </canvas>
+  <!-- <button mat-button mat-raised-button color="primary" (click)="randomize()">
+    Update
+  </button> -->
+  <div class="table-container">
+    <table class="bodega-table">
+      <tr>
+        <th>fecha</th>
+        <th>variación porcentual</th>
+        <th>variación monetaria</th>
+      </tr>
+      <tr *ngFor="let dato of resumenDatos">
+        <td>{{dato.fecha}}</td>
+        <td>{{dato.variacion_porcentual | number:'1.2-2'}}%</td>
+        <td>{{dato.variacionMonetaria | currency:'USD':'symbol':'1.2-2'}}</td>
+      </tr>
+      <tfoot>
+        <td>total:</td>
+        <td>{{variacionTotal | number:'1.2-2'}}%</td>
+        <td>{{variacionMonetariaTotal | currency:'USD':'symbol':'1.2-2'}}</td>
+
+      </tfoot>
+    </table>
+  </div>
+</div>

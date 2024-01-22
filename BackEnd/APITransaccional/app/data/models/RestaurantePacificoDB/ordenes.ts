@@ -78,6 +78,7 @@ export class ordenes extends Model<ordenesAttributes, ordenesCreationAttributes>
   }, {
     sequelize,
     tableName: 'ordenes',
+    hasTrigger: true,
     timestamps: false,
     indexes: [
       {

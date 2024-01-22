@@ -1,8 +1,11 @@
 .canvas_container{
-    display: flex;
-    justify-content: space-evenly;
-    height: 50vh;
-    width: 65vw;
+  display: flex;
+  justify-content: space-evenly;
+  height: auto;
+  width: auto;
+  flex-direction: column;
+  flex-wrap: wrap;
+  padding: 8rem;
 }
 /* Filtros */
 .filter-container {
@@ -172,4 +175,108 @@ button.btn-filter:hover {
   border: solid white;
   border-width: 0 3px 3px 0;
   transform: rotate(45deg);
+}
+
+.print-btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 1em;
+  transition: background-color 0.3s;
+  margin-right: 1.2rem;
+}
+
+.print-btn:hover {
+  background-color: #45a049;
+}
+
+.print-btn i {
+  margin-right: 5px;
+}
+
+.filter-container {
+  width: 98%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  background-color: #ffffff;
+  padding: 1rem;
+  margin: 1rem;
+}
+
+.table-container {
+  height: 50vh; 
+  width: auto;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.bodega-table{
+  width: 50vw;
+    border-radius: 2rem;
+    margin: 0 0.5rem;
+}
+
+.bodega-table {
+    width: 98%;
+    height: 43vh;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.bodega-table th {
+    background-color: #ffffff;
+    padding: 10px;
+    text-align: center;
+    border-radius: 2rem;
+    font-family: 'Rosario';
+    color: #7f8ca1;
+    font-size: 1.4rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.bodega-table td {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e1e1e1;
+    text-align: center;
+    color: #8392AB;
+    text-decoration: none;
+    font-family: 'Rosario';
+    font-size: 1.4rem;
+}
+
+
+@media print {
+  body * {
+    visibility: hidden; /* Oculta todo el contenido del body al imprimir */
+  }
+  .header_container_principal {
+    visibility: hidden; /* Esto ocultará header, footer y aside durante la impresión */
+  }
+  .filter-container{
+    visibility: hidden;
+  }
+  button{
+    visibility: hidden;
+  }
+  .print-container, .print-container * {
+    visibility: visible; /* Solo el contenido dentro de .print-container se mostrará */
+  }
+  .print-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  .table-container{
+    height: auto; 
+    width: auto;
+  }
 }

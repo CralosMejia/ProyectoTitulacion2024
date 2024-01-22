@@ -9,14 +9,24 @@
 
   <nav>
     <ul>
-      <li
-        *ngFor="let listItemMenu of listMenu"
-        class="sidebar-item"
-        [class.active]="activeItem === listItemMenu.id"
-        (click)="setActive(listItemMenu.id,listItemMenu.url,listItemMenu.name)"
-      >
-        <i class="fas sidebar-icon" [ngClass]="listItemMenu.icon"></i
-        ><span>{{ listItemMenu.name }}</span>
+      <li *ngFor="let listItemMenu of listMenu; let i = index" class="sidebar-item"
+          [class.active]="activeItem === listItemMenu.id"
+          (click)="listItemMenu.subMenu ? toggleSubMenu(i) : setActive(listItemMenu.id, listItemMenu.url, listItemMenu.name)">
+        
+        <div class="container_sidebar_menu">
+          <i class="fas sidebar-icon" [ngClass]="listItemMenu.icon"></i>
+          <span>{{ listItemMenu.name }}</span>
+          <i *ngIf="listItemMenu.subMenu" class="fas fa-chevron-down" [class.rotate]="subMenuOpen === i"></i>
+        </div>
+        <ul *ngIf="subMenuOpen === i" class="submenu">
+          <li *ngFor="let subItem of listItemMenu.subMenu"
+              (click)="setActive(listItemMenu.id, subItem.url, subItem.name)" class="item_submenu">
+              <i class="fas sidebar-icon-submenu" [ngClass]="subItem.icon"></i>
+              <span>
+              {{ subItem.name }}
+              </span>
+          </li>
+        </ul>
       </li>
     </ul>
   </nav>
