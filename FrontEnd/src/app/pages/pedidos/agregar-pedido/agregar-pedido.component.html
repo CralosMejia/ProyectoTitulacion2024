@@ -2,6 +2,7 @@
     <header>
       <h2>Numero de Pedido: {{orden!==undefined?orden.orden_id:''}}</h2>
       <h2>fecha de Creación: {{orden!==undefined?orden.fecha_orden:''}}</h2>
+      <h2>fecha de recepción: {{orden!==undefined?orden.fecha_estimada_recepcion:''}}</h2>
       <h2>Estado del Pedido: {{orden!==undefined?orden.estado:''}}</h2>
     </header>
   
@@ -65,8 +66,9 @@
             <select name="proveedor" [(ngModel)]="provSelect" disabled>
               <option *ngFor="let prov of listProv" value="{{prov.proveedor_id}}" >{{prov.nombre_proveedor}}</option>
           </select>
-            
-    
+
+          
+          
         </div>
 
         <button class="btn-add" (click)="isEdit?updateDetalle():createDetalle()">{{isEdit?"Editar":"Agregar"}}</button>
@@ -77,15 +79,25 @@
     <div [ngClass]="{'button-container-seen':isSeen,               'button-container':!isSeen}" *ngIf="orden===undefined||!(orden.estado==='Recibido' || orden.estado==='Cancelado')">
         <h3>Acciones </h3>
         <div class="buttons">
+            <!-- <div class="container_date" *ngIf="orden===undefined">
+              <label for="estimate_date" class="label_date">Fecha estimada de recepción</label>
+              <input type="date" id="estimate_date" [(ngModel)]="estimeteDate">
+            </div> -->
             <button *ngIf="orden===undefined" class="approve-btn" (click)="createPedidoCompleto()">CREAR PEDIDO</button>
             <button *ngIf="orden!==undefined &&(orden.estado==='Aprobado' ) " class="approve-btn" (click)="changeStatuS('Enviado')">ENVIAR EL PEDIDO</button>
             <button *ngIf="orden!==undefined &&(orden.estado==='En espera')" class="approve-btn" (click)="changeStatuS('Aprobado')">APROBAR PEDIDO</button>
 
-            <select *ngIf="orden!==undefined &&(orden.estado==='Enviado' )"  name="proveedorRecib" [(ngModel)]="provToReci" [disabled]="isEdit">
-              <option  value="{{0}}">Todos</option>
-              <option *ngFor="let prov of listProv" value="{{prov.proveedor_id}}" >{{prov.nombre_proveedor}}</option>
-           </select>
-            <button *ngIf="orden!==undefined &&(orden.estado==='Enviado' )" class="approve-btn" (click)="reciveOrder()">RECIBIR TODO EL PEDIDO</button>
+            <!-- Acciones de recepcion de pedido -->
+            <select *ngIf="orden!==undefined &&(orden.estado==='Enviado' )"  [(ngModel)]="selectedFilter" [disabled]="isEdit" (change)="chageFilterRecive()">
+              <option *ngFor="let filter of listFilterRecive" value="{{filter}}" >{{filter}}</option>
+            </select>
+            <select *ngIf="orden!==undefined &&(orden.estado==='Enviado' ) && selectedFilter==='Proveedores'"  [(ngModel)]="provToReci" [disabled]="isEdit">
+              <option *ngFor="let prov of listProvRecep" value="{{prov.proveedor_id}}" >{{prov.nombre_proveedor}}</option>
+            </select>
+            <select *ngIf="orden!==undefined &&(orden.estado==='Enviado'  && selectedFilter==='Porducto' )"   [(ngModel)]="detailToReci" [disabled]="isEdit" >
+              <option *ngFor="let prod of listdetallesProdRecep" value="{{prod.detalle_orden_id}}" >{{prod.productInfo.nombre_producto}}</option>
+            </select>
+            <button *ngIf="orden!==undefined &&(orden.estado==='Enviado' )" class="approve-btn" (click)="reciveOrder()">RECIBIR</button>
 
 
 

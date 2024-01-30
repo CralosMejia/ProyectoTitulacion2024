@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.business.etl.utils.etl_funtions import exists_row_in_df, get_value_in_df_by_list, exists_date_in_df, \
     exists_value_in_df_by_column
-from app.data.Models.DataScienceDBModels import Hechosdemandaproducto, Dimfecha
+from app.data.Models.DataScienceDBModels import Hechosdemandaproducto, Hechosventaplato
 
 
 def load_demanda_producto_facts(ses_db_etls: Session, ses_db_data_science: Session, table_name_extraction: str, table_name_load: str):
@@ -246,23 +246,28 @@ def load_venta_platos_facts(ses_db_etls,ses_db_data_science,table_name_extractio
         ventas_platos_df = pd.DataFrame()
 
         for index, row in ventas_etl_df.iterrows():
-            venta_id = ventas_etl_df.at[index, "venta_id"],
             fecha_id = ventas_etl_df.at[index, "fecha_id"],
             plato_id = ventas_etl_df.at[index, "plato_id"]
             cantidad = ventas_etl_df.at[index, "cantidad"]
             precio_total = ventas_etl_df.at[index, "precio_total"]
 
-            values = [('venta_id', venta_id), ('fecha_id', fecha_id), ('plato_id', plato_id)]
+            values = [('fecha_id', fecha_id), ('plato_id', plato_id)]
             if not exists_row_in_df(ventas_plato_fact_df,values):
                 ventas_platos_df = pd.concat([ventas_platos_df, pd.DataFrame([
                     {
-                        'venta_id': venta_id,
                         'fecha_id': fecha_id,
                         'plato_id': plato_id,
                         'unidades_vendidas': cantidad,
                         'precio_total': precio_total
                     }
                 ])], ignore_index=True)
+            elif get_value_in_df_by_list(ventas_plato_fact_df, 'unidades_vendidas', values) != cantidad:
+                venta_plato_id = int(get_value_in_df_by_list(ventas_plato_fact_df, 'venta_plato_id', values))
+                registro_a_actualizar = ses_db_data_science.query(Hechosventaplato).filter_by(
+                    venta_plato_id=venta_plato_id).first()
+                registro_a_actualizar.unidades_vendidas = cantidad
+                registro_a_actualizar.precio_total=precio_total
+                ses_db_data_science.commit()
         # if doesn't exist data on table facturas complete
         if ventas_platos_df is not None:
             ventas_platos_df.to_sql(table_name_load, ses_db_data_science.bind, if_exists="append",

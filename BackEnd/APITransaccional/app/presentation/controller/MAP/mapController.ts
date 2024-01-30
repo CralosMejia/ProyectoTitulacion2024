@@ -2,9 +2,12 @@ import { container } from "../../../../config/inversify.config";
 import { PedidoAutomaticoService } from "../../../business/services/MAP/PedidosAutomaticosServices";
 import { PedidosServices } from "../../../business/services/MAP/PedidosServices";
 import { Request, Response } from 'express';
+import { LoggerService } from "../../../business/services/common/logs/LogsAPP";
 
 const pedidosServ = container.get<PedidosServices>(PedidosServices)
 const paServices = container.get<PedidoAutomaticoService>(PedidoAutomaticoService)
+const logs = container.get<LoggerService>(LoggerService)
+
 
 
 /**
@@ -19,7 +22,8 @@ export const create = async (req: Request, res: Response): Promise<Response> => 
 
     try {
         const resp = await pedidosServ.createOrdenComplete(orden, detalleOrden);
-        console.log(`Created correctly: ${JSON.stringify(resp)}`);
+        const message=`Order created correctly: ${JSON.stringify(resp)}`
+        logs.addLog(message,'Apitransaccional','Módulo pedidos automaticos')
         return res.status(200).json(resp);
     } catch (error) {
         console.error('Error when creating an order:', error);
@@ -38,7 +42,8 @@ export const getOrdenComplete = async (req: Request, res: Response): Promise<Res
 
     try {
         const resp = await pedidosServ.getOrderCompleteInfo(Number(id));
-        console.log(`Get correctly: ${JSON.stringify(resp)}`);
+        const message=`Get order correctly: ${JSON.stringify(resp)}`
+        logs.addLog(message,'Apitransaccional','Módulo pedidos automaticos')
         return res.status(200).json(resp);
     } catch (error) {
         console.error('Error when obtaining an order: ', error);
@@ -58,7 +63,8 @@ export const updatedetalleOrden = async (req: Request, res: Response): Promise<R
 
     try {
         const resp = await pedidosServ.updateDetalleOrden(Number(id),detalleOrd);
-        console.log(`Updated correctly: ${JSON.stringify(resp)}`);
+        const message=`Updated order correctly: ${JSON.stringify(resp)}`
+        logs.addLog(message,'Apitransaccional','Módulo pedidos automaticos')
         return res.status(200).json(resp);
     } catch (error) {
         console.error('Error updating the order detail:', error);
@@ -78,7 +84,8 @@ export const createdetalleOrden = async (req: Request, res: Response): Promise<R
 
     try {
         const resp = await pedidosServ.createDetalleOrden(detalleOrden);
-        console.log(`Order detail successfully created: ${JSON.stringify(resp)}`);
+        const message=`Order detail successfully created: ${JSON.stringify(resp)}`
+        logs.addLog(message,'Apitransaccional','Módulo pedidos automaticos')
         return res.status(200).json(resp);
     } catch (error) {
         console.error('Error when creating the order detail: ', error);
@@ -97,7 +104,8 @@ export const deletedetalleOrden = async (req: Request, res: Response): Promise<R
 
     try {
         const resp = await pedidosServ.deleteDetalleOrden(Number(id));
-        console.log(`Order detail successfully created: ${JSON.stringify(resp)}`);
+        const message=`Order detail successfully deleted: ${JSON.stringify(resp)}`
+        logs.addLog(message,'Apitransaccional','Módulo pedidos automaticos')
         return res.status(200).json(resp);
     } catch (error) {
         console.error('Error when creating the order detail: ', error);
@@ -117,7 +125,8 @@ export const updateOrdenState = async (req: Request, res: Response): Promise<Res
 
     try {
         const resp = await pedidosServ.changeOrderStatus(Number(id),orden);
-        console.log(`Updated correctly: ${JSON.stringify(resp)}`);
+        const message=`Updated order state correctly: ${JSON.stringify(resp)}`
+        logs.addLog(message,'Apitransaccional','Módulo pedidos automaticos')
         return res.status(200).json(resp);
     } catch (error) {
         console.error('Error changing order status:', error);
@@ -133,12 +142,13 @@ export const updateOrdenState = async (req: Request, res: Response): Promise<Res
  */
 export const finalizeOrder = async (req: Request, res: Response): Promise<Response> => {
     const {id} = req.params
-    const {idProv} = req.body
+    const {idProv,idDetail,date} = req.body
 
 
     try {
-        const resp = await pedidosServ.finalizeOrder(Number(id),Number(idProv));
-        console.log(`Order completed successfully`);
+        const resp = await pedidosServ.finalizeOrder(Number(id),date,Number(idProv)|| 0,Number(idDetail)||0);
+        const message=`order completed correctly: ${JSON.stringify(resp)}`
+        logs.addLog(message,'Apitransaccional','Módulo pedidos automaticos')
         return res.status(200).json(resp);
     } catch (error) {
         console.error('Error finalizing the order:', error);
@@ -157,6 +167,8 @@ export const getDetalleInfo = async (req: Request, res: Response): Promise<Respo
 
     try {
         const resp = await pedidosServ.getProductCompleteInfo(Number(id));
+        const message=`get detailed info: ${JSON.stringify(resp)}`
+        logs.addLog(message,'Apitransaccional','Módulo pedidos automaticos')
         return res.status(200).json(resp);
     } catch (error) {
         console.error('Error finalizing the order:', error);
@@ -182,7 +194,8 @@ export const approveOrder = async (req: Request, res: Response): Promise<Respons
 
     try {
         const resp = await pedidosServ.changeOrderStatus(Number(id),'Aprobado');
-        console.log(`Updated correctly: ${JSON.stringify(resp)}`);
+        const message=`The order has been approved correctly: ${JSON.stringify(resp)}`
+        logs.addLog(message,'Apitransaccional','Módulo pedidos automaticos')
         return res.status(200).json(resp);
     } catch (error) {
         console.error('Error changing order status:', error);
@@ -193,7 +206,8 @@ export const approveOrder = async (req: Request, res: Response): Promise<Respons
 export const sendAllOrder = async (_req: Request, res: Response): Promise<Response> => {
     try {
         const resp = await pedidosServ.processAndNotifyApprovedOrders();
-        console.log(`Updated correctly: ${JSON.stringify(resp)}`);
+        const message=`orders have been sent correctly: ${JSON.stringify(resp)}`
+        logs.addLog(message,'Apitransaccional','Módulo pedidos automaticos')
         return res.status(200).json(resp);
     } catch (error) {
         console.error('Error when changing the status of orders:', error);
@@ -205,6 +219,8 @@ export const searchProve = async (req: Request, res: Response): Promise<Response
     const{paramSeacrh,atributeSearch} = req.body
     try {
         const resp = await pedidosServ.searchProveedoresByAttribute(atributeSearch,paramSeacrh);
+        const message=`The search was successful: ${JSON.stringify(resp)}`
+        logs.addLog(message,'Apitransaccional','Módulo pedidos automaticos')
         return res.status(200).json(resp);
     } catch (error) {
         console.error('Not found', error);
@@ -216,6 +232,8 @@ export const searchOrdenes = async (req: Request, res: Response): Promise<Respon
     const{paramSeacrh,atributeSearch} = req.body
     try {
         const resp = await pedidosServ.searchOrdenesByAttribute(atributeSearch,paramSeacrh);
+        const message=`The search was successful: ${JSON.stringify(resp)}`
+        logs.addLog(message,'Apitransaccional','Módulo pedidos automaticos')
         return res.status(200).json(resp);
     } catch (error) {
         console.error('Not found', error);
@@ -228,6 +246,8 @@ export const searchOrden = async (req: Request, res: Response): Promise<Response
     const{paramSeacrh,atributeSearch} = req.body
     try {
         const resp = await pedidosServ.searchCompleteOrderInfoByAttributeAndId(Number(id),atributeSearch,paramSeacrh);
+        const message=`The search was successful: ${JSON.stringify(resp)}`
+        logs.addLog(message,'Apitransaccional','Módulo pedidos automaticos')
         return res.status(200).json(resp);
     } catch (error) {
         console.error('Not found', error);
@@ -235,3 +255,13 @@ export const searchOrden = async (req: Request, res: Response): Promise<Response
     }
 };
 
+export const getAllPendigOrderDatils = async (_req: Request, res: Response): Promise<Response> => {
+
+    try {
+        const resp = await pedidosServ.getPendingOrderDetailsNearReception();
+        return res.status(200).json(resp);
+    } catch (error) {
+        console.error('Error generate order:', error);
+        return res.status(400).send(error);
+    }
+};

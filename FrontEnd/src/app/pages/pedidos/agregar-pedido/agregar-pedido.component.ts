@@ -22,16 +22,31 @@ export class AgregarPedidoComponent implements OnInit{
   public listProv:any[]=[]
   public listProd:any[]=[]
   public listdetalles:any[]=[]
+  public listdetallesProdRecep:any[]=[]
+  public listProvRecep:any[]=[]
+
+
 
   public provSelect=1
   public prodSelect=1
   public cantidad:number=0
   public detalleSelected=1
+  public estimeteDate=''
 
   public isEdit=false;
   public valorTotal:number=0
 
-  public provToReci=0
+  public provToReci=1
+  public detailToReci=0
+
+  public selectedFilter='Porducto'
+
+  listFilterRecive=[
+ 
+    'Porducto'
+
+  ]
+
 
 
 
@@ -77,6 +92,9 @@ export class AgregarPedidoComponent implements OnInit{
     })
     this.provServices.getProv().subscribe((resp:any)=>{
       this.listProv= resp.entriesList
+      console.log(resp)
+
+
 
     })
     
@@ -87,8 +105,21 @@ export class AgregarPedidoComponent implements OnInit{
   loadOrdenDetalle(){
     if (this.idPedido!=='0'){
         this.orderServices.getOrderComplete(this.idPedido).subscribe((resp:any)=>{
-        this.orden=resp.order
-        this.listdetalles=resp.orderDetails
+          this.orden=resp.order
+          this.listdetalles=resp.orderDetails
+          this.listdetalles.forEach((detail:any)=>{
+              if(detail.estado==='Por recibir'){
+                this.listdetallesProdRecep.push(detail)
+              }
+          })
+          this.chageFilterRecive()
+          this.listProv.forEach((prov:any)=>{
+            const val = this.listdetallesProdRecep.some((detail:any)=>detail.proveedorNombre === prov.nombre_proveedor )
+            if(val){
+              this.listProvRecep.push(prov)
+            }
+          })
+
       })
     }
   }
@@ -171,7 +202,6 @@ export class AgregarPedidoComponent implements OnInit{
   }
 
   createPedidoCompleto(){
-    console.log('creando prod')
     const listaTransformada = this.listdetalles.map(objeto => ({
       "producto_bodega_id": objeto.producto_bodega_id,
       "cantidad_necesaria": this.cantidad
@@ -180,13 +210,14 @@ export class AgregarPedidoComponent implements OnInit{
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: "No se puede crear una orden vacia!"
+        text: "No se puede crear una orden vacia o sin fecha estimada de entrega!"
       });
       return
     }
     const data:any={
       "orden":{
-        estado:'Aprobado'
+        estado:'Aprobado',
+        // fecha_estimada_recepcion:this.estimeteDate
       },
       "detallesOrden":listaTransformada
     }
@@ -220,7 +251,57 @@ export class AgregarPedidoComponent implements OnInit{
   }
 
   reciveOrder(){
-    this.orderServices.reciveOrder(Number(this.idPedido),this.provToReci).subscribe(()=>this.router.navigate([`pedidos/listar`]))
+    let data
+    if(this.selectedFilter==='Todo'){
+      data={}
+    }else if(this.selectedFilter==='Proveedores'){
+      console.log(this.listProv)
+      console.log(this.provToReci)
+      data={
+        idProv:this.provToReci
+      }
+    }else if(this.selectedFilter==='Porducto'){
+      Swal.fire({
+        title: 'Ingrese la fecha de vencimiento',
+        html: `
+          <input type="date" id="swal-input1" class="swal2-input" placeholder="Ingrese la fecha de vencimiento" >
+        `,
+        focusConfirm: false,
+        preConfirm: () => {
+          const inputAnio = (document.getElementById('swal-input1') as HTMLSelectElement).value;
+          if (!inputAnio) {
+            Swal.showValidationMessage('El campo debe estar lleno');
+            return false;
+          }
+          return { anio: inputAnio};
+        }
+      }).then((result) => {
+        if (result.value) {
+          console.log('Año:', result.value.anio);
+          const data ={
+            idDetail:this.detailToReci,
+            date:result.value.anio
+          }
+          // Aquí puedes hacer lo que sea necesario con los valores de los inputs
+          this.orderServices.reciveOrder(Number(this.idPedido),data).subscribe(()=>{
+            this.listdetallesProdRecep=[]
+            this.loadData()
+            this.getOrderId()
+            this.loadOrdenDetalle()
+
+          })
+        }
+      });
+    }
+
+  }
+
+  chageFilterRecive(){
+    if(this.selectedFilter==='Porducto'){
+      this.detailToReci=this.listdetallesProdRecep[0].detalle_orden_id
+    }else{
+      this.provToReci = this.listProvRecep[0].proveedor_id
+    }
   }
 
   validateProd(){
@@ -239,6 +320,7 @@ export class AgregarPedidoComponent implements OnInit{
     this.prodSelect=1;
     this.provSelect=1;
     this.cantidad=0
+    this.estimeteDate=''
     this.isEdit=false
   }
 

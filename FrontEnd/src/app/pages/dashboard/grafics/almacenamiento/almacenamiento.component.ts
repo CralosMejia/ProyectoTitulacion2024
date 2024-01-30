@@ -5,6 +5,8 @@ import { BaseChartDirective } from 'ng2-charts';
 import DataLabelsPlugin from 'chartjs-plugin-datalabels';
 import { PlatosService } from 'src/app/services/platos.service';
 import { GraficsService } from 'src/app/services/grafics.service';
+import * as XLSX from 'xlsx';
+
 
 @Component({
   selector: 'app-almacenamiento',
@@ -17,6 +19,9 @@ export class AlmacenamientoComponent  implements OnInit{
 
   public listProductosBodega:any[]=[]
   public productoSeleccionado: number=1;
+  public infoLotestabla:any=[]
+  public cantTotal=0
+  public subStr=''
 
 
 
@@ -76,8 +81,16 @@ export class AlmacenamientoComponent  implements OnInit{
   }
 
   updatedata(){
+    this.cantTotal=0
     this.graficsServices.getInventory(this.productoSeleccionado).subscribe((resp:any)=>{
-      this.barChartData= resp;
+      this.barChartData= resp.datos;
+      this.infoLotestabla=resp.infoLotes
+
+      this.infoLotestabla.forEach((element:any) => {
+          this.subStr= element.cantidad.substring(element.cantidad.length - 2)
+          const cant= element.cantidad.replace(this.subStr,'')
+          this.cantTotal+=Number(cant)
+      });
     })
   }
 
@@ -117,6 +130,23 @@ export class AlmacenamientoComponent  implements OnInit{
     ];
 
     this.chart?.update();
+  }
+
+  printComponent() {
+    window.print();
+
+  }
+
+  exportToExcel(){
+    console.log(this.listProductosBodega)
+    const name=this.listProductosBodega.find((prod:any)=>prod.producto_bodega_id ==this.productoSeleccionado)
+    console.log(name)
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.infoLotestabla);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Hoja1');
+
+    // Guarda el archivo
+    XLSX.writeFile(wb, `datos_informacion_bodega_${name.nombre_producto}.xlsx`);
   }
   
 }

@@ -58,9 +58,9 @@ export class OrdenesService {
 
   }
 
-  reciveOrder(idOrder:number,idProv:number){
+  reciveOrder(idOrder:number,data:any){
     const url= `${base_url}/map/finalizeOrder/${idOrder}`
-    return this.http.post(url,{idProv});
+    return this.http.post(url,data);
   }
 
   search(data:any){

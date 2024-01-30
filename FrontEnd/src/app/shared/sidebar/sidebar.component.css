@@ -13,6 +13,7 @@
 
 .sidebar-item {
     display: flex;
+    flex-direction: column;
     width: 90%;
     align-items: center;
     margin-bottom: 20px;
@@ -70,4 +71,64 @@
 .sidebar-item .sidebar-icon {
     color: #111;
     background-color: #FFFFFF;
+}
+
+.fa-chevron-down{
+    margin-left: 1.5rem;
+    font-size: 1.5rem;
+}
+.submenu {
+    display: none;
+    list-style-type: none;
+    padding-left: 20px; /* Ajustar según sea necesario */
+  }
+  
+  .sidebar-item .fa-chevron-down {
+    transition: transform 0.3s ease;
+  }
+  
+  .sidebar-item .fa-chevron-down.rotate {
+    transform: rotate(180deg);
+  }
+  
+  /* Estilo para mostrar el submenú cuando es el activo */
+  ul.submenu {
+    display: block;
+    margin-top: 1.3rem;
+  }
+
+
+  .container_sidebar_menu{
+    display: flex;
+    align-items: center;
+
+  }
+
+  .item_submenu{
+    display: flex;
+    flex-direction: row
+  }
+
+  .item_submenu span{
+    font-size: 1.1rem;
+  }
+
+  .sidebar-icon-submenu {
+    color: #111;
+    font-size: 1.8rem;
+    margin-right: 1rem;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    height: 3rem;
+    width: 3rem;
+    border-radius: 20%;
+}
+
+.item_submenu:hover .sidebar-icon-submenu{
+    color: #f5a623;
+}
+
+.item_submenu:hover span{
+    color: #f5a623;
 }

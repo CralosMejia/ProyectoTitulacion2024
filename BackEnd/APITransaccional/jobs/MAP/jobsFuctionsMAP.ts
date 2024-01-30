@@ -21,8 +21,10 @@ export function setupCrearPedidosAutomaticosJob() {
         console.log('Running the cron job to create automatic orders');
         
         try {
-            const dateSpecific = new Date().toISOString(); // O la fecha específica que necesitas
-            await pedidosServices.createAutomaticOrders(dateSpecific);
+            const dateSpecific = new Date(); // O la fecha específica que necesitas
+            console.log(dateSpecific)
+
+            await pedidosServices.createAutomaticOrders(dateSpecific.toISOString());
             console.log('Automatic orders successfully created');
         } catch (error) {
             console.error('Error in the cron job to create automatic orders:', error);
@@ -37,7 +39,7 @@ export function sendApprovedOrdersJob() {
         console.log('Running the cron job to send approved orders');
         
         try {
-            await pedidosServices.processAndNotifyApprovedOrders();
+            await pedidosServices.processAndNotifyApprovedOrders(0);
             console.log('approved orders were sent correctly');
         } catch (error) {
             console.error('Error in the cron job to send approved orders:', error);

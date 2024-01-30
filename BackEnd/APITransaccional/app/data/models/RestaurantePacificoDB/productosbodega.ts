@@ -3,6 +3,7 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import type { detalleordenes, detalleordenesId } from './detalleordenes';
 import type { ingredientesporplato, ingredientesporplatoId } from './ingredientesporplato';
 import type { lotes, lotesId } from './lotes';
+import type { lotes_desperdiciados, lotes_desperdiciadosId } from './lotes_desperdiciados';
 import type { peso, pesoId } from './peso';
 import type { proveedor, proveedorId } from './proveedor';
 
@@ -73,6 +74,18 @@ export class productosbodega extends Model<productosbodegaAttributes, productosb
   hasLote!: Sequelize.HasManyHasAssociationMixin<lotes, lotesId>;
   hasLotes!: Sequelize.HasManyHasAssociationsMixin<lotes, lotesId>;
   countLotes!: Sequelize.HasManyCountAssociationsMixin;
+  // productosbodega hasMany lotes_desperdiciados via producto_bodega_id
+  lotes_desperdiciados!: lotes_desperdiciados[];
+  getLotes_desperdiciados!: Sequelize.HasManyGetAssociationsMixin<lotes_desperdiciados>;
+  setLotes_desperdiciados!: Sequelize.HasManySetAssociationsMixin<lotes_desperdiciados, lotes_desperdiciadosId>;
+  addLotes_desperdiciado!: Sequelize.HasManyAddAssociationMixin<lotes_desperdiciados, lotes_desperdiciadosId>;
+  addLotes_desperdiciados!: Sequelize.HasManyAddAssociationsMixin<lotes_desperdiciados, lotes_desperdiciadosId>;
+  createLotes_desperdiciado!: Sequelize.HasManyCreateAssociationMixin<lotes_desperdiciados>;
+  removeLotes_desperdiciado!: Sequelize.HasManyRemoveAssociationMixin<lotes_desperdiciados, lotes_desperdiciadosId>;
+  removeLotes_desperdiciados!: Sequelize.HasManyRemoveAssociationsMixin<lotes_desperdiciados, lotes_desperdiciadosId>;
+  hasLotes_desperdiciado!: Sequelize.HasManyHasAssociationMixin<lotes_desperdiciados, lotes_desperdiciadosId>;
+  hasLotes_desperdiciados!: Sequelize.HasManyHasAssociationsMixin<lotes_desperdiciados, lotes_desperdiciadosId>;
+  countLotes_desperdiciados!: Sequelize.HasManyCountAssociationsMixin;
   // productosbodega belongsTo proveedor via proveedor_id
   proveedor!: proveedor;
   getProveedor!: Sequelize.BelongsToGetAssociationMixin<proveedor>;
@@ -108,14 +121,14 @@ export class productosbodega extends Model<productosbodegaAttributes, productosb
       allowNull: false
     },
     cantidad_actual: {
-      type: DataTypes.DECIMAL(10,2),
+      type: DataTypes.DECIMAL(14,3),
       allowNull: true,
-      defaultValue: 0.00
+      defaultValue: 0.000
     },
     cantidad_maxima: {
-      type: DataTypes.DECIMAL(10,2),
+      type: DataTypes.DECIMAL(14,3),
       allowNull: true,
-      defaultValue: 0.00
+      defaultValue: 0.000
     },
     tipo: {
       type: DataTypes.ENUM('liquidos','solidos'),
@@ -123,9 +136,9 @@ export class productosbodega extends Model<productosbodegaAttributes, productosb
       defaultValue: "solidos"
     },
     precio_proveedor: {
-      type: DataTypes.DECIMAL(8,6),
+      type: DataTypes.DECIMAL(14,3),
       allowNull: true,
-      defaultValue: 0.000000
+      defaultValue: 0.000
     }
   }, {
     sequelize,

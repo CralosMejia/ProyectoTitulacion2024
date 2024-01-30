@@ -1,9 +1,10 @@
-<label class="checkbox-container" *ngIf="!isFilter">
-  Seleccionar
-  <input type="checkbox">
-  <span class="checkmark"></span>
-</label>
-<div class="filter-container" *ngIf="isFilter">
+<button class="print-btn"  (click)="printComponent()">
+  <i class="fas fa-print"></i> IMPRIMIR
+</button>
+<button class="print-btn" (click)=" exportToExcel()" >
+  <i class="fa-solid fa-file-excel"></i> EXPORTAR A EXCEL
+</button>
+<div class="filter-container " *ngIf="isFilter">
 
   
   <!-- Filtro de productos -->
@@ -13,7 +14,7 @@
     </option>
   </select>
 </div>
-<div class="canvas_container">
+<div class="canvas_container print-container">
 
   <canvas
     baseChart
@@ -25,5 +26,27 @@
     (chartClick)="chartClicked($event)"
   >
   </canvas>
+
+  <div class="table-container">
+    <table class="bodega-table">
+      <tr>
+        <th>Numero lote</th>
+        <th>Cantidad</th>
+        <th>fecha de expiración</th>
+        <th>Proveedor</th>
+        
+      </tr>
+      <tr *ngFor="let lote of infoLotestabla">
+        <td>{{lote.idLote}}</td>
+        <td>{{lote.cantidad}}</td>
+        <td>{{lote.fechaExpiracion}}</td>
+        <td>{{lote.nombreProveedor}}</td>
+      </tr>
+      <tfoot>
+        <td></td>
+        <td>Total: {{cantTotal}} {{subStr}}</td>
+      </tfoot>
+    </table>
+  </div>
 </div>
 

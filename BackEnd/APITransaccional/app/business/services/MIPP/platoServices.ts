@@ -1,10 +1,11 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { ingredientesporplato } from "../../../data/models/RestaurantePacificoDB/ingredientesporplato";
 import { platos } from "../../../data/models/RestaurantePacificoDB/platos";
 import { productosbodega } from "../../../data/models/RestaurantePacificoDB/productosbodega";
 import { EntrieRepository } from "../../../data/repository/entrieRepository";
 import { ValidatorPlatosServices } from "../../validators/MIPP/validatorPlatosServices";
 import { peso } from "../../../data/models/RestaurantePacificoDB/peso";
+import { LoggerService } from "../common/logs/LogsAPP";
 
 /**
  * Service class for managing 'platos' (dishes) and their related entities.
@@ -20,7 +21,9 @@ export class PlatosServices {
     private readonly repositoryPeso: EntrieRepository<peso>;
     
 
-    constructor(){
+    constructor(
+        @inject(LoggerService) private log: LoggerService,
+    ){
         this.validator = new ValidatorPlatosServices()
 
         this.respositoryPlato = new EntrieRepository(platos);
@@ -52,13 +55,19 @@ export class PlatosServices {
                 const updatedIppInter = this.addIngredientesToPlate(createdPlato.plato_id, listIppInter);
                 ingredientsResult = await this.respositoryIPP.bulkCreate(updatedIppInter);
             }
-
-            return {
+            const resp= {
                 "plato": createdPlato,
                 "lista de ingredientes": ingredientsResult
             };
+
+            let message=`A complete plate was created correctly` 
+            this.log.addLog(message,'Apitransaccional','Módulo ingrediente por plato')
+
+            return resp
         } catch (error) {
             console.error('Error when creating the dish and its ingredients:', error);
+            let errorMessage=`Error when creating the dish and its ingredients: ${error}` 
+            this.log.addLog(errorMessage,'Apitransaccional','Módulo ingrediente por plato')
             throw error;
         }
     }
@@ -71,6 +80,8 @@ export class PlatosServices {
     async showInfoPlatos() {
         const platosFound = await this.respositoryPlato.getAll();
         const infoPlatosComplet = await this.completeInfoPlato(platosFound);
+        let message=`the correct information was obtained from the dishes: ${infoPlatosComplet}` 
+        this.log.addLog(message,'Apitransaccional','Módulo ingrediente por plato')
         return infoPlatosComplet;
     }
 
@@ -95,9 +106,18 @@ export class PlatosServices {
             const affectedRows = await this.respositoryPlato.updateSingleFieldById('plato_id', plato_id, 'estado', newState);
 
             // Check if the update was successful
-            return affectedRows > 0;
+            const resp=affectedRows > 0;
+
+            let message=`The condition of the plate was changed correctly: ${resp}` 
+            this.log.addLog(message,'Apitransaccional','Módulo ingrediente por plato')
+
+            return resp
         } catch (error) {
             console.error(`Error updating the status of the plato with ID ${plato_id}:`, error);
+
+            let message=`Error updating the status of the plato with ID ${plato_id}: ${error}` 
+            this.log.addLog(message,'Apitransaccional','Módulo ingrediente por plato')
+
             throw error;
         }
     }
@@ -136,10 +156,17 @@ export class PlatosServices {
                     "lista de ingredientes": ingredientsResult
                 });
             }
+
+            let message=`multiple dishes have been created correctly` 
+            this.log.addLog(message,'Apitransaccional','Módulo ingrediente por plato')
     
             return results;
         } catch (error) {
-            console.error('Error al crear los platos y sus ingredientes:', error);
+            console.error('Error when creating the dishes and their ingredients:', error);
+
+            let message=`Error when creating the dishes and their ingredients: ${error}` 
+            this.log.addLog(message,'Apitransaccional','Módulo ingrediente por plato')
+
             throw error;
         }
     }
@@ -188,6 +215,10 @@ export class PlatosServices {
                     tipoPeso: peso ? peso.tipo : ''
                 };
             }));
+
+
+            let message=`Complete information about the dish was correctly obtained: ${plato_id}` 
+            this.log.addLog(message,'Apitransaccional','Módulo ingrediente por plato')
     
             // Construir el objeto de respuesta
             return {
@@ -196,6 +227,9 @@ export class PlatosServices {
             };
         } catch (error) {
             console.error(`Error retrieving complete info for plato with ID ${plato_id}:`, error);
+            let message=`Error retrieving complete info for plato with ID ${plato_id}: ${error}` 
+            this.log.addLog(message,'Apitransaccional','Módulo ingrediente por plato')
+    
             throw error;
         }
     }
@@ -209,6 +243,8 @@ export class PlatosServices {
      */
     async addIngredientToPlato(newIngrediente: ingredientesporplato): Promise<ingredientesporplato> {
         await this.validator.validateWeightConversion(newIngrediente.producto_bodega_id, newIngrediente.peso_id);
+        let message=`An ingredient has been added to the dish correctly.` 
+        this.log.addLog(message,'Apitransaccional','Módulo ingrediente por plato')
         return await this.respositoryIPP.create(newIngrediente);
     }
 
@@ -221,8 +257,12 @@ export class PlatosServices {
     async deleteIngredientOfPlato(ingrediente_id: number): Promise<boolean> {
         const ingrediente = await this.respositoryIPP.getById(ingrediente_id);
         if (!ingrediente) {
-            throw new Error(`Ingrediente with ID ${ingrediente_id} not found.`);
+            let errorMessage=`Ingrediente with ID ${ingrediente_id} not found.` 
+            this.log.addLog(errorMessage,'Apitransaccional','Módulo ingrediente por plato')
+            throw new Error(errorMessage);
         }
+        let message=`One ingredient has been removed from the dish correctly` 
+        this.log.addLog(message,'Apitransaccional','Módulo ingrediente por plato')
         return await this.respositoryIPP.delete(ingrediente_id);
     }
 
@@ -243,8 +283,12 @@ export class PlatosServices {
             await this.validator.validateWeightConversion(ingrediente.producto_bodega_id, updatedData.peso_id);
         }
         if (!ingrediente) {
-            throw new Error(`Ingrediente with ID ${ingrediente_id} not found.`);
+            let errormessage=`Ingrediente with ID ${ingrediente_id} not found.` 
+            this.log.addLog(errormessage,'Apitransaccional','Módulo ingrediente por plato')
+            throw new Error(errormessage);
         }
+        let message=`One ingredient has been updated to the dish correctly.` 
+        this.log.addLog(message,'Apitransaccional','Módulo ingrediente por plato')
         return await this.respositoryIPP.update(ingrediente_id, updatedData);
     }
 
@@ -272,6 +316,8 @@ export class PlatosServices {
     
         // Utilizar completeInfoPlato para obtener información detallada de los platos filtrados
         const platosConIngredientes = await this.completeInfoPlato(filteredPlatos);
+        let message=`The search was successful` 
+        this.log.addLog(message,'Apitransaccional','Módulo ingrediente por plato')
         return platosConIngredientes;
     }
     

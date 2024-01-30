@@ -15,6 +15,7 @@
               <th>Numero del pedido</th>
               <th>Valor total de la orden</th>
               <th>Fecha de creación</th>
+              <th>Fecha estimada de recepción</th>
               <th>Estado</th>
               <th></th>
             </tr>
@@ -24,6 +25,8 @@
                 <td>{{pedido.orden_id}}</td>
                 <td>{{pedido.total}}</td>
                 <td>{{pedido.fecha_orden}}</td>
+                <td>{{pedido.fecha_estimada_recepcion}}</td>
+
                 <td>
                     <span
                     [ngClass]="{'en-espera-btn': pedido.estado=='En espera', 

@@ -1,8 +1,6 @@
-<label class="checkbox-container" *ngIf="!isFilter">
-  Seleccionar
-  <input type="checkbox">
-  <span class="checkmark"></span>
-</label>
+<button class="print-btn"  (click)="printComponent()">
+  <i class="fas fa-print"></i> IMPRIMIR
+</button>
 <div class="filter-container" *ngIf="isFilter">
   <!-- Rango de fechas -->
   Desde: <input type="date" [(ngModel)]="fechaDesde" (ngModelChange)="changeFilter()">

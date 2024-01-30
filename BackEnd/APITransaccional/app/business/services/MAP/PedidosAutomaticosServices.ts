@@ -6,6 +6,10 @@ import { Observable } from "../common/Observable";
 import { PedidosServices } from "./PedidosServices";
 import { dimunidadmedida } from "../../../data/models/DataScienceDB/dimunidadmedida";
 import { productosbodega } from "../../../data/models/RestaurantePacificoDB/productosbodega";
+import { LoggerService } from "../common/logs/LogsAPP";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 /**
  * Service class for automatically generating orders based on predicted demand.
@@ -22,7 +26,10 @@ export class PedidoAutomaticoService extends Observable {
 
     // Assuming there's a service or repository to handle orders
 
-    constructor(@inject(PedidosServices) private pedidosService: PedidosServices,) {
+    constructor(
+        @inject(PedidosServices) private pedidosService: PedidosServices,
+        @inject(LoggerService) private log: LoggerService,
+        ) {
         super();
         this.repositoryFecha = new EntrieRepository(dimfecha);
         this.repositoryDemanda = new EntrieRepository(hechosdemandaproducto);
@@ -37,8 +44,11 @@ export class PedidoAutomaticoService extends Observable {
      * @returns The result of creating the order based on predicted demand.
      */
     async createAutomaticOrders(fechaEspecifica: string) {
+        let message=`Starting the automatic order creation process` 
+        this.log.addLog(message,'Apitransaccional','Módulo pedidos automaticos')
         try {
             const fechaHoyFormat = new Date(fechaEspecifica).toISOString().split('T')[0];
+
     
             // Obtener la fecha_id correspondiente a la fecha actual
             const fecha = await this.repositoryFecha.getAllByField('fecha', fechaHoyFormat);
@@ -75,17 +85,19 @@ export class PedidoAutomaticoService extends Observable {
                         let cantidadNecesaria = Number(demanda.cantidad_predicha_modelo_1) - Number(productoBodega.cantidad_actual);
     
                         // Verificar y ajustar la cantidad máxima si la demanda la supera significativamente
-                        if (demanda.cantidad_predicha_modelo_1 > productoBodega.cantidad_maxima + 5) {
+                        if (demanda.cantidad_predicha_modelo_1 > productoBodega.cantidad_maxima + 50) {
                             const diferencia_cant= Number(productoBodega.cantidad_maxima)-Number(productoBodega.cantidad_actual)
                             cantidadNecesaria=Number(productoBodega.cantidad_actual)+diferencia_cant;
                         }
+
+                        cantidadTotalConDemanda= Number(productoBodega.cantidad_actual) +cantidadNecesaria
     
                         // Ajustar la cantidad máxima si supera el total por 20
-                        if (cantidadTotalConDemanda > productoBodega.cantidad_maxima + 20) {
-                            await this.repositoryProductosBodega.updateSingleFieldById('producto_bodega_id', Number(productoBodega.producto_bodega_id), 'cantidad_maxima', cantidadTotalConDemanda);
+                        if (cantidadTotalConDemanda > productoBodega.cantidad_maxima + 300) {
+                            await this.repositoryProductosBodega.updateSingleFieldById('producto_bodega_id', Number(productoBodega.producto_bodega_id), 'cantidad_maxima', Math.round(cantidadTotalConDemanda));
                         }
 
-                        if (peso && peso.simbolo === 'u') {
+                        if (peso) {
                             cantidadNecesaria = Math.round(cantidadNecesaria);
                         }
     
@@ -103,19 +115,25 @@ export class PedidoAutomaticoService extends Observable {
             // Crear el pedido si hay detalles válidos
             if (detallesPedido.length > 0) {
                 const pedido: any = {
-                    modo_creacion: 'Automatico'
+                    modo_creacion: 'Automatico',
+                    // fecha_estimada_recepcion:dateMaxToRecive
                 };
                 const orderComplete = await this.pedidosService.createOrdenComplete(pedido, detallesPedido);
                 if (orderComplete !== null) {
                     const infoOrderComplete = await this.pedidosService.getOrderCompleteInfo(orderComplete.order.orden_id);
                     this.notify(infoOrderComplete);
                 }
+                message=`The automatic order has been created correctly: ${orderComplete}` 
+                this.log.addLog(message,'Apitransaccional','Módulo pedidos automaticos')
                 return orderComplete;
             } else {
-                throw new Error('No valid order details found.');
+                message=`Does not exist details to create order` 
+                this.log.addLog(message,'Apitransaccional','Módulo pedidos automaticos')
+                return
             }
         } catch (error) {
-            console.error('Error while creating automatic orders:', error);
+            const errorMessage=`Error while creating automatic orders: ${error}` 
+            this.log.addLog(errorMessage,'Apitransaccional','Módulo pedidos automaticos')
             throw error;
         }
     }

@@ -25,7 +25,7 @@
 
 .ingredients-section {
     width: 98%;
-    height: 120%;
+    height: 130%;
     border-radius: 2rem;
     display: flex;
     flex-direction: column;
@@ -41,7 +41,7 @@
 }
 .button-container {
     width: 98%;
-    height: 120%;
+    height: 130%;
     background-color: #ffffff;
     padding: 2rem;
     border-radius: 20px;
@@ -162,7 +162,7 @@ header .agregar-btn {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    justify-content: space-around;
+    justify-content: flex-start;
     gap: .5rem; 
 }
 
@@ -267,4 +267,25 @@ h3 {
 
 .btn-icon i:hover {
     transform: scale(1.2);
+}
+
+.container_date{
+    display: flex;
+    flex-direction:column
+}
+
+input[type="date"] {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.5rem;
+    width: 150px;
+    font-size: 14px;
+    color: #777;
+}
+
+.label_date {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #8392AB;
+    font-size: 1.2rem;
 }

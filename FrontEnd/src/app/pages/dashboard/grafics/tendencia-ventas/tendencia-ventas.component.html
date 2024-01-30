@@ -1,14 +1,23 @@
-<label class="checkbox-container" *ngIf="!isFilter">
-  Seleccionar
-  <input type="checkbox">
-  <span class="checkmark"></span>
-</label>
+
+<button class="print-btn"  (click)="printComponent()">
+  <i class="fas fa-print"></i> IMPRIMIR
+</button>
+<button class="print-btn" (click)=" exportToExcel()">
+  <i class="fa-solid fa-file-excel"></i> EXPORTAR A EXCEL
+</button>
+
 <div class="filter-container" *ngIf="isFilter">
   <!-- app.component.html -->
 
   <!-- Rango de fechas -->
   Desde: <input type="date" [(ngModel)]="fechaDesde" (ngModelChange)="changeFilter()">
   Hasta: <input type="date" [(ngModel)]="fechaHasta" (ngModelChange)="changeFilter()">
+  Agrupar por:<select [(ngModel)]="agrpacionPor" (ngModelChange)="changeFilter()">
+    <option value="w">Semanas</option>
+    <option value="m">Meses</option>
+    <option value="a">Años</option>
+
+  </select>
   
   <!-- Filtro de productos -->
   <select [(ngModel)]="platoSeleccionado" (ngModelChange)="changeFilter()">
@@ -18,7 +27,7 @@
     </option>
   </select>
 </div>
-<div class="canvas_container">
+<div class="canvas_container print-container">
   <canvas
     baseChart
     class="chart"
@@ -28,5 +37,33 @@
     (chartHover)="chartHovered($event)"
     (chartClick)="chartClicked($event)"
   ></canvas>
+
+  <div class="table-container">
+    <table class="bodega-table">
+      <tr>
+        <th>{{nombreAgrpacionPor}}</th>
+        <th>Cantidad estimada</th>
+        <th>Ganancia estimado</th>
+        <!-- <th>Catidad Real</th>
+        <th>Valor real</th> -->
+        
+      </tr>
+      <tr *ngFor="let dato of datosTabla">
+        <td>{{dato.fecha}}</td>
+        <td>{{dato.cantidad_real | number:'1.2-2'}} Unidades</td>
+        <td>{{dato.valor_Real | currency:'USD':'symbol':'1.2-2'}}</td>
+        <!-- <td>{{dato.real}}</td>
+        <td>{{dato.valorReal | currency:'USD':'symbol':'1.2-2'}}</td> -->
+      </tr>
+      <tfoot>
+        <td></td>
+        <!-- <td>Total Real:</td>
+        <td>100</td> -->
+        <td>Total Estimado:</td>
+        <td>{{valorTotal | currency:'USD':'symbol':'1.2-2'}}</td>
+
+      </tfoot>
+    </table>
+  </div>
 
 </div>

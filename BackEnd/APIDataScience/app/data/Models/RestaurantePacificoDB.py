@@ -1,11 +1,21 @@
-
-from sqlalchemy import CHAR, Column, DECIMAL, Date, Enum, ForeignKey, Integer, text
-from sqlalchemy.dialects.mysql import TINYINT, VARCHAR
+# coding: utf-8
+from sqlalchemy import CHAR, Column, DECIMAL, Date, DateTime, Enum, ForeignKey, Integer, String, text
+from sqlalchemy.dialects.mysql import LONGTEXT, TINYINT, VARCHAR
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 metadata = Base.metadata
+
+
+class Logsapp(Base):
+    __tablename__ = 'logsapp'
+
+    logs_app_id = Column(Integer, primary_key=True)
+    log_description = Column(LONGTEXT, nullable=False)
+    fecha_log = Column(DateTime, nullable=False)
+    sistema = Column(String(250), nullable=False)
+    modulo = Column(String(250), nullable=False)
 
 
 class Ordene(Base):

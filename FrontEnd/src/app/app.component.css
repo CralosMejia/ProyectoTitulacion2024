@@ -29,3 +29,20 @@
     overflow-y: auto;
     overflow-x: auto;
 }
+
+@media print {
+    body * {
+      visibility: hidden; /* Oculta todo el contenido del body al imprimir */
+    }
+    .header_container_principal {
+      visibility: hidden; /* Esto ocultará header, footer y aside durante la impresión */
+    }
+
+    .sidebar_container_principal{
+      visibility: hidden; /* Esto ocultará header, footer y aside durante la impresión */
+    }
+
+    .footer_container_principal{
+      visibility: hidden;
+    }
+}

@@ -42,4 +42,20 @@ export class GraficsService {
     return this.http.post(url,data)
 
   }
+
+  saveDatapredicted(data:any){
+    const url = `${base_url}/mvd/savePredictdemand`;
+    return this.http.post(url,data)
+
+  }
+
+  getNamesAnalisis(){
+    const url = `${base_url}/mvd/getAllAnalisis`;
+    return this.http.get(url)
+  }
+
+  getDataAnalisis(data:any){
+    const url = `${base_url}/mvd/doAnalisis`;
+    return this.http.post(url,data)
+  }
 }

@@ -18,6 +18,7 @@ import { AlmacenamientoComponent } from './dashboard/grafics/almacenamiento/alma
 import { InformacionPedidosComponent } from './dashboard/grafics/informacion-pedidos/informacion-pedidos.component';
 import { CommonComponentsModule } from '../common/common-components.module';
 import { FormsModule } from '@angular/forms';
+import { AnalisiPrediccionDemandaComponent } from './dashboard/grafics/analisi-prediccion-demanda/analisi-prediccion-demanda.component';
 
 
 
@@ -35,6 +36,7 @@ import { FormsModule } from '@angular/forms';
     TendenciaVentasComponent,
     AlmacenamientoComponent,
     InformacionPedidosComponent,
+    AnalisiPrediccionDemandaComponent,
   ],
   imports: [
     CommonModule,
@@ -49,7 +51,12 @@ import { FormsModule } from '@angular/forms';
     MenuComponent,
     PedidosComponent,
     PlatoComponent,
-    AgregarPedidoComponent
+    AgregarPedidoComponent,
+    PrediccionDemandaComponent,
+    AlmacenamientoComponent,
+    InformacionPedidosComponent,
+    TendenciaVentasComponent,
+    AnalisiPrediccionDemandaComponent
   ]
 })
 export class PagesModule { }

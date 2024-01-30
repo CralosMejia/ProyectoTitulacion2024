@@ -11,28 +11,19 @@ from app.business.MPD.mpd_Manager import MPD_Manager
 from config.Containers.containers import Container
 
 @inject
-def train_model(mpd: MPD_Manager = Provide[Container.mpd_manager]):
+def process(mpd: MPD_Manager = Provide[Container.mpd_manager]):
     today = datetime.date.today()
     tomorrow = today + datetime.timedelta(days=1)
     if tomorrow.day == 1:
-        mpd.train()
-
-@inject
-def run_etl(mpd: MPD_Manager = Provide[Container.mpd_manager]):
-    mpd.run_etl()
-@inject
-def predict_demand(mpd: MPD_Manager = Provide[Container.mpd_manager]):
-    today = datetime.date.today()
-    tomorrow = today + datetime.timedelta(days=1)
-    if tomorrow.day == 1:
+        mpd.run_etl()
+        mpd.train_model_to_predict_demand()
+        mpd.train_model_to_predict_trend_sales()
         mpd.predict_demand()
-
+        mpd.predict_trend_sales()
 def prueba():
     print('funca los jobs')
 def configure_cron_jobs():
-    schedule.every().day.at("23:00").do(train_model)
-    schedule.every().day.at("00:00").do(predict_demand)
-    schedule.every().day.at("22:00").do(run_etl)
+    schedule.every().day.at("22:00").do(process)
     #schedule.every(2).minutes.do(run_etl)
 
 

@@ -61,19 +61,19 @@ export class hechosdemandaproducto extends Model<hechosdemandaproductoAttributes
       }
     },
     cantidad_predicha_modelo_1: {
-      type: DataTypes.DECIMAL(10,2),
+      type: DataTypes.DECIMAL(14,3),
       allowNull: true,
-      defaultValue: 0.00
+      defaultValue: 0.000
     },
     cantidad_predicha_modelo_2: {
-      type: DataTypes.DECIMAL(10,2),
+      type: DataTypes.DECIMAL(14,3),
       allowNull: true,
-      defaultValue: 0.00
+      defaultValue: 0.000
     },
     cantidad_real: {
-      type: DataTypes.DECIMAL(10,2),
+      type: DataTypes.DECIMAL(14,3),
       allowNull: true,
-      defaultValue: 0.00
+      defaultValue: 0.000
     }
   }, {
     sequelize,

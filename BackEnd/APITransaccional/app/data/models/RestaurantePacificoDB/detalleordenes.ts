@@ -9,11 +9,12 @@ export interface detalleordenesAttributes {
   orden_id: number;
   cantidad_necesaria?: number;
   estado?: 'Por recibir' | 'Recibido';
+  fecha_recepcion?: string;
 }
 
 export type detalleordenesPk = "detalle_orden_id";
 export type detalleordenesId = detalleordenes[detalleordenesPk];
-export type detalleordenesOptionalAttributes = "detalle_orden_id" | "cantidad_necesaria" | "estado";
+export type detalleordenesOptionalAttributes = "detalle_orden_id" | "cantidad_necesaria" | "estado" | "fecha_recepcion";
 export type detalleordenesCreationAttributes = Optional<detalleordenesAttributes, detalleordenesOptionalAttributes>;
 
 export class detalleordenes extends Model<detalleordenesAttributes, detalleordenesCreationAttributes> implements detalleordenesAttributes {
@@ -22,6 +23,7 @@ export class detalleordenes extends Model<detalleordenesAttributes, detalleorden
   orden_id!: number;
   cantidad_necesaria?: number;
   estado?: 'Por recibir' | 'Recibido';
+  fecha_recepcion?: string;
 
   // detalleordenes belongsTo ordenes via orden_id
   orden!: ordenes;
@@ -59,14 +61,18 @@ export class detalleordenes extends Model<detalleordenesAttributes, detalleorden
       }
     },
     cantidad_necesaria: {
-      type: DataTypes.DECIMAL(10,2),
+      type: DataTypes.DECIMAL(14,3),
       allowNull: true,
-      defaultValue: 0.00
+      defaultValue: 0.000
     },
     estado: {
       type: DataTypes.ENUM('Por recibir','Recibido'),
       allowNull: true,
       defaultValue: "Por recibir"
+    },
+    fecha_recepcion: {
+      type: DataTypes.DATEONLY,
+      allowNull: true
     }
   }, {
     sequelize,
