@@ -57,15 +57,15 @@ export class IngredientesServices extends Observable{
             let currentDate = new Date();
             let currentDateISO = currentDate.toISOString();
             
-            // let loteExpirationDate = new Date(lote.fecha_vencimiento);
+            let loteExpirationDate = new Date(lote.fecha_vencimiento);
         
-            // if (loteExpirationDate.getTime() <= currentDate.getTime()) {
+            if (loteExpirationDate.getTime() <= currentDate.getTime()) {
 
-            //     let ErroMessage=`The expiration date is less than or equal to the current date` 
-            //     this.log.addLog(ErroMessage,'Apitransaccional','Módulo gestion de productos alimenticios almacenados en bodega')
+                let ErroMessage=`The expiration date is less than or equal to the current date` 
+                this.log.addLog(ErroMessage,'Apitransaccional','Módulo gestion de productos alimenticios almacenados en bodega')
 
-            //     throw new Error(ErroMessage);
-            // }
+                throw new Error(ErroMessage);
+            }
 
             lote.fecha_ingreso = currentDateISO;
             const resp=await this.repositoryLotes.create(lote);
@@ -311,6 +311,36 @@ export class IngredientesServices extends Observable{
             this.log.addLog(errorMessage,'Apitransaccional','Módulo gestion de productos alimenticios almacenados en bodega')
             throw new Error(errorMessage);
         }
+    }
+
+     /**
+     * Retrieves all products that are near or below their minimum stock level.
+     * 
+     * @param difference - The quantity difference from the minimum stock level to consider.
+     * @returns An array of products near or below their minimum stock level.
+     */
+    async getProductsNearOrBelowMinimum() {
+        const difference = this.DIFMINORMAX;
+        // Get all products from the repository
+        const allProducts = await this.repositoryProductoBodega.getAll();
+    
+        // Filter products that are near or below their minimum quantity
+        const productsNearOrBelowMinimum = allProducts.filter(product => {
+            const currentAmount = Number(product.cantidad_actual);
+            const minimumAmount = Number(product.cantidad_minima);
+    
+            // Check if the current amount is within the specified difference of the minimum amount
+            return currentAmount <= (minimumAmount + difference);
+        });
+
+        if(productsNearOrBelowMinimum !== null ) this.notify({
+            type: 'ProductsMinimun',
+            productsNearOrBelowMinimum
+        })
+        
+
+    
+        return productsNearOrBelowMinimum;
     }
     
     

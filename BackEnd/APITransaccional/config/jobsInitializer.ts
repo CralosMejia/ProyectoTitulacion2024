@@ -2,7 +2,7 @@
 
 import { IngredientesServices } from '../app/business/services/MGPAAB/IngredientesServices';
 import { sendApprovedOrdersJob, setupCrearPedidosAutomaticosJob } from '../jobs/MAP/jobsFuctionsMAP';
-import { setupExpiredLotesJob, /*setupLotestoExpireJob, setupProductsMaximumJob*/ } from '../jobs/MGPAAB/jobsFuctionsMGPAAB';
+import { setupExpiredLotesJob, setupProductsMinimumJob, /*setupLotestoExpireJob, setupProductsMaximumJob*/ } from '../jobs/MGPAAB/jobsFuctionsMGPAAB';
 import { container } from './inversify.config';
 // Importa otros cron jobs aquí
 
@@ -14,7 +14,7 @@ export function initializeJobs(): void {
 
     setupExpiredLotesJob(ingredientesServices);
     // setupLotestoExpireJob(ingredientesServices)
-    // setupProductsMinimumJob(ingredientesServices)
+    setupProductsMinimumJob(ingredientesServices)
     // setupProductsMaximumJob(ingredientesServices)
     setupCrearPedidosAutomaticosJob()
     sendApprovedOrdersJob()

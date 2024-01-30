@@ -33,16 +33,22 @@
     <table class="bodega-table">
       <tr>
         <th>fecha</th>
+        <th>{{opciones[0].name}}</th>
+        <th>{{opciones[1].name}}</th>
         <th>variación porcentual</th>
         <th>variación monetaria</th>
       </tr>
       <tr *ngFor="let dato of resumenDatos">
         <td>{{dato.fecha}}</td>
+        <td>{{dato.cant_a | currency:'USD':'symbol':'1.2-2'}}</td>
+        <td>{{dato.cant_b | currency:'USD':'symbol':'1.2-2'}}</td>
         <td>{{dato.variacion_porcentual | number:'1.2-2'}}%</td>
         <td>{{dato.variacionMonetaria | currency:'USD':'symbol':'1.2-2'}}</td>
       </tr>
       <tfoot>
         <td>total:</td>
+        <td></td>
+        <td></td>
         <td>{{variacionTotal | number:'1.2-2'}}%</td>
         <td>{{variacionMonetariaTotal | currency:'USD':'symbol':'1.2-2'}}</td>
 

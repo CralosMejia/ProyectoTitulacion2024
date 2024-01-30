@@ -76,7 +76,7 @@ export class PedidoAutomaticoService extends Observable {
                     
     
     
-                    if(productoBodega.cantidad_maxima === undefined  || productoBodega.cantidad_actual === undefined)  throw new Error('there are no current or maximum or minimum quantity values, which are necessary to work with');
+                    if(productoBodega.cantidad_maxima === undefined  || productoBodega.cantidad_actual === undefined || productoBodega.cantidad_minima === undefined)  throw new Error('there are no current or maximum or minimum quantity values, which are necessary to work with');
     
                     let cantidadTotalConDemanda = Number(productoBodega.cantidad_actual) + Number(demanda.cantidad_predicha_modelo_1);
 
@@ -95,6 +95,10 @@ export class PedidoAutomaticoService extends Observable {
                         // Ajustar la cantidad máxima si supera el total por 20
                         if (cantidadTotalConDemanda > productoBodega.cantidad_maxima + 300) {
                             await this.repositoryProductosBodega.updateSingleFieldById('producto_bodega_id', Number(productoBodega.producto_bodega_id), 'cantidad_maxima', Math.round(cantidadTotalConDemanda));
+                        }
+
+                        if(cantidadTotalConDemanda< productoBodega.cantidad_minima ){
+                            cantidadNecesaria=productoBodega.cantidad_minima
                         }
 
                         if (peso) {

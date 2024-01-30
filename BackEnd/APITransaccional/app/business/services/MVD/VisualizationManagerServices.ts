@@ -124,7 +124,7 @@ export class VisualizationManagerServices{
 
                         nombreMes=nombreMes+'-'+fecha.anio
 
-                        this.agregarOModificarPrediccion(resumenDatos,nombreMes,( 0),0);
+                        this.addOModifyPrediction(resumenDatos,nombreMes,( 0),0);
 
                         resumenDatos = this.sortByDate(resumenDatos)
 
@@ -133,7 +133,7 @@ export class VisualizationManagerServices{
                     }else{
                         const anio = fecha.anio || 0
 
-                        this.agregarOModificarPrediccion(resumenDatos,String(anio),( 0), 0);
+                        this.addOModifyPrediction(resumenDatos,String(anio),( 0), 0);
 
                         labels=resumenDatos.map((item:any)=> item.fecha)
                         datosPrediccion=resumenDatos.map((item:any)=> item.cantidad_predicha)
@@ -152,7 +152,7 @@ export class VisualizationManagerServices{
     
                             nombreMes=nombreMes+'-'+fecha.anio
     
-                            this.agregarOModificarPrediccion(resumenDatos,nombreMes,(Number(demanda.cantidad_predicha_modelo_1) || 0),Number(product.precio_proveedor || 0));
+                            this.addOModifyPrediction(resumenDatos,nombreMes,(Number(demanda.cantidad_predicha_modelo_1) || 0),Number(product.precio_proveedor || 0));
     
                             resumenDatos = this.sortByDate(resumenDatos)
     
@@ -161,7 +161,7 @@ export class VisualizationManagerServices{
                         }else{
                             const anio = fecha.anio || 0
     
-                            this.agregarOModificarPrediccion(resumenDatos,String(anio),(Number(demanda.cantidad_predicha_modelo_1) || 0),product.precio_proveedor || 0);
+                            this.addOModifyPrediction(resumenDatos,String(anio),(Number(demanda.cantidad_predicha_modelo_1) || 0),product.precio_proveedor || 0);
     
                             labels=resumenDatos.map((item:any)=> item.fecha)
                             datosPrediccion=resumenDatos.map((item:any)=> item.cantidad_predicha)
@@ -416,7 +416,7 @@ export class VisualizationManagerServices{
                 const ventaDelPlato = ventasEnFecha.find(venta => venta.plato_id === platoId);
                 if(frecuencia === 'w'){
                     if( ventaDelPlato !== undefined && ventaDelPlato.unidades_vendidas !== undefined){
-                        this.agregarTendenciaVentasMes(resumenDatos,fecha.fecha,Number(ventaDelPlato.unidades_vendidas),(Number(plato.precio)));
+                        this.addTrendSalesMonth(resumenDatos,fecha.fecha,Number(ventaDelPlato.unidades_vendidas),(Number(plato.precio)));
                     }
 
                     labels=resumenDatos.map((item:any)=> item.fecha)
@@ -425,7 +425,7 @@ export class VisualizationManagerServices{
                     const nombreMes = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"][fecha.mes - 1];
 
                     if( ventaDelPlato !== undefined && ventaDelPlato.unidades_vendidas !== undefined){
-                        this.agregarTendenciaVentasMes(resumenDatos,nombreMes,Number(ventaDelPlato.unidades_vendidas),(Number(plato.precio)));
+                        this.addTrendSalesMonth(resumenDatos,nombreMes,Number(ventaDelPlato.unidades_vendidas),(Number(plato.precio)));
                     }
 
                     labels=resumenDatos.map((item:any)=> item.fecha)
@@ -434,7 +434,7 @@ export class VisualizationManagerServices{
                     const anio = fecha.anio || 0
 
                     if( ventaDelPlato !== undefined && ventaDelPlato.unidades_vendidas !== undefined){
-                        this.agregarTendenciaVentasMes(resumenDatos,anio,Number(ventaDelPlato.unidades_vendidas),(Number(plato.precio)));
+                        this.addTrendSalesMonth(resumenDatos,anio,Number(ventaDelPlato.unidades_vendidas),(Number(plato.precio)));
                     }
 
                     labels=resumenDatos.map((item:any)=> item.fecha)
@@ -515,7 +515,7 @@ export class VisualizationManagerServices{
                     const ventaDelPlato = ventasEnFecha.find(venta => venta.plato_id === plato.plato_id);
                 if(frecuencia === 'w'){
                     if( ventaDelPlato !== undefined && ventaDelPlato.unidades_vendidas !== undefined){
-                        this.agregarTendenciaVentasMes(resumenDatos,fecha.fecha,Number(ventaDelPlato.unidades_vendidas),(Number(plato.precio)));
+                        this.addTrendSalesMonth(resumenDatos,fecha.fecha,Number(ventaDelPlato.unidades_vendidas),(Number(plato.precio)));
                     }
 
                     labels=resumenDatos.map((item:any)=> item.fecha)
@@ -524,7 +524,7 @@ export class VisualizationManagerServices{
                     const nombreMes = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"][fecha.mes - 1];
 
                     if( ventaDelPlato !== undefined && ventaDelPlato.unidades_vendidas !== undefined){
-                        this.agregarTendenciaVentasMes(resumenDatos,nombreMes,Number(ventaDelPlato.unidades_vendidas),(Number(plato.precio)));
+                        this.addTrendSalesMonth(resumenDatos,nombreMes,Number(ventaDelPlato.unidades_vendidas),(Number(plato.precio)));
                     }
 
                     labels=resumenDatos.map((item:any)=> item.fecha)
@@ -533,7 +533,7 @@ export class VisualizationManagerServices{
                     const anio = fecha.anio || 0
 
                     if( ventaDelPlato !== undefined && ventaDelPlato.unidades_vendidas !== undefined){
-                        this.agregarTendenciaVentasMes(resumenDatos,anio,Number(ventaDelPlato.unidades_vendidas),(Number(plato.precio)));
+                        this.addTrendSalesMonth(resumenDatos,anio,Number(ventaDelPlato.unidades_vendidas),(Number(plato.precio)));
                     }
 
                     labels=resumenDatos.map((item:any)=> item.fecha)
@@ -601,8 +601,10 @@ export class VisualizationManagerServices{
                 datos: {
                     labels: [producto.nombre_producto],
                     datasets: [
-                        { data: [producto.cantidad_maxima || 0], label: 'Cantidad Máxima' },
+                        { data: [producto.cantidad_minima || 0], label: 'Cantidad Minima' },
                         { data: [producto.cantidad_actual || 0], label: 'Cantidad Actual' },
+                        { data: [producto.cantidad_maxima || 0], label: 'Cantidad Máxima' },
+
                     ],
                 },infoLotes
             };
@@ -707,7 +709,7 @@ export class VisualizationManagerServices{
 
 
 
-    private agregarOModificarPrediccion(arreglo: any[], fecha: string,cantidad_predicha:number,precio_provee:number): void {
+    private addOModifyPrediction(arreglo: any[], fecha: string,cantidad_predicha:number,precio_provee:number): void {
         const indice = arreglo.findIndex(item => item.fecha === fecha);
     
         if (indice !== -1) {
@@ -721,7 +723,7 @@ export class VisualizationManagerServices{
     }
 
 
-    private agregarTendenciaVentasMes(arreglo: any[], fecha:number|string, cantidad_real: number,precio_plato:number): void {
+    private addTrendSalesMonth(arreglo: any[], fecha:number|string, cantidad_real: number,precio_plato:number): void {
         const indice = arreglo.findIndex(item => item.fecha == fecha);
     
         if (indice !== -1) {
@@ -858,9 +860,9 @@ export class VisualizationManagerServices{
                 analisis.info.forEach((element:any) => {
                     const mes = element.fecha.split('-')[0];
                     if(cont==1){
-                        this.agruparAnalisisPrediccion(resumenDatos,mes,element.valor_estimado)
+                        this.groupAnalysisPrediction(resumenDatos,mes,element.valor_estimado)
                     }else{
-                        this.agruparAnalisisPrediccion(resumenDatos,mes,0,element.valor_estimado)
+                        this.groupAnalysisPrediction(resumenDatos,mes,0,element.valor_estimado)
 
                     }
                     obj.data.push(element.valor_estimado)
@@ -892,7 +894,7 @@ export class VisualizationManagerServices{
     }
 
 
-    private agruparAnalisisPrediccion(arreglo: any[], fecha: string,cant_a:number=0,cant_b:number=0): void {
+    private groupAnalysisPrediction(arreglo: any[], fecha: string,cant_a:number=0,cant_b:number=0): void {
         const indice = arreglo.findIndex(item => item.fecha === fecha);
     
         if (indice !== -1) {
