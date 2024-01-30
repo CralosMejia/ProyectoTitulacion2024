@@ -28,18 +28,31 @@ export class EmailNotificationObserver implements Observer {
         try {
             if (observable instanceof PedidoAutomaticoService) {
                 // Enviar notificación de pedido
-                let detallesPedidoHTML = '<ul style="list-style-type:none;">';
+                let detallesPedidoHTML =  `
+                                <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                                    <thead>
+                                    <tr>
+                                        <th style="border: 1px solid #ddd; background-color: #f2f2f2; padding: 8px; text-align: left;">Nombre del Producto</th>
+                                        <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Cantidad necesaria</th>
+                                        <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Precio Proveedor</th>
+                                        <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Valor</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>`;
                 data.orderDetails.forEach((detail:any) => {
                     detallesPedidoHTML += `
-                        <li>
-                            <strong>${detail.productInfo.nombre_producto}</strong> - 
-                            Cantidad: ${detail.cantidad_necesaria} ${detail.pesoInfo.simbolo}, 
-                            Precio: ${detail.productInfo.precio_proveedor}$, 
-                            Valor: ${(detail.cantidad_necesaria * detail.productInfo.precio_proveedor).toFixed(2)}$
-                        </li>
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${detail.productInfo.nombre_producto}</td>
+                            <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${detail.cantidad_necesaria} ${detail.pesoInfo.simbolo}</td>
+                            <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${detail.productInfo.precio_proveedor}$</td>
+                            <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${(detail.cantidad_necesaria * detail.productInfo.precio_proveedor).toFixed(2)}$</td>
+
+                        </tr>
                     `;
                 });
-                detallesPedidoHTML += '</ul>';
+                detallesPedidoHTML += `</tbody>
+                </table>
+    `
                 const mail =await this.emailServ.sendEmail(
                     process.env.ADMIN_MAIL || '',
                     'Orden automatica creada',
@@ -56,15 +69,12 @@ export class EmailNotificationObserver implements Observer {
                         
 
                     `
-                    // <a href="http://localhost:3000/api/map/approveOrder/${data.order.orden_id}" style="background-color: #4CAF50; color: white; padding: 15px 25px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;">
-                    //         Aprobar Pedido
-                    //     </a>
                 )
                 if(mail !== null) console.log("mail sent successfully")
     
             }else if (observable instanceof IngredientesServices) {
                 //Enviar notificación de venta
-                if(data.type === 'ExpiredLotes'){
+                 if(data.type === 'ExpiredLotes'){
                     const lotesExpired: any[] = data.detailedExpiredLotes as any[];
                     let lotesExpiredHTML = '<ul style="list-style-type:none;">';
                     lotesExpired.forEach((detail:any)=>{
@@ -116,6 +126,41 @@ export class EmailNotificationObserver implements Observer {
     
                     if(mail !== null) console.log("mail sent successfully")
     
+                }else if(data.type === 'ProductsMinimun'){
+                    const productsMinum: any[] = data.productsNearOrBelowMinimum  as any[];
+                    let lotesExpiredHTML = `
+                                            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                                                <thead>
+                                                <tr>
+                                                    <th style="border: 1px solid #ddd; background-color: #f2f2f2; padding: 8px; text-align: left;">Nombre del Producto</th>
+                                                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Cantidad Actual</th>
+                                                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Cantidad Mínima</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>`;
+
+
+                    productsMinum.forEach((detail:any)=>{
+                        lotesExpiredHTML+=`
+                                    <tr>
+                                        <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${detail.nombre_producto}</td>
+                                        <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${detail.cantidad_actual}</td>
+                                        <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${detail.cantidad_minima}</td>
+                                    </tr>
+                        `
+    
+                    })
+                    lotesExpiredHTML+=`</tbody>
+                                </table>
+                    `
+                    const mail =await this.emailServ.sendEmail(
+                        process.env.ADMIN_MAIL || '',
+                        'Productos que ha superado el minimo',
+                        ``,
+                        lotesExpiredHTML
+                    )
+    
+                    if(mail !== null) console.log("mail sent successfully")
                 }
                 
             }else if(observable instanceof PedidosServices){
@@ -124,26 +169,39 @@ export class EmailNotificationObserver implements Observer {
                     for (const [supplierId, details] of Object.entries(data.ordersBySupplier)) {
                         const detallesDelProveedor: any[] = details as any[];
                         // Supongamos que cada detalle contiene información del producto y del proveedor
-                        let detallesProveedorHTML = '<ul style="list-style-type:none;">';
+                        let detallesProveedorHTML = `
+                                        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                                            <thead>
+                                            <tr>
+                                                <th style="border: 1px solid #ddd; background-color: #f2f2f2; padding: 8px; text-align: left;">Nombre del Producto</th>
+                                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Cantidad Necesaria</th>
+                                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Precio estipulado</th>
+                                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">valor</th>
+
+                                            </tr>
+                                            </thead>
+                                            <tbody>`;
                         detallesDelProveedor.forEach((detail: any) => {
                             detallesProveedorHTML += `
-                                <li>
-                                    <strong>${detail.productInfo.nombre_producto}</strong> - 
-                                    Cantidad: ${detail.cantidad_necesaria} ${detail.pesoInfo.simbolo}, 
-                                    Precio: ${detail.productInfo.precio_proveedor}$, 
-                                    Valor: ${(detail.cantidad_necesaria * detail.productInfo.precio_proveedor).toFixed(2)}$
-                                </li>
-                            `;
+                            <tr>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${detail.productInfo.nombre_producto}</td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${detail.cantidad_necesaria} ${detail.pesoInfo.simbolo}</td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${detail.productInfo.precio_proveedor}$</td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">${(detail.cantidad_necesaria * detail.productInfo.precio_proveedor).toFixed(2)}$</td>
+    
+                            </tr>
+                        `;
                         });
-                        detallesProveedorHTML += '</ul>';
+                        detallesProveedorHTML += `</tbody>
+                        </table>
+            `
     
                         const supplierEmail = detallesDelProveedor.length > 0 ? detallesDelProveedor[0].supplierInfo.email : 'defaultemail@example.com';
                         const mail = await this.emailServ.sendEmail(
                             supplierEmail,
-                            'Pedido Enviado',
+                            'Pedido para el restaurante Pacifico',
                             'Se ha enviado un pedido',
                             `
-                                <h1>Pedido Enviado</h1>
                                 <h3>De acuerdo a lo estipulado en el contrato, el restaurante Pacifico receptara el pedido a mas tardar en la fecha: ${detallesDelProveedor[0].date}</h3>
                                 <h3>Detalles del pedido para el proveedor ${detallesDelProveedor[0].supplierInfo.nombre_proveedor}</h3>
                                 ${detallesProveedorHTML}

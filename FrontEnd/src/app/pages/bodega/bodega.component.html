@@ -5,7 +5,7 @@
           <th></th>
           <th>Nombre del Producto</th>
           <th>Cantidad en Existencia</th>
-          <!-- <th>Cantidad Mínima</th> -->
+          <th>Cantidad Mínima Recomendada</th>
           <th>Cantidad Máxima Recomendada</th>
           <th>Proveedor</th>
           <th>Precio</th>
@@ -27,7 +27,7 @@
             </td>
             <td class="td_image">{{product.prodbodega.nombre_producto}}</td>
             <td>{{product.prodbodega.cantidad_actual}} {{product.prodbodega.simboloPeso}}</td>
-            <!-- <td>{{product.prodbodega.cantidad_minima}} {{product.prodbodega.simboloPeso}}</td> -->
+            <td>{{product.prodbodega.cantidad_minima}} {{product.prodbodega.simboloPeso}}</td>
             <td>{{product.prodbodega.cantidad_maxima}} {{product.prodbodega.simboloPeso}}</td>
             <td>{{product.prodbodega.proveedor.nombre_proveedor}}</td>
             <td>{{product.prodbodega.precio_proveedor}}</td>
@@ -82,8 +82,8 @@
             <input *ngIf="!isLote" type="text"  placeholder="Type here..." [(ngModel)]="nameProd">
         </div>
         <div class="input-group" >
-            <!-- <label for="cant_min" *ngIf="!isLote" >CANTIDAD MINIMA</label>
-            <input class="input-weigth" type="number" id="cant_min" placeholder="Type here..." *ngIf="!isLote"  [(ngModel)]="minQuantityProd"> -->
+            <label for="cant_min" *ngIf="!isLote" >CANTIDAD MINIMA</label>
+            <input class="input-weigth" type="number" id="cant_min" placeholder="Type here..." *ngIf="!isLote"  [(ngModel)]="minQuantityProd">
             <!--  -->
             <label for="cant-lote" *ngIf="isLote" >CANTIDAD</label>
             <input  type="number" id="cant-lote" placeholder="Type here..." *ngIf="isLote"  [(ngModel)]="quantityNewLot">

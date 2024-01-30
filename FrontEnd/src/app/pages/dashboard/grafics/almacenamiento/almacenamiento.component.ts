@@ -84,6 +84,7 @@ export class AlmacenamientoComponent  implements OnInit{
     this.cantTotal=0
     this.graficsServices.getInventory(this.productoSeleccionado).subscribe((resp:any)=>{
       this.barChartData= resp.datos;
+      
       this.infoLotestabla=resp.infoLotes
 
       this.infoLotestabla.forEach((element:any) => {

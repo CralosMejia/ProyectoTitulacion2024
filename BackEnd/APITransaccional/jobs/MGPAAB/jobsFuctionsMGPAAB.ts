@@ -3,6 +3,8 @@
 import cron from 'node-cron';
 import { IngredientesServices } from '../../app/business/services/MGPAAB/IngredientesServices';
 import dotenv from 'dotenv';
+// import { addDays, startOfWeek } from 'date-fns';
+
 
 dotenv.config();
 
@@ -52,18 +54,24 @@ export function setupLotestoExpireJob(ingredientesServices: IngredientesServices
  *
  * @param ingredientesServices - The instance of IngredientesServices used for the job.
  */
-// export function setupProductsMinimumJob(ingredientesServices: IngredientesServices) {
-//     cron.schedule(TIMEDIFMINORMAX, async () => {
-//         console.log('Running the cron job for products close to or below minimum');
-//         try {
-//             const productsNearOrBelowMinimum = await ingredientesServices.getProductsNearOrBelowMinimum();
-//             console.log('Products near or below the minimum:', productsNearOrBelowMinimum);
-//             // Lógica adicional para productos cerca o por debajo del mínimo
-//         } catch (error) {
-//             console.error('Error in the cron job of products near or below the minimum:', error);
-//         }
-//     });
-// }
+export function setupProductsMinimumJob(ingredientesServices: IngredientesServices) {
+    cron.schedule(TIMEDIFMINORMAX, async () => {
+        console.log('Running the cron job for products close to or below minimum');
+        try {
+            const productsNearOrBelowMinimum = await ingredientesServices.getProductsNearOrBelowMinimum();
+            if(productsNearOrBelowMinimum !== null){
+                // console.log(productsNearOrBelowMinimum)
+                // const hoy = new Date();
+                // const proximoSabado = startOfWeek(addDays(hoy, 6));
+        
+                // console.log(proximoSabado.toISOString().slice(0, 10));
+            }
+            // Lógica adicional para productos cerca o por debajo del mínimo
+        } catch (error) {
+            console.error('Error in the cron job of products near or below the minimum:', error);
+        }
+    });
+}
 
 /**
  * Sets up a cron job to monitor and log products that are near or above their maximum stock levels.

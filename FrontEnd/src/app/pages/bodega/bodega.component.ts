@@ -87,6 +87,7 @@ export class BodegaComponent implements OnInit {
     })
     this.bodegaServices.getAllInfoproducts().subscribe((resp:any)=>{
       this.listProductsWithAllInfo= resp;
+
     })
     this.platoServices.getAllPeso().subscribe((resp:any)=>{
       this.pesoList=resp.entriesList.filter((objeto:any) => objeto.tipo_uso === 'proveedor' || objeto.tipo_uso === 'ambos');
@@ -167,7 +168,7 @@ export class BodegaComponent implements OnInit {
       "proveedor_id": this.provSeleccionado,
       "peso_proveedor_id": this.pesoSeleccionado,
       "nombre_producto": this.nameProd,
-      // "cantidad_minima": this.minQuantityProd,
+      "cantidad_minima": this.minQuantityProd,
       "cantidad_maxima": this.maxQuantityProd,
       "precio_proveedor": this.priceProv
     }
@@ -217,7 +218,7 @@ export class BodegaComponent implements OnInit {
     }
     const data:any={
       "peso_id": this.pesoSeleccionado,
-      // "cantidad_minima":this.minQuantityProd,
+      "cantidad_minima":this.minQuantityProd,
       "cantidad_maxima": this.maxQuantityProd,
       "precio_proveedor": this.priceProv,
       "nombre_producto":this.nameProd,

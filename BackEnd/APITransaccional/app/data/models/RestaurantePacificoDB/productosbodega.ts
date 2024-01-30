@@ -16,11 +16,12 @@ export interface productosbodegaAttributes {
   cantidad_maxima?: number;
   tipo?: 'liquidos' | 'solidos';
   precio_proveedor?: number;
+  cantidad_minima?: number;
 }
 
 export type productosbodegaPk = "producto_bodega_id";
 export type productosbodegaId = productosbodega[productosbodegaPk];
-export type productosbodegaOptionalAttributes = "producto_bodega_id" | "cantidad_actual" | "cantidad_maxima" | "tipo" | "precio_proveedor";
+export type productosbodegaOptionalAttributes = "producto_bodega_id" | "cantidad_actual" | "cantidad_maxima" | "tipo" | "precio_proveedor" | "cantidad_minima";
 export type productosbodegaCreationAttributes = Optional<productosbodegaAttributes, productosbodegaOptionalAttributes>;
 
 export class productosbodega extends Model<productosbodegaAttributes, productosbodegaCreationAttributes> implements productosbodegaAttributes {
@@ -32,6 +33,7 @@ export class productosbodega extends Model<productosbodegaAttributes, productosb
   cantidad_maxima?: number;
   tipo?: 'liquidos' | 'solidos';
   precio_proveedor?: number;
+  cantidad_minima?: number;
 
   // productosbodega belongsTo peso via peso_proveedor_id
   peso_proveedor!: peso;
@@ -136,6 +138,11 @@ export class productosbodega extends Model<productosbodegaAttributes, productosb
       defaultValue: "solidos"
     },
     precio_proveedor: {
+      type: DataTypes.DECIMAL(14,3),
+      allowNull: true,
+      defaultValue: 0.000
+    },
+    cantidad_minima: {
       type: DataTypes.DECIMAL(14,3),
       allowNull: true,
       defaultValue: 0.000
